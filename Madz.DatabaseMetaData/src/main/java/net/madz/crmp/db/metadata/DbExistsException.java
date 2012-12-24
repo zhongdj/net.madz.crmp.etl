@@ -1,4 +1,4 @@
-package net.madz.crmp.db.metadata.utils;
+package net.madz.crmp.db.metadata;
 
 /**
  * The exception will be thrown when cloning database if the target database

@@ -1,4 +1,4 @@
-package net.madz.crmp.db.metadata.utils;
+package net.madz.crmp.db.metadata;
 
 /**
  * This class is the facade of this module. It provides checking,comparing,

@@ -1,6 +1,6 @@
 package net.madz.crmp.db.metadata.business;
 
-import net.madz.crmp.db.metadata.connection.Connection;
+import java.sql.Connection;
 
 /**
  * This factory generates pair of connection and DBSchemaResolver of different
@@ -9,18 +9,17 @@ import net.madz.crmp.db.metadata.connection.Connection;
  * @author tracy
  * 
  */
-public abstract class AbstractFactory {
+public interface DbSchemaResolverFactory {
 
 	/**
 	 * @param dbName
 	 * @return
 	 */
-	public abstract Connection createConnection(String dbName);
+	Connection createConnection(String dbName);
 
 	/**
 	 * @param dbName
 	 * @return
 	 */
-	public abstract AbstractDBSchemaResolver createDBSchemaResolver(
-			String dbName);
+	DBSchemaResolver createDBSchemaResolver(String dbName);
 }

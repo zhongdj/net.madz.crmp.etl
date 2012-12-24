@@ -9,10 +9,10 @@ import net.madz.crmp.db.metadata.business.impl.DataBaseMetaData;
  * @author tracy
  * 
  */
-public abstract class AbstractDBSchemaResolver {
+public interface DBSchemaResolver {
 	/**
 	 * @param dbName
 	 * @return
 	 */
-	public abstract DataBaseMetaData createDBMetadata(String dbName);
+	DataBaseMetaData createDBMetadata(String dbName);
 }
