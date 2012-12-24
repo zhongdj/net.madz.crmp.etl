@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources xmlns="http://madz.net/datasource"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://madz.net/datasource DataSourcesSchema.xsd">
+	<datasource name="S1" product="MySQL" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/crmp" user="root" password="1q2w3e4r5t" />
+	<datasource name="T1" product="MySQL" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/crmp2" user="root" password="1q2w3e4r5t" />
+</datasources>

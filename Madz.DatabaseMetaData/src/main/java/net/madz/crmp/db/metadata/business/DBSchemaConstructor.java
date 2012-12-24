@@ -12,5 +12,5 @@ public interface DBSchemaConstructor {
 	/**
 	 * @param metadata
 	 */
-	void coloneDbSchema(DataBaseMetaData metadata);
+	void cloneDbSchema(DataBaseMetaData metadata);
 }
