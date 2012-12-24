@@ -1,4 +1,4 @@
-package net.madz.crmp.db.metadata;
+package net.madz.crmp.etl.engine.meta;
 /**
  * The interface provides methods for checking, validating, and coping source
  * database schema by mixing plant id. For now, we support Access, MySQL
