@@ -2,11 +2,37 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://madz.net/datasource" xmlns:tns="http://madz.net/datasource"
 	elementFormDefault="qualified">
-	<xs:element name="databases">
+	<xs:element name="database-config">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="tns:database" minOccurs="1" maxOccurs="unbounded" />
+				<xs:element ref="tns:source-databases" minOccurs="1"
+					maxOccurs="1" />
+				<xs:element ref="tns:database-copies" minOccurs="1"
+					maxOccurs="1" />
 				<xs:element ref="tns:sku-conf" minOccurs="1" maxOccurs="unbounded" />
+				<xs:element ref="tns:database-copies-server" minOccurs="1"
+					maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="source-databases">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:database" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="database-copies">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:database" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="database-copies-server">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:database" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

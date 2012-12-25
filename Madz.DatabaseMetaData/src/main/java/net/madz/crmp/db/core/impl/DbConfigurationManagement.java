@@ -1,4 +1,4 @@
-package net.madz.crmp.db.metadata.business.impl;
+package net.madz.crmp.db.core.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,36 +13,48 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import net.madz.crmp.db.metadata.business.DBSchemaConstructor;
-import net.madz.crmp.db.metadata.business.DBSchemaResolver;
-import net.madz.crmp.db.metadata.business.DbOperatorFactory;
 import net.madz.crmp.db.metadata.configuration.Database;
-import net.madz.crmp.db.metadata.configuration.Databases;
+import net.madz.crmp.db.metadata.configuration.DatabaseConfig;
+import net.madz.crmp.db.metadata.configuration.DatabaseCopiesServer;
 import net.madz.crmp.db.metadata.configuration.Sku;
 import net.madz.crmp.db.metadata.configuration.SkuConf;
 
-public class DbOperatorFactoryImpl implements DbOperatorFactory {
+public class DbConfigurationManagement {
 	private static final String NET_MADZ_DB_CONFIGURATION = "net.madz.db.configuration";
 	private static final String CONFIGURATION_DATA_SOURCES = "/Databases.xml";
-	private static final Map<String, Database> dataSourceCache = new HashMap<String, Database>();
+	private static final Map<String, Database> sourceDatabaseCache = new HashMap<String, Database>();
+	private static final Map<String, Database> databaseCopiesCache = new HashMap<String, Database>();
 	private static final Map<Sku, SkuConf> skuConfs = new HashMap<Sku, SkuConf>();
-	private static Databases databases;
+	private static DatabaseCopiesServer databaseCopiesServer = null;
+	private static DatabaseConfig databaseconfig;
 
 	static {
+		loadDatabaseConfiguration();
+	}
+
+	private static void loadDatabaseConfiguration() {
 		InputStream resource = null;
 		try {
 			final JAXBContext context = JAXBContext
-					.newInstance(Databases.class);
+					.newInstance(DatabaseConfig.class);
 			final Unmarshaller shaller = context.createUnmarshaller();
 			final String configurationFile = System.getProperty(
-					NET_MADZ_DB_CONFIGURATION, CONFIGURATION_DATA_SOURCES);
-			resource = DbOperatorFactoryImpl.class
+					DbConfigurationManagement.NET_MADZ_DB_CONFIGURATION,
+					CONFIGURATION_DATA_SOURCES);
+			resource = DbConfigurationManagement.class
 					.getResourceAsStream(configurationFile);
-			databases = (Databases) shaller.unmarshal(resource);
-			final List<Database> result = databases.getDatabase();
-			final List<SkuConf> skuResult = databases.getSkuConf();
-			for (Database item : result) {
-				dataSourceCache.put(item.getName(), item);
+			databaseconfig = (DatabaseConfig) shaller.unmarshal(resource);
+			final List<Database> sourceDatabases = databaseconfig
+					.getSourceDatabases().getDatabase();
+			final List<Database> databaseCopies = databaseconfig
+					.getDatabaseCopies().getDatabase();
+			final List<SkuConf> skuResult = databaseconfig.getSkuConf();
+			databaseCopiesServer = databaseconfig.getDatabaseCopiesServer();
+			for (Database item : sourceDatabases) {
+				sourceDatabaseCache.put(item.getName(), item);
+			}
+			for (Database item : databaseCopies) {
+				databaseCopiesCache.put(item.getName(), item);
 			}
 			for (SkuConf item : skuResult) {
 				skuConfs.put(item.getSku(), item);
@@ -57,11 +69,10 @@ public class DbOperatorFactoryImpl implements DbOperatorFactory {
 				}
 			}
 		}
-
 	}
 
-	private Connection createConnection(String dbName) {
-		Database datasource = dataSourceCache.get(dbName);
+	public static Connection createConnection(String dbName) {
+		Database datasource = sourceDatabaseCache.get(dbName);
 		Connection connection = null;
 		try {
 			Class.forName(skuConfs.get(datasource.getSku()).getDriverClass());
@@ -73,18 +84,6 @@ public class DbOperatorFactoryImpl implements DbOperatorFactory {
 			throw new IllegalStateException(e);
 		}
 		return connection;
-	}
-
-	@Override
-	public DBSchemaResolver createDBSchemaResolver(String dbName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public DBSchemaConstructor createDBSchemaConstructor(String dbName) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

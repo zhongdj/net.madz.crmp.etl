@@ -1,5 +1,4 @@
-package net.madz.crmp.db.metadata.business;
-
+package net.madz.crmp.db.core;
 
 /**
  * This factory generates DBSchemaResolvers and DBSchemaConstrutors of different
@@ -12,12 +11,10 @@ public interface DbOperatorFactory {
 
 	/**
 	 * @param dbName
+	 * @param isCopy
 	 * @return
 	 */
-	DBSchemaResolver createDBSchemaResolver(String dbName);
-	/**
-	 * @param dbName
-	 * @return
-	 */
-	DBSchemaConstructor createDBSchemaConstructor(String dbName);
+	AbsSchemaMetaDataParser createSchemaParser(String dbName, boolean isCopy);
+
+	AbsDatabaseGenerator createDatabaseGenerator();
 }
