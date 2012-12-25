@@ -1,5 +1,7 @@
 package net.madz.crmp.db.metadata.business;
 
+import com.mysql.jdbc.Connection;
+
 import net.madz.crmp.db.metadata.business.impl.DataBaseMetaData;
 
 /**
@@ -9,10 +11,19 @@ import net.madz.crmp.db.metadata.business.impl.DataBaseMetaData;
  * @author tracy
  * 
  */
-public interface DBSchemaResolver {
+public abstract class DBSchemaResolver {
+	private Connection conn;
+
+	/**
+	 * @param conn
+	 */
+	public void setConnection(Connection conn) {
+		this.conn = conn;
+	}
+
 	/**
 	 * @param dbName
 	 * @return
 	 */
-	DataBaseMetaData createDBMetadata(String dbName);
+	public abstract DataBaseMetaData createDBMetadata();
 }

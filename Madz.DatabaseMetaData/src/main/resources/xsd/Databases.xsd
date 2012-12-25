@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://madz.net/datasource" xmlns:tns="http://madz.net/datasource"
+	elementFormDefault="qualified">
+	<xs:element name="databases">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:database" minOccurs="1" maxOccurs="unbounded" />
+				<xs:element ref="tns:sku-conf" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="database">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:attribute name="sku" type="tns:sku" use="required" />
+			<xs:attribute name="url" type="xs:string" use="required" />
+			<xs:attribute name="user" type="xs:string" use="required" />
+			<xs:attribute name="password" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="sku">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MySQL" />
+			<xs:enumeration value="MS Access" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="sku-conf">
+		<xs:complexType>
+			<xs:attribute name="sku" type="tns:sku" use="required" />
+			<xs:attribute name="driverClass" type="xs:string" use="required" />
+			<xs:attribute name="parserClass" type="xs:string" use="required" />
+			<xs:attribute name="generatorClass" type="xs:string"
+				use="optional" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

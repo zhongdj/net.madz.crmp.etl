@@ -15,10 +15,9 @@ public class DbMetadataUtilsImpl implements DbMetadataUtils {
 	}
 
 	@Override
-	public void cloneDbMetadata(String sourceDbName, String targetDbName)
+	public String cloneDbMetadata(String sourceDbName, String targetDbName)
 			throws DbExistsException {
-		// TODO Auto-generated method stub
-
+				return targetDbName;
 	}
 
 	@Override

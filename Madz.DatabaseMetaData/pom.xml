@@ -7,33 +7,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>Madz.DatabaseMetaData</artifactId>
-
-	<repositories>
-		<repository>
-			<id>central</id>
-			<name>MavenChinaMirror</name>
-			<url>http://maven.net.cn/content/groups/public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>central</id>
-			<name>MavenChinaMirror</name>
-			<url>http://maven.net.cn/content/groups/public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
 	<dependencies>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
@@ -63,7 +36,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.5.1</version>
+					<version>3.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -78,10 +51,13 @@
 						<goals>
 							<goal>xjc</goal>
 						</goals>
+						<configuration>
+						</configuration>
 					</execution>
 				</executions>
 				<configuration>
-					<packageName>net.madz.db.metadata.configuration</packageName><!--Thenameofyourgeneratedsourcepackage -->
+					<packageName>net.madz.crmp.db.metadata.configuration</packageName>
+					<schemaDirectory>${project.basedir}/src/main/resources/xsd/</schemaDirectory>
 				</configuration>
 			</plugin>
 		</plugins>

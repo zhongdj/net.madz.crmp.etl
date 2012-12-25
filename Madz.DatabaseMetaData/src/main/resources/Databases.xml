@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databases xmlns="http://madz.net/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://madz.net/datasource Databases.xsd">
+	<database name="S1" sku="MS Access" url="jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=d:\\work\your.mdb"
+		user="root" password="1q2w3e4r5t" />
+	<database name="S1" sku="MySQL" url="jdbc:mysql://localhost:3306/crmp"
+		user="root" password="1q2w3e4r5t" />
+	<database name="T1" sku="MySQL" url="jdbc:mysql://localhost:3306/crmp2"
+		user="root" password="1q2w3e4r5t" />
+	<sku-conf parserClass="" driverClass="com.mysql.jdbc.Driver"
+		sku="MySQL" />
+	<sku-conf parserClass="" driverClass="sun.jdbc.odbc.JdbcOdbcDriver" sku="MS Access" />	
+</databases>

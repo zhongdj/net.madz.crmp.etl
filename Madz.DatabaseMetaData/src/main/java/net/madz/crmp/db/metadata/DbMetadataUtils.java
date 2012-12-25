@@ -33,9 +33,10 @@ public interface DbMetadataUtils {
 	 * 
 	 * @param sourceDbName
 	 * @param targetDbName
+	 * @return
 	 * @throws DbExistsException
 	 */
-	void cloneDbMetadata(String sourceDbName, String targetDbName)
+	String cloneDbMetadata(String sourceDbName, String targetDbName)
 			throws DbExistsException;
 
 	/**
