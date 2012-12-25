@@ -12,18 +12,19 @@ import net.madz.crmp.db.metadata.SchemaMetaData;
  * 
  */
 public abstract class AbsDatabaseGenerator {
-	protected final Connection conn;
 
-	/**
-	 * @param conn
-	 */
-	public AbsDatabaseGenerator(Connection conn) {
-		this.conn = conn;
-	}
+    protected final Connection conn;
 
-	/**
-	 * @param metadata
-	 * @return generated database name
-	 */
-	abstract String generateDatabase(SchemaMetaData metadata);
+    /**
+     * @param conn
+     */
+    public AbsDatabaseGenerator(Connection conn) {
+        this.conn = conn;
+    }
+
+    /**
+     * @param metadata
+     * @return generated database name
+     */
+    abstract String generateDatabase(SchemaMetaData metadata);
 }

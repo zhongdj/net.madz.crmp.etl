@@ -9,12 +9,10 @@ package net.madz.crmp.db.core;
  */
 public class IllegalOperationException extends Exception {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+    public static final String DB_NAME_ALREAY_EXISTS = "Database name already exists.";
 
-	public static final String DB_NAME_ALREAY_EXISTS = "Database name already exists.";
-
-	public IllegalOperationException(String message) {
-		super(message);
-	}
-
+    public IllegalOperationException(String message) {
+        super(message);
+    }
 }

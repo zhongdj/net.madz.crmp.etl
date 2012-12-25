@@ -11,47 +11,46 @@ package net.madz.crmp.db.core;
  * 
  */
 public interface DatabaseSchemaUtils {
-	/**
-	 * This method check whether the specified database exists.
-	 * 
-	 * @param databaseName
-	 * @param isCopy
-	 * @return
-	 */
-	boolean databaseExists(String databaseName, boolean isCopy);
 
-	/**
-	 * This method compares schema of two databases. True will be returned when
-	 * only database names different.
-	 * 
-	 * @param sourceDatabaseName
-	 * @param targetDatabaseName
-	 * @return
-	 */
-	boolean compareDatabaseSchema(String sourceDatabaseName,
-			String targetDatabaseName);
+    /**
+     * This method check whether the specified database exists.
+     * 
+     * @param databaseName
+     * @param isCopy
+     * @return
+     */
+    boolean databaseExists(String databaseName, boolean isCopy);
 
-	/**
-	 * This method will clone database schema of source database to target
-	 * database. If target database already exists, IllegalOperationException
-	 * will be thrown.
-	 * 
-	 * @param sourceDatabaseName
-	 * @param targetDatabaseName
-	 *            , optional
-	 * @return
-	 * @throws IllegalOperationException
-	 */
-	String cloneDatabaseSchema(String sourceDatabaseName,
-			String targetDatabaseName) throws IllegalOperationException;
+    /**
+     * This method compares schema of two databases. True will be returned when
+     * only database names different.
+     * 
+     * @param sourceDatabaseName
+     * @param targetDatabaseName
+     * @return
+     */
+    boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName);
 
-	/**
-	 * This method drop database according to specified database name and isCopy flag. Some
-	 * exception will be thrown, check when implementation.
-	 * 
-	 * @param databaseName
-	 * @param isCopy
-	 * @return
-	 */
-	boolean dropDatabase(String databaseName, boolean isCopy);
+    /**
+     * This method will clone database schema of source database to target
+     * database. If target database already exists, IllegalOperationException
+     * will be thrown.
+     * 
+     * @param sourceDatabaseName
+     * @param targetDatabaseName
+     *            , optional
+     * @return
+     * @throws IllegalOperationException
+     */
+    String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException;
+
+    /**
+     * This method drop database according to specified database name and isCopy
+     * flag. Some exception will be thrown, check when implementation.
+     * 
+     * @param databaseName
+     * @param isCopy
+     * @return
+     */
+    boolean dropDatabase(String databaseName, boolean isCopy);
 }

@@ -12,18 +12,19 @@ import net.madz.crmp.db.metadata.SchemaMetaData;
  * 
  */
 public abstract class AbsSchemaMetaDataParser {
-	protected final Connection conn;
 
-	/**
-	 * @param conn
-	 */
-	public AbsSchemaMetaDataParser(Connection conn) {
-		this.conn = conn;
-	}
+    protected final Connection conn;
 
-	/**
-	 * @param dbName
-	 * @return
-	 */
-	public abstract SchemaMetaData parseSchemaMetaData();
+    /**
+     * @param conn
+     */
+    public AbsSchemaMetaDataParser(Connection conn) {
+        this.conn = conn;
+    }
+
+    /**
+     * @param dbName
+     * @return
+     */
+    public abstract SchemaMetaData parseSchemaMetaData();
 }

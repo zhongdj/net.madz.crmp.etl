@@ -5,16 +5,14 @@ import net.madz.crmp.db.core.AbsSchemaMetaDataParser;
 import net.madz.crmp.db.core.DbOperatorFactory;
 
 public class DbOperatorFactoryImpl implements DbOperatorFactory {
-	
 
-	@Override
-	public AbsSchemaMetaDataParser createSchemaParser(String databaseName, boolean isCopy) {
-		return null;
-	}
+    @Override
+    public AbsSchemaMetaDataParser createSchemaParser(String databaseName, boolean isCopy) {
+        return null;
+    }
 
-	@Override
-	public AbsDatabaseGenerator createDatabaseGenerator() {
-		return null;
-	}
-
+    @Override
+    public AbsDatabaseGenerator createDatabaseGenerator() {
+        return null;
+    }
 }
