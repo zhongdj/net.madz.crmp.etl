@@ -65,12 +65,26 @@ public class DbConfigurationManagement {
         }
     }
 
-    public static Connection createConnection(String dbName) {
-        Database datasource = sourceDatabaseCache.get(dbName);
+    public static Connection createConnection(String databaseName, boolean isCopy) {
+        Database database = null;
         Connection connection = null;
+        if ( isCopy ) {
+            database = databaseCopiesCache.get(databaseName);
+            if ( database == null ) {
+                if ( null == databaseCopiesServer ) {
+                    throw new IllegalStateException("Please configure database-copies-server information in your Databases.xml file.");
+                }
+                database = databaseCopiesServer.getDatabase();
+            }
+        } else {
+            database = sourceDatabaseCache.get(databaseName);
+            if ( database == null ) {
+                throw new IllegalStateException("Please configure source database information for database:" + databaseName);
+            }
+        }
         try {
-            Class.forName(skuConfs.get(datasource.getSku()).getDriverClass());
-            connection = DriverManager.getConnection(datasource.getUrl(), datasource.getUser(), datasource.getPassword());
+            Class.forName(skuConfs.get(database.getSku()).getDriverClass());
+            connection = DriverManager.getConnection(database.getUrl(), database.getUser(), database.getPassword());
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(e);
         } catch (SQLException e) {
