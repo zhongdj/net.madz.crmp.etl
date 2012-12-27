@@ -48,7 +48,7 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
 
     @Override
     public boolean dropDatabase(String databaseName, boolean isCopy) {
-        // TODO Auto-generated method stub
+        //TODO how to handle access db
         return false;
     }
 }
