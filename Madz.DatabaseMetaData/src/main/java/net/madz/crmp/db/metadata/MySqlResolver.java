@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 public class MySqlResolver {
@@ -25,13 +26,15 @@ public class MySqlResolver {
         MySqlResolver resolver = new MySqlResolver();
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection sourceDBConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + DBNAME + "?tinyInt1isBit=false", "root", "1q2w3e4r5t");
+            Connection sourceDBConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + DBNAME
+                    + "?tinyInt1isBit=false", "root", "1q2w3e4r5t");
             resolver.parseMetadata(sourceDBConn);
             List<String> sqlBatch = resolver.generateCreateSQL();
             resolver.submitSqlBatch(sqlBatch);
             List<String> modifyTablesBatch = resolver.generateModifySQL();
             resolver.submitSqlBatch(modifyTablesBatch);
-            Connection targetDBConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/crmp2" + "?tinyInt1isBit=false", "root", "1q2w3e4r5t");
+            Connection targetDBConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/crmp2"
+                    + "?tinyInt1isBit=false", "root", "1q2w3e4r5t");
             validate(sourceDBConn.getMetaData(), targetDBConn.getMetaData());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -182,6 +185,7 @@ public class MySqlResolver {
 
     private void parseMetadata(Connection conn) throws SQLException {
         DatabaseMetaData metaData = conn.getMetaData();
+        Properties clientInfo = conn.getClientInfo();
         ResultSet catalogs = metaData.getCatalogs();
         ResultSet schemas = metaData.getSchemas();
         String types[] = { "TABLE" };

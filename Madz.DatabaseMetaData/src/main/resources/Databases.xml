@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<database-config xmlns="http://madz.net/datasource"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://madz.net/datasource Databases.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<database-config xmlns="http://madz.net/datasource">
 	<source-databases>
 		<database name="S1" sku="MS Access"
 			url="jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=d:\\work\your.mdb"
@@ -9,14 +7,12 @@
 		<database name="crmp" sku="MySQL" url="jdbc:mysql://localhost:3306/crmp"
 			user="root" password="1q2w3e4r5t" />
 	</source-databases>
-	<database-copies>
-		<database name="crmp2" sku="MySQL" url="jdbc:mysql://localhost:3306/crmp2"
-			user="root" password="1q2w3e4r5t" />
-	</database-copies>
-	<sku-conf parserClass="" driverClass="com.mysql.jdbc.Driver"
-		sku="MySQL" />
-	<sku-conf parserClass="" driverClass="sun.jdbc.odbc.JdbcOdbcDriver"
-		sku="MS Access" />
+	<database-copies />
+	<sku-conf sku="MySQL" driverClass="com.mysql.jdbc.Driver"
+		parserClass="net.madz.crmp.db.core.impl.MySqlSchemaMetaDataParser"
+		generatorClass="net.madz.crmp.db.core.impl.MySqlSchemaMetaDataGenerator" />
+	<sku-conf sku="MS Access" driverClass="sun.jdbc.odbc.JdbcOdbcDriver"
+		parserClass="" />
 	<database-copies-server>
 		<database name="DatabaseCopyServer" sku="MySQL"
 			url="jdbc:mysql://localhost:3306/" user="root" password="1q2w3e4r5t" />

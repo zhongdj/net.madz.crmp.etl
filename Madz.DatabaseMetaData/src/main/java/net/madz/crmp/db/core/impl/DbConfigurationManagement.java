@@ -1,5 +1,6 @@
 package net.madz.crmp.db.core.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import net.madz.crmp.db.metadata.configuration.Database;
@@ -28,6 +30,7 @@ public class DbConfigurationManagement {
     private static final Map<Sku, SkuConf> skuConfs = new HashMap<Sku, SkuConf>();
     private static DatabaseCopiesServer databaseCopiesServer = null;
     private static DatabaseConfig databaseconfig;
+    private static String configurationFile = System.getProperty(DbConfigurationManagement.NET_MADZ_DB_CONFIGURATION, CONFIGURATION_DATA_SOURCES);
     static {
         loadDatabaseConfiguration();
     }
@@ -37,7 +40,6 @@ public class DbConfigurationManagement {
         try {
             final JAXBContext context = JAXBContext.newInstance(DatabaseConfig.class);
             final Unmarshaller shaller = context.createUnmarshaller();
-            final String configurationFile = System.getProperty(DbConfigurationManagement.NET_MADZ_DB_CONFIGURATION, CONFIGURATION_DATA_SOURCES);
             resource = DbConfigurationManagement.class.getResourceAsStream(configurationFile);
             databaseconfig = (DatabaseConfig) shaller.unmarshal(resource);
             final List<Database> sourceDatabases = databaseconfig.getSourceDatabases().getDatabase();
@@ -91,5 +93,41 @@ public class DbConfigurationManagement {
             throw new IllegalStateException(e);
         }
         return connection;
+    }
+
+    public static String getSchemaMetaDataPaser(String databaseName, boolean isCopy) {
+        Database database;
+        if ( isCopy ) {
+            database = databaseCopiesCache.get(databaseName);
+            if ( null == database ) {
+                if ( null != databaseCopiesServer ) {
+                    return skuConfs.get(databaseCopiesServer.getDatabase().getSku()).getParserClass();
+                }
+            }
+        } else {
+            database = sourceDatabaseCache.get(databaseName);
+            if ( null == database ) {
+                throw new IllegalStateException("Please make sure configure source database information for database:" + databaseName);
+            }
+        }
+        Sku sku = database.getSku();
+        SkuConf skuConf = skuConfs.get(sku);
+        return skuConf.getParserClass();
+    }
+
+    @SuppressWarnings("resource")
+    public static synchronized boolean removeDatabaseInfo(String databaseName) {
+        Database database = databaseCopiesCache.get(databaseName);
+        databaseconfig.getDatabaseCopies().getDatabase().remove(database);
+        try {
+            final JAXBContext context = JAXBContext.newInstance(DatabaseConfig.class);
+            Marshaller marshaller = context.createMarshaller();
+            File file = new File("./src/main/resources/" + configurationFile);
+            marshaller.marshal(databaseconfig, file);
+            return true;
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

@@ -1,6 +1,6 @@
 package net.madz.crmp.db.core;
 
-import com.mysql.jdbc.Connection;
+import java.sql.Connection;
 
 import net.madz.crmp.db.metadata.SchemaMetaData;
 
@@ -13,12 +13,14 @@ import net.madz.crmp.db.metadata.SchemaMetaData;
  */
 public abstract class AbsSchemaMetaDataParser {
 
+    protected final String databaseName;
     protected final Connection conn;
 
     /**
      * @param conn
      */
-    public AbsSchemaMetaDataParser(Connection conn) {
+    public AbsSchemaMetaDataParser(String databaseName, Connection conn) {
+        this.databaseName = databaseName;
         this.conn = conn;
     }
 

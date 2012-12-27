@@ -5,8 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import net.madz.crmp.db.core.AbsSchemaMetaDataParser;
 import net.madz.crmp.db.core.DatabaseSchemaUtils;
 import net.madz.crmp.db.core.IllegalOperationException;
+import net.madz.crmp.db.metadata.SchemaMetaData;
 
 public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
 
@@ -36,8 +38,11 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
 
     @Override
     public boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) {
-        // TODO Auto-generated method stub
-        return false;
+        AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
+        AbsSchemaMetaDataParser targetDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(targetDatabaseName, true);
+        SchemaMetaData sourceSchemaMetaData = sourceDbParser.parseSchemaMetaData();
+        SchemaMetaData targetSchemaMetaData = targetDbParser.parseSchemaMetaData();
+        return sourceSchemaMetaData.equals(targetSchemaMetaData);
     }
 
     @Override
@@ -47,8 +52,28 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
     }
 
     @Override
-    public boolean dropDatabase(String databaseName, boolean isCopy) {
-        //TODO how to handle access db
+    public boolean dropDatabase(String databaseName) {
+        if ( databaseExists(databaseName, true) ) {
+            Connection conn = DbConfigurationManagement.createConnection(databaseName, true);
+            Statement stmt;
+            try {
+                stmt = conn.createStatement();
+                stmt.execute("drop database " + databaseName + ";");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+            DbConfigurationManagement.removeDatabaseInfo(databaseName);
+            return true;
+        }
+        DbConfigurationManagement.removeDatabaseInfo(databaseName);
         return false;
+    }
+
+    public static void main(String[] args) {
+        DatabaseSchemaUtilsImpl impl = new DatabaseSchemaUtilsImpl();
+        // boolean result = impl.compareDatabaseSchema("crmp", "crmp2");
+        // System.out.println(result);
+        impl.dropDatabase("crmp2");
     }
 }

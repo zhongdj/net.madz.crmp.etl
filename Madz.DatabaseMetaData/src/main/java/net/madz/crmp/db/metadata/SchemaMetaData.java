@@ -1,22 +1,24 @@
 package net.madz.crmp.db.metadata;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import net.madz.crmp.db.metadata.comparators.TableComparator;
 
 public class SchemaMetaData {
 
     private final String databaseName;
-    List<Table> tables = new LinkedList<Table>();
+    private Map<String, Table> tables = new HashMap<String, Table>();
 
     public SchemaMetaData(String databaseName) {
         this.databaseName = databaseName;
     }
 
     public void addTable(Table table) {
-        this.tables.add(table);
+        this.tables.put(table.getName().toUpperCase(), table);
     }
 
     public String getDatabaseName() {
@@ -36,6 +38,18 @@ public class SchemaMetaData {
         return result;
     }
 
+    public List<Table> getTables() {
+        List<Table> result = new LinkedList<Table>();
+        for ( Table item : tables.values() ) {
+            result.add(item);
+        }
+        return result;
+    }
+
+    public Table getTable(String tableName) {
+        return tables.get(tableName.toUpperCase());
+    }
+
     @Override
     public boolean equals(Object obj) {
         if ( this == obj ) return true;
@@ -45,8 +59,8 @@ public class SchemaMetaData {
         if ( tables == null ) {
             if ( other.tables != null ) return false;
         } else {
-            Collections.sort(tables, new TableComparator());
-            Collections.sort(other.tables, new TableComparator());
+            Collections.sort(this.getTables(), new TableComparator());
+            Collections.sort(other.getTables(), new TableComparator());
             if ( !tables.equals(other.tables) ) return false;
         }
         return true;

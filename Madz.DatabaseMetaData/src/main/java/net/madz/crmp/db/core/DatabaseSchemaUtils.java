@@ -49,8 +49,7 @@ public interface DatabaseSchemaUtils {
      * flag. Some exception will be thrown, check when implementation.
      * 
      * @param databaseName
-     * @param isCopy
      * @return
      */
-    boolean dropDatabase(String databaseName, boolean isCopy);
+    boolean dropDatabase(String databaseName);
 }
