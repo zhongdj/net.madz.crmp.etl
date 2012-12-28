@@ -9,7 +9,7 @@ import net.madz.crmp.db.metadata.comparators.TableComparator;
 public class SchemaMetaData {
 
     private final String databaseName;
-    List<Table> tables = new LinkedList<Table>();
+    private final List<Table> tables = new LinkedList<Table>();
 
     public SchemaMetaData(String databaseName) {
         this.databaseName = databaseName;
