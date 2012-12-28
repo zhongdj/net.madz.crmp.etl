@@ -1,20 +1,18 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
-
 import scala.slick.jdbc.{ StaticQuery => Q }
 import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
-
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfter
 import org.scalatest.FunSpec
-
 import net.madz.crmp.db.core.AbsDatabaseGenerator
 import net.madz.crmp.db.core.impl.MySQLDatabaseGenerator
 import net.madz.crmp.db.metadata.SchemaMetaData
+import org.scalatest.BeforeAndAfterEach
 
-class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfter {
+class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach {
   val show_tables_query = "show tables;"
   var conn: Connection = null
   var generator: MySQLDatabaseGenerator = null
@@ -23,12 +21,12 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfter {
   def user = { "root" }
   def password = { "1q2w3e4r5t" }
 
-  before {
+  override def beforeEach {
     conn = Database.forURL(urlRoot, user, password, driver = "com.mysql.jdbc.Driver").createSession.conn
     generator = new MySQLDatabaseGenerator(conn)
   }
 
-  after {
+  override def afterEach {
     if (null != conn) conn.close()
   }
 
