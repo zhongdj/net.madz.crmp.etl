@@ -15,6 +15,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import net.madz.crmp.db.core.AbsDatabaseGenerator;
 import net.madz.crmp.db.metadata.configuration.Database;
 import net.madz.crmp.db.metadata.configuration.DatabaseConfig;
 import net.madz.crmp.db.metadata.configuration.DatabaseCopiesServer;
@@ -129,5 +130,9 @@ public class DbConfigurationManagement {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static String getDatabaseGeneratorClass() {
+        return null;
     }
 }

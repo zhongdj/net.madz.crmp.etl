@@ -28,5 +28,5 @@ public abstract class AbsDatabaseGenerator {
      * @param metadata
      * @return generated database name
      */
-    public abstract String generateDatabase(SchemaMetaData metadata);
+    public abstract String generateDatabase(SchemaMetaData metadata, String targetDatabaseName);
 }

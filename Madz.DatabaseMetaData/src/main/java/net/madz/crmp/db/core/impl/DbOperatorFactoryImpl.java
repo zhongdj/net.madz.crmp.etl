@@ -31,6 +31,8 @@ public class DbOperatorFactoryImpl implements DbOperatorFactory {
 
     @Override
     public AbsDatabaseGenerator createDatabaseGenerator() {
+        String databaseGenerator = DbConfigurationManagement.getDatabaseGeneratorClass();
+        
         return null;
     }
 }

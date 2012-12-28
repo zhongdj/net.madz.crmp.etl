@@ -1,32 +1,47 @@
 package net.madz.db.core.impl
 
-import scala.slick.session.Database
-import org.scalatest.FunSpec
-import Database.threadLocalSession
-import scala.slick.jdbc.{StaticQuery => Q}
-import Q.interpolation
-import net.madz.crmp.db.core.AbsDatabaseGenerator
-import net.madz.crmp.db.metadata.SchemaMetaData
-import org.scalatest.Assertions
+import java.sql.Connection
 
-class MySQLDatabaseGeneratorTestSpec extends FunSpec {
-  
-  def createGenerator(): AbsDatabaseGenerator = {
-    //TODO give an implementation
-    Database.forURL("jdbc:mysql://localhost:3306/madz_empty_database_test", "root", "1q2w3e4r5t", driver = "com.mysql.jdbc.Driver").createSession.conn
-    null
+import scala.slick.jdbc.{ StaticQuery => Q }
+import scala.slick.session.Database
+import scala.slick.session.Database.threadLocalSession
+
+import org.scalatest.Assertions
+import org.scalatest.BeforeAndAfter
+import org.scalatest.FunSpec
+
+import net.madz.crmp.db.core.AbsDatabaseGenerator
+import net.madz.crmp.db.core.impl.MySQLDatabaseGenerator
+import net.madz.crmp.db.metadata.SchemaMetaData
+
+class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfter {
+  val show_tables_query = "show tables;"
+  var conn: Connection = null
+  var generator: MySQLDatabaseGenerator = null
+
+  def urlRoot = { "jdbc:mysql://localhost:3306/" }
+  def user = { "root" }
+  def password = { "1q2w3e4r5t" }
+
+  before {
+    conn = Database.forURL(urlRoot, user, password, driver = "com.mysql.jdbc.Driver").createSession.conn
+    generator = new MySQLDatabaseGenerator(conn)
   }
-  
+
+  after {
+    if (null != conn) conn.close()
+  }
+
   describe("Generate an Empty Database") {
     it("should generate an empty database with a specified database name") {
-      
-      val generator = createGenerator()
-      val schemaMetaData: SchemaMetaData = new SchemaMetaData("madz_empty_database_test")
-      val generatedDbName = generator generateDatabase schemaMetaData
-      
-      Database.forURL("jdbc:mysql://localhost:3306/madz_empty_database_test", "root", "1q2w3e4r5t", driver = "com.mysql.jdbc.Driver") withSession {
-         val q = Q.queryNA[String]("show tables;")
-         Assertions.expectResult(0)(q.list().size)
+
+      val databaseName = "madz_empty_database_test"
+      val schemaMetaData: SchemaMetaData = new SchemaMetaData(databaseName)
+      val generatedDbName = generator.generateDatabase(schemaMetaData, "madz_empty_database_test")
+
+      Database.forURL(urlRoot + databaseName, user, password, driver = "com.mysql.jdbc.Driver") withSession {
+        val q = Q.queryNA[String](show_tables_query)
+        Assertions.expectResult(0)(q.list().size)
       }
     }
   }

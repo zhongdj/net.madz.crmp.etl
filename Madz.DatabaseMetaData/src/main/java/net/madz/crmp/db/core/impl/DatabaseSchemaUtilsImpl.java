@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import net.madz.crmp.db.core.AbsDatabaseGenerator;
 import net.madz.crmp.db.core.AbsSchemaMetaDataParser;
 import net.madz.crmp.db.core.DatabaseSchemaUtils;
 import net.madz.crmp.db.core.IllegalOperationException;
@@ -47,8 +48,11 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
 
     @Override
     public String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException {
-        // TODO Auto-generated method stub
-        return null;
+        AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
+        SchemaMetaData schemaMetaData = sourceDbParser.parseSchemaMetaData();
+        AbsDatabaseGenerator databaseGenerator = DbOperatorFactoryImpl.getInstance().createDatabaseGenerator();
+        String databaseName = databaseGenerator.generateDatabase(schemaMetaData, targetDatabaseName);
+        return databaseName;
     }
 
     @Override

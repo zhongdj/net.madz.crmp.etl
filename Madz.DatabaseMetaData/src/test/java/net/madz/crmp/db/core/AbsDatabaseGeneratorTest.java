@@ -12,6 +12,6 @@ public abstract class AbsDatabaseGeneratorTest {
     public void testGenerateDatabase() {
         final AbsDatabaseGenerator generator = create();
         SchemaMetaData metadata = null;
-        generator.generateDatabase(metadata);
+        generator.generateDatabase(metadata,"");
     }
 }
