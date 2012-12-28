@@ -1,6 +1,7 @@
 package net.madz.crmp.db.core;
 
-import com.mysql.jdbc.Connection;
+
+import java.sql.Connection;
 
 import net.madz.crmp.db.metadata.SchemaMetaData;
 
@@ -14,6 +15,7 @@ import net.madz.crmp.db.metadata.SchemaMetaData;
 public abstract class AbsDatabaseGenerator {
 
     protected final Connection conn;
+    protected SchemaMetaData schemaMetaData;
 
     /**
      * @param conn
