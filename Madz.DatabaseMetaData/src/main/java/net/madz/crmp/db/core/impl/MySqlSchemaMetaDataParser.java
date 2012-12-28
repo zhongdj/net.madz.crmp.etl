@@ -18,11 +18,11 @@ import net.madz.crmp.db.metadata.Table;
 import net.madz.crmp.db.metadata.UniqueKey;
 import net.madz.crmp.db.metadata.UniqueKeyItem;
 
-public class MySqlSchemaMetaDataParser extends AbsSchemaMetaDataParser {
+public class MySQLSchemaMetaDataParser extends AbsSchemaMetaDataParser {
 
     private SchemaMetaData schemaMetaData;
 
-    public MySqlSchemaMetaDataParser(String databaseName, Connection conn) {
+    public MySQLSchemaMetaDataParser(String databaseName, Connection conn) {
         super(databaseName, conn);
     }
 
@@ -133,7 +133,7 @@ public class MySqlSchemaMetaDataParser extends AbsSchemaMetaDataParser {
         if ( this == obj ) return true;
         if ( obj == null ) return false;
         if ( getClass() != obj.getClass() ) return false;
-        MySqlSchemaMetaDataParser other = (MySqlSchemaMetaDataParser) obj;
+        MySQLSchemaMetaDataParser other = (MySQLSchemaMetaDataParser) obj;
         if ( schemaMetaData == null ) {
             if ( other.schemaMetaData != null ) return false;
         } else if ( !schemaMetaData.equals(other.schemaMetaData) ) return false;
