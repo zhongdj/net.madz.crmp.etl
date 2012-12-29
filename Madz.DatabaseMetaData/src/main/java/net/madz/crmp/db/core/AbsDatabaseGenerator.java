@@ -1,6 +1,5 @@
 package net.madz.crmp.db.core;
 
-
 import java.sql.Connection;
 
 import net.madz.crmp.db.metadata.SchemaMetaData;

@@ -48,9 +48,17 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
 
     @Override
     public String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException {
+        if ( !databaseExists(sourceDatabaseName, false) ) {
+            throw new IllegalOperationException("Please make sure configure souce database information.");
+        }
+        if ( databaseExists(targetDatabaseName, true) ) {
+            dropDatabase(targetDatabaseName);
+        }
         AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
         SchemaMetaData schemaMetaData = sourceDbParser.parseSchemaMetaData();
-        AbsDatabaseGenerator databaseGenerator = DbOperatorFactoryImpl.getInstance().createDatabaseGenerator();
+        // Upload schemaMetaData to to writer (local or remote)
+        //
+        AbsDatabaseGenerator databaseGenerator = DbOperatorFactoryImpl.getInstance().createDatabaseGenerator(targetDatabaseName);
         String databaseName = databaseGenerator.generateDatabase(schemaMetaData, targetDatabaseName);
         return databaseName;
     }
@@ -78,6 +86,10 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
         DatabaseSchemaUtilsImpl impl = new DatabaseSchemaUtilsImpl();
         // boolean result = impl.compareDatabaseSchema("crmp", "crmp2");
         // System.out.println(result);
-        impl.dropDatabase("crmp2");
+        try {
+            impl.cloneDatabaseSchema("crmp", "crmp1000");
+        } catch (IllegalOperationException e) {
+            e.printStackTrace();
+        }
     }
 }

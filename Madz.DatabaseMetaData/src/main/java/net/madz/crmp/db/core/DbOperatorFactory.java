@@ -10,11 +10,11 @@ package net.madz.crmp.db.core;
 public interface DbOperatorFactory {
 
     /**
-     * @param dbName
+     * @param databaseName
      * @param isCopy
      * @return
      */
-    AbsSchemaMetaDataParser createSchemaParser(String dbName, boolean isCopy);
+    AbsSchemaMetaDataParser createSchemaParser(String databaseName, boolean isCopy);
 
-    AbsDatabaseGenerator createDatabaseGenerator();
+    AbsDatabaseGenerator createDatabaseGenerator(String databaseName);
 }

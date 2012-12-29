@@ -6,9 +6,13 @@ import java.sql.Statement;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import net.madz.crmp.db.core.AbsDatabaseGenerator;
 import net.madz.crmp.db.metadata.Column;
+import net.madz.crmp.db.metadata.ForeignKeyItem;
 import net.madz.crmp.db.metadata.PrimaryKeyItem;
 import net.madz.crmp.db.metadata.SchemaMetaData;
 import net.madz.crmp.db.metadata.Table;
@@ -17,6 +21,8 @@ import net.madz.crmp.db.metadata.UniqueKeyItem;
 
 public class MySQLDatabaseGenerator extends AbsDatabaseGenerator {
 
+    private String targetDatabaseName;
+
     public MySQLDatabaseGenerator(Connection conn) {
         super(conn);
     }
@@ -24,13 +30,32 @@ public class MySQLDatabaseGenerator extends AbsDatabaseGenerator {
     @Override
     public String generateDatabase(SchemaMetaData metadata, String targetDatabaseName) {
         this.schemaMetaData = metadata;
-        createEmptyDatabase();
+        if ( null == targetDatabaseName || 0 >= targetDatabaseName.length() ) {
+            this.targetDatabaseName = this.schemaMetaData.getDatabaseName() + "_copy";
+        } else {
+            this.targetDatabaseName = targetDatabaseName;
+        }
+        try {
+            createEmptyDatabase();
+            DbConfigurationManagement.addDatabaseInfo(targetDatabaseName);
+        } catch (SQLException e) {
+            // throw exception?
+            e.printStackTrace();
+        }
         List<String> sqlBatch = generateCreateSQL();
         submitSqlBatch(sqlBatch);
-        return null;
+        sqlBatch = generateModifySQL();
+        submitSqlBatch(sqlBatch);
+        return this.targetDatabaseName;
     }
 
-    private void createEmptyDatabase() {
+    private void createEmptyDatabase() throws SQLException {
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.execute("create database " + this.targetDatabaseName + ";");
+        } catch (SQLException e) {
+            throw e;
+        }
     }
 
     private List<String> generateCreateSQL() {
@@ -116,7 +141,7 @@ public class MySQLDatabaseGenerator extends AbsDatabaseGenerator {
     private void submitSqlBatch(List<String> sqlBatch) {
         Connection targetDBConn = null;
         try {
-            targetDBConn = DbConfigurationManagement.createConnection(schemaMetaData.getDatabaseName() + "_Copy", true);
+            targetDBConn = DbConfigurationManagement.createConnection(this.targetDatabaseName, true);
             Statement cs = targetDBConn.createStatement();
             for ( String stmt : sqlBatch ) {
                 System.out.println("===" + stmt);
@@ -132,5 +157,41 @@ public class MySQLDatabaseGenerator extends AbsDatabaseGenerator {
                 e.printStackTrace();
             }
         }
+    }
+
+    private List<String> generateModifySQL() {
+        List<String> stmtBatch = new LinkedList<String>();
+        for ( Table table : this.schemaMetaData.getTables() ) {
+            Map<String, List<ForeignKeyItem>> fks = table.getFks();
+            Set<Entry<String, List<ForeignKeyItem>>> entrySet = fks.entrySet();
+            for ( Entry<String, List<ForeignKeyItem>> fk : entrySet ) {
+                StringBuilder result = new StringBuilder();
+                result.append("alter table ");
+                result.append(table.getName());
+                result.append(" add foreign key ");
+                List<ForeignKeyItem> items = fk.getValue();
+                result.append(fk.getKey());
+                result.append("(");
+                Table pkTable = null;
+                for ( ForeignKeyItem item : items ) {
+                    result.append(item.getFkColumn().getName());
+                    result.append(",");
+                    pkTable = item.getPkTable();
+                }
+                result.deleteCharAt(result.length() - 1);
+                result.append(")");
+                result.append(" references ");
+                result.append(pkTable.getName());
+                result.append("(");
+                for ( ForeignKeyItem item : items ) {
+                    result.append(item.getPkColumn().getName());
+                    result.append(",");
+                }
+                result.deleteCharAt(result.length() - 1);
+                result.append(");\n");
+                stmtBatch.add(result.toString());
+            }
+        }
+        return stmtBatch;
     }
 }

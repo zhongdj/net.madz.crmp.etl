@@ -110,10 +110,11 @@ public class MySQLSchemaMetaDataParser extends AbsSchemaMetaDataParser {
             ResultSet fkrs = metaData.getImportedKeys(databaseName, null, t.getName());
             while ( fkrs.next() ) {
                 String pkColumnName = fkrs.getString("PKCOLUMN_NAME");
+                String pkTableName = fkrs.getString("PKTABLE_NAME");
                 String fkColumnName = fkrs.getString("FKCOLUMN_NAME");
                 String fkName = fkrs.getString("FK_NAME");
                 int keySeq = fkrs.getInt("KEY_SEQ");
-                Table pkTable = schemaMetaData.getTable(t.getName());
+                Table pkTable = schemaMetaData.getTable(pkTableName);
                 ForeignKeyItem fk = new ForeignKeyItem(pkTable, pkTable.getColumn(pkColumnName), t, t.getColumn(fkColumnName), fkName, keySeq);
                 t.addForeignKey(fkName, fk);
             }

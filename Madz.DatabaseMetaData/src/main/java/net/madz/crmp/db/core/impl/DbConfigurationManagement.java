@@ -15,7 +15,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import net.madz.crmp.db.core.AbsDatabaseGenerator;
 import net.madz.crmp.db.metadata.configuration.Database;
 import net.madz.crmp.db.metadata.configuration.DatabaseConfig;
 import net.madz.crmp.db.metadata.configuration.DatabaseCopiesServer;
@@ -116,10 +115,10 @@ public class DbConfigurationManagement {
         return skuConf.getParserClass();
     }
 
-    @SuppressWarnings("resource")
     public static synchronized boolean removeDatabaseInfo(String databaseName) {
         Database database = databaseCopiesCache.get(databaseName);
         databaseconfig.getDatabaseCopies().getDatabase().remove(database);
+        databaseCopiesCache.remove(database);
         try {
             final JAXBContext context = JAXBContext.newInstance(DatabaseConfig.class);
             Marshaller marshaller = context.createMarshaller();
@@ -133,6 +132,32 @@ public class DbConfigurationManagement {
     }
 
     public static String getDatabaseGeneratorClass() {
-        return null;
+        if ( null == databaseCopiesServer ) {
+            throw new IllegalStateException("Please make sure configure target server information.");
+        }
+        return skuConfs.get(databaseCopiesServer.getDatabase().getSku()).getGeneratorClass();
+    }
+
+    public static synchronized void addDatabaseInfo(String targetDatabaseName) {
+        Database database = databaseCopiesCache.get(targetDatabaseName);
+        if ( null == database ) {
+            database = new Database();
+            database.setName(targetDatabaseName);
+            database.setPassword(databaseCopiesServer.getDatabase().getPassword());
+            database.setSku(databaseCopiesServer.getDatabase().getSku());
+            database.setUrl(databaseCopiesServer.getDatabase().getUrl() + targetDatabaseName);
+            database.setUser(databaseCopiesServer.getDatabase().getUser());
+            databaseconfig.getDatabaseCopies().getDatabase().add(database);
+            databaseCopiesCache.put(targetDatabaseName, database);
+            JAXBContext context;
+            try {
+                context = JAXBContext.newInstance(DatabaseConfig.class);
+                Marshaller marshaller = context.createMarshaller();
+                File file = new File("./src/main/resources/" + configurationFile);
+                marshaller.marshal(databaseconfig, file);
+            } catch (JAXBException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
