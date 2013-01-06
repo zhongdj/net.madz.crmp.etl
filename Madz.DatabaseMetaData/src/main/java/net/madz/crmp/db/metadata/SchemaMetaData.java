@@ -1,12 +1,9 @@
 package net.madz.crmp.db.metadata;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import net.madz.crmp.db.metadata.comparators.TableComparator;
 
 public class SchemaMetaData {
 
@@ -25,19 +22,6 @@ public class SchemaMetaData {
         return databaseName;
     }
 
-    @Override
-    public String toString() {
-        return this.getClass().getName() + " [tables=" + tables + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ( ( tables == null ) ? 0 : tables.hashCode() );
-        return result;
-    }
-
     public List<Table> getTables() {
         List<Table> result = new LinkedList<Table>();
         for ( Table item : tables.values() ) {
@@ -51,6 +35,19 @@ public class SchemaMetaData {
     }
 
     @Override
+    public String toString() {
+        return this.getClass().getName() + " [tables=" + tables + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( tables == null ) ? 0 : tables.hashCode() );
+        return result;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if ( this == obj ) return true;
         if ( obj == null ) return false;
@@ -58,11 +55,17 @@ public class SchemaMetaData {
         SchemaMetaData other = (SchemaMetaData) obj;
         if ( tables == null ) {
             if ( other.tables != null ) return false;
-        } else {
-            Collections.sort(this.getTables(), new TableComparator());
-            Collections.sort(other.getTables(), new TableComparator());
-            if ( !tables.equals(other.tables) ) return false;
-        }
+        } else if ( !tables.equals(other.tables) ) return false;
         return true;
+    }
+
+    public static void main(String[] args) {
+        SchemaMetaData metaData = new SchemaMetaData("crmp");
+        SchemaMetaData metaData2 = new SchemaMetaData("crmp_copy");
+        metaData.tables.put("t1", new Table("t1"));
+        metaData.tables.put("t2", new Table("t2"));
+        metaData2.tables.put("t2", new Table("t2"));
+        metaData2.tables.put("t1", new Table("t1"));
+        System.out.println(metaData.equals(metaData2));
     }
 }
