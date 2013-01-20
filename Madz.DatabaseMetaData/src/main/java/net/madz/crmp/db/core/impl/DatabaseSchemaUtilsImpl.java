@@ -10,6 +10,8 @@ import net.madz.crmp.db.core.AbsSchemaMetaDataParser;
 import net.madz.crmp.db.core.DatabaseSchemaUtils;
 import net.madz.crmp.db.core.IllegalOperationException;
 import net.madz.crmp.db.metadata.SchemaMetaData;
+import net.madz.crmp.db.metadata.jdbc.JdbcMetaData;
+import net.madz.crmp.db.metadata.jdbc.JdbcSchemaMetaData;
 
 public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
 
@@ -38,16 +40,16 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
     }
 
     @Override
-    public boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) {
+    public boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException {
         AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
         AbsSchemaMetaDataParser targetDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(targetDatabaseName, true);
-        SchemaMetaData sourceSchemaMetaData = sourceDbParser.parseSchemaMetaData();
-        SchemaMetaData targetSchemaMetaData = targetDbParser.parseSchemaMetaData();
+        JdbcSchemaMetaData sourceSchemaMetaData = sourceDbParser.parseSchemaMetaData();
+        JdbcSchemaMetaData targetSchemaMetaData = targetDbParser.parseSchemaMetaData();
         return sourceSchemaMetaData.equals(targetSchemaMetaData);
     }
 
     @Override
-    public String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException {
+    public String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException, SQLException {
         if ( !databaseExists(sourceDatabaseName, false) ) {
             throw new IllegalOperationException("Please make sure configure souce database information.");
         }
@@ -55,7 +57,7 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
             dropDatabase(targetDatabaseName);
         }
         AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
-        SchemaMetaData schemaMetaData = sourceDbParser.parseSchemaMetaData();
+        JdbcSchemaMetaData schemaMetaData = sourceDbParser.parseSchemaMetaData();
         // Upload schemaMetaData to to writer (local or remote)
         //
         AbsDatabaseGenerator databaseGenerator = DbOperatorFactoryImpl.getInstance().createDatabaseGenerator(targetDatabaseName);
@@ -87,8 +89,11 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
         // boolean result = impl.compareDatabaseSchema("crmp", "crmp2");
         // System.out.println(result);
         try {
-            impl.cloneDatabaseSchema("crmp", "crmp1000");
+            impl.cloneDatabaseSchema("c3", "crmp2000");
         } catch (IllegalOperationException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

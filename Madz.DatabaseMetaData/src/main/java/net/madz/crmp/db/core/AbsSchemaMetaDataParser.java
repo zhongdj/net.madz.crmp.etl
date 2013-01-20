@@ -1,8 +1,9 @@
 package net.madz.crmp.db.core;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
-import net.madz.crmp.db.metadata.SchemaMetaData;
+import net.madz.crmp.db.metadata.jdbc.JdbcSchemaMetaData;
 
 /**
  * This class is responsible for creating DatabaseMetadata instance of specified
@@ -28,5 +29,5 @@ public abstract class AbsSchemaMetaDataParser {
      * @param dbName
      * @return
      */
-    public abstract SchemaMetaData parseSchemaMetaData();
+    public abstract JdbcSchemaMetaData parseSchemaMetaData() throws SQLException;
 }

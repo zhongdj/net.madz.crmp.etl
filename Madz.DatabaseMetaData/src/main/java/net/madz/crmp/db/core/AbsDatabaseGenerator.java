@@ -3,6 +3,8 @@ package net.madz.crmp.db.core;
 import java.sql.Connection;
 
 import net.madz.crmp.db.metadata.SchemaMetaData;
+import net.madz.crmp.db.metadata.jdbc.JdbcMetaData;
+import net.madz.crmp.db.metadata.jdbc.JdbcSchemaMetaData;
 
 /**
  * This class is responsible for cloning the database schema into MySQL
@@ -14,7 +16,7 @@ import net.madz.crmp.db.metadata.SchemaMetaData;
 public abstract class AbsDatabaseGenerator {
 
     protected final Connection conn;
-    protected SchemaMetaData schemaMetaData;
+    protected JdbcSchemaMetaData schemaMetaData;
 
     /**
      * @param conn
@@ -27,5 +29,5 @@ public abstract class AbsDatabaseGenerator {
      * @param metadata
      * @return generated database name
      */
-    public abstract String generateDatabase(SchemaMetaData metadata, String targetDatabaseName);
+    public abstract String generateDatabase(JdbcSchemaMetaData metadata, String targetDatabaseName);
 }

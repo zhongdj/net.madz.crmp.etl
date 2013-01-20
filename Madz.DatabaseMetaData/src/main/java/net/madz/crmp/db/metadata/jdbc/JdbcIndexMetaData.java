@@ -1,6 +1,12 @@
-package net.madz.crmp.db.metadata;
+package net.madz.crmp.db.metadata.jdbc;
 
 import java.util.Collection;
+
+import net.madz.crmp.db.metadata.jdbc.impl.JdbcTableMetaDataImpl;
+import net.madz.crmp.db.metadata.jdbc.type.JdbcIndexType;
+import net.madz.crmp.db.metadata.jdbc.type.JdbcKeyType;
+import net.madz.crmp.db.metadata.jdbc.type.JdbcSortDirection;
+
 
 public interface JdbcIndexMetaData extends JdbcMetaData{
 
@@ -42,4 +48,6 @@ public interface JdbcIndexMetaData extends JdbcMetaData{
 
     /** All columns in index */
     Collection<? extends JdbcIndexMetaData.Entry> getEntrySet();
+
+    JdbcTableMetaData getTable();
 }

@@ -1,4 +1,4 @@
-package net.madz.crmp.db.metadata;
+package net.madz.crmp.db.metadata.jdbc.type;
 
 import java.sql.DatabaseMetaData;
 import java.util.NoSuchElementException;

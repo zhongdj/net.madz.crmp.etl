@@ -1,6 +1,10 @@
-package net.madz.crmp.db.metadata;
+package net.madz.crmp.db.metadata.jdbc;
 
 import java.util.List;
+
+import net.madz.crmp.db.metadata.jdbc.type.JdbcCascadeRule;
+import net.madz.crmp.db.metadata.jdbc.type.JdbcKeyDeferrability;
+
 
 /**
  * JDBC DatabaseMetaData about a foreign-key constraint
@@ -15,9 +19,9 @@ public interface JdbcForeignKeyMetaData extends JdbcMetaData {
      * @return SqlIndexMetaData or null if there is no foreign key index; MySQL
      *         appears to always give us a value
      */
-    public JdbcIndexMetaData getForeignKeyIndex();
+    JdbcIndexMetaData getForeignKeyIndex();
 
-    public JdbcTableMetaData getForeignKeyTable();
+    JdbcTableMetaData getForeignKeyTable();
 
     /**
      * primary key index
@@ -27,40 +31,40 @@ public interface JdbcForeignKeyMetaData extends JdbcMetaData {
      * @return SqlIndexMetaData or null if there is no primary key index; MySQL
      *         appears to always give us null
      */
-    public JdbcIndexMetaData getPrimaryKeyIndex();
+    JdbcIndexMetaData getPrimaryKeyIndex();
 
-    public JdbcTableMetaData getPrimaryKeyTable();
+    JdbcTableMetaData getPrimaryKeyTable();
 
     /**
      * Defines what is to happen to this record when the referenced record is
      * deleted.
      */
-    public JdbcCascadeRule getDeleteCascadeRule();
+    JdbcCascadeRule getDeleteCascadeRule();
 
     /**
      * Defines what is to happen to this record when the referenced record's
      * primary key is updated.
      */
-    public JdbcCascadeRule getUpdateCascadeRule();
+    JdbcCascadeRule getUpdateCascadeRule();
 
     /**
      * Deferrability rule on this key
      */
-    public JdbcKeyDeferrability getKeyDeferrability();
+    JdbcKeyDeferrability getKeyDeferrability();
 
-    public List<? extends Entry> getEntrySet();
+    List<? extends Entry> getEntrySet();
 
     /**
      * Number of relationships in the key
      */
-    public int size();
+    Integer size();
 
     public interface Entry {
 
-        public JdbcColumnMetaData getForeignKeyColumn();
+        JdbcColumnMetaData getForeignKeyColumn();
 
-        public JdbcColumnMetaData getPrimaryKeyColumn();
+        JdbcColumnMetaData getPrimaryKeyColumn();
 
-        public JdbcForeignKeyMetaData getKey();
+        JdbcForeignKeyMetaData getKey();
     }
 }

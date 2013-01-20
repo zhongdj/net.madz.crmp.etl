@@ -1,5 +1,7 @@
 package net.madz.crmp.db.core;
 
+import java.sql.SQLException;
+
 /**
  * This interface is the facade of this module. It provides checking,comparing,
  * cloning, and dropping database schema features.
@@ -29,7 +31,7 @@ public interface DatabaseSchemaUtils {
      * @param targetDatabaseName
      * @return
      */
-    boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName);
+    boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException;
 
     /**
      * This method will clone database schema of source database to target
@@ -42,7 +44,7 @@ public interface DatabaseSchemaUtils {
      * @return
      * @throws IllegalOperationException
      */
-    String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException;
+    String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException, SQLException;
 
     /**
      * This method drop database according to specified database name and isCopy

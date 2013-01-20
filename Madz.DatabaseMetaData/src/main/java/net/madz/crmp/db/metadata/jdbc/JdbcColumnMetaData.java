@@ -1,7 +1,9 @@
-package net.madz.crmp.db.metadata;
+package net.madz.crmp.db.metadata.jdbc;
 
 import java.util.Collection;
 import java.util.Comparator;
+
+import net.madz.crmp.db.metadata.DottedPath;
 
 /**
  * JDBC DatabaseMetaData definition of a column
@@ -17,7 +19,7 @@ public interface JdbcColumnMetaData extends JdbcMetaData {
     String getColumnName();
 
     /** Sql Type from java.sql.Types */
-    int getSqlType();
+    Integer getSqlType();
 
     /**
      * Data source dependent type name, for a UDT the type name is fully
@@ -62,7 +64,7 @@ public interface JdbcColumnMetaData extends JdbcMetaData {
     /** Position of this column in physical table layout (first column=1, ...) */
     Short getOrdinalPosition();
 
-    String getDefaultValue();
+    boolean hasDefaultValue();
 
     /**
      * Sorts JdbcColumnMetaData values by ordinal position
@@ -76,4 +78,10 @@ public interface JdbcColumnMetaData extends JdbcMetaData {
             return o1.getOrdinalPosition().compareTo(o2.getOrdinalPosition());
         }
     };
+
+    Integer getCharOctetLength();
+
+    String getRemarks();
+
+    String getDefaultValue();
 }
