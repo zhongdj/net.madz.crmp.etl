@@ -21,7 +21,6 @@ import net.madz.crmp.db.metadata.mysql.impl.MySQLSchemaMetaDataImpl;
 public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder {
 
     private Connection conn;
-    private DottedPath schemaPath;
     private Map<String, JdbcTableMetaData> tables;
     private String charSet;
     private String collation;
@@ -29,7 +28,6 @@ public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder {
     public MySQLSchemaMetaDataBuilder(Connection conn, DottedPath schemaPath) throws SQLException {
         super(conn, schemaPath);
         this.conn = conn;
-        this.schemaPath = schemaPath;
         Statement stmt = conn.createStatement();
         stmt.executeQuery("use information_schema;");
         ResultSet rs = stmt.executeQuery("select * from SCHEMATA where schema_name = '" + schemaPath.getName() + "'");
@@ -48,7 +46,6 @@ public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder {
 
     @Override
     public JdbcSchemaMetaData newSchemaMetaData(DottedPath schemaPath, Map tables) {
-        System.out.println("mysql schema builder");
         MySQLSchemaMetaDataImpl metaData = new MySQLSchemaMetaDataImpl(schemaPath, tables, this.getCharSet(), this.getCollation());
         return metaData;
     }
@@ -70,7 +67,7 @@ public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder {
     }
 
     public DottedPath getSchemaPath() {
-        return schemaPath;
+        return super.getSchemaPath();
     }
 
     public Collection<JdbcTableMetaData> getTables() {

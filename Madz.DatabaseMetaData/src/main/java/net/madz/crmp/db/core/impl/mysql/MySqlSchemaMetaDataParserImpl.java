@@ -10,11 +10,11 @@ import net.madz.crmp.db.metadata.jdbc.JdbcSchemaMetaData;
 import net.madz.crmp.db.metadata.mysql.impl.MySQLSchemaMetaDataImpl;
 import net.madz.crmp.db.metadata.mysql.impl.builder.MySQLSchemaMetaDataBuilder;
 
-public class MySqlSchemaMetaDataParserImpl extends AbsSchemaMetaDataParser {
+public class MySQLSchemaMetaDataParserImpl extends AbsSchemaMetaDataParser {
 
     private MySQLSchemaMetaDataImpl mysqlMetaData;
 
-    public MySqlSchemaMetaDataParserImpl(String databaseName, Connection conn) {
+    public MySQLSchemaMetaDataParserImpl(String databaseName, Connection conn) {
         super(databaseName, conn);
     }
 

@@ -9,5 +9,5 @@ public interface MySQLIndexMetaData extends JdbcIndexMetaData {
 
     boolean isNull();
 
-    MySqlIndexMethod getIndexMethod();
+    MySQLIndexMethod getIndexMethod();
 }

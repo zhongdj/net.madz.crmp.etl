@@ -9,10 +9,10 @@ import net.madz.crmp.db.metadata.jdbc.JdbcColumnMetaData;
 import net.madz.crmp.db.metadata.jdbc.impl.JdbcMetaDataResultSet;
 import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcColumnMetaDataBuilder;
 import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcTableMetaDataBuilder;
-import net.madz.crmp.db.metadata.mysql.MySqlColumnMetaData;
+import net.madz.crmp.db.metadata.mysql.MySQLColumnMetaData;
 import net.madz.crmp.db.metadata.mysql.impl.MySQLColumnMetaDataImpl;
 
-public class MySQLColumnMetaDataBuilder extends JdbcColumnMetaDataBuilder implements MySqlColumnMetaData {
+public class MySQLColumnMetaDataBuilder extends JdbcColumnMetaDataBuilder implements MySQLColumnMetaData {
 
     private String charSet;
     private String collation;

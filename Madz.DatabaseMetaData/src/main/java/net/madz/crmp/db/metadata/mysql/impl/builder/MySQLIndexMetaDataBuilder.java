@@ -10,14 +10,14 @@ import net.madz.crmp.db.metadata.jdbc.impl.JdbcMetaDataResultSet;
 import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcIndexMetaDataBuilder;
 import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcTableMetaDataBuilder;
 import net.madz.crmp.db.metadata.mysql.MySQLIndexMetaData;
-import net.madz.crmp.db.metadata.mysql.MySqlIndexMethod;
+import net.madz.crmp.db.metadata.mysql.MySQLIndexMethod;
 import net.madz.crmp.db.metadata.mysql.impl.MySQLIndexMetaDataImpl;
 
 public class MySQLIndexMetaDataBuilder extends JdbcIndexMetaDataBuilder implements MySQLIndexMetaData {
 
     private int subPart;
     private boolean isNull;
-    private MySqlIndexMethod indexMethod;
+    private MySQLIndexMethod indexMethod;
     private Connection conn;
 
     public MySQLIndexMetaDataBuilder(JdbcTableMetaDataBuilder metaData, JdbcMetaDataResultSet ixRs) throws SQLException {
@@ -30,7 +30,7 @@ public class MySQLIndexMetaDataBuilder extends JdbcIndexMetaDataBuilder implemen
         while ( rs.next() && rs.getRow() == 1 ) {
             subPart = rs.getInt("SUB_PART");
             isNull = rs.getBoolean("NULLABLE");
-            indexMethod = MySqlIndexMethod.valueOf(rs.getString("INDEX_TYPE"));
+            indexMethod = MySQLIndexMethod.valueOf(rs.getString("INDEX_TYPE"));
         }
     }
 
@@ -52,7 +52,7 @@ public class MySQLIndexMetaDataBuilder extends JdbcIndexMetaDataBuilder implemen
     }
 
     @Override
-    public MySqlIndexMethod getIndexMethod() {
+    public MySQLIndexMethod getIndexMethod() {
         return this.indexMethod;
     }
 }

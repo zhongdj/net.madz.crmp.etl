@@ -2,13 +2,13 @@ package net.madz.crmp.db.metadata.mysql.impl;
 
 import net.madz.crmp.db.metadata.jdbc.impl.JdbcIndexMetaDataImpl;
 import net.madz.crmp.db.metadata.mysql.MySQLIndexMetaData;
-import net.madz.crmp.db.metadata.mysql.MySqlIndexMethod;
+import net.madz.crmp.db.metadata.mysql.MySQLIndexMethod;
 
 public class MySQLIndexMetaDataImpl extends JdbcIndexMetaDataImpl implements MySQLIndexMetaData {
 
     private final int subPart;
     private final boolean isNull;
-    private final MySqlIndexMethod indexMethod;
+    private final MySQLIndexMethod indexMethod;
 
     public MySQLIndexMetaDataImpl(MySQLIndexMetaData metaData) {
         super(metaData);
@@ -28,7 +28,7 @@ public class MySQLIndexMetaDataImpl extends JdbcIndexMetaDataImpl implements MyS
     }
 
     @Override
-    public MySqlIndexMethod getIndexMethod() {
+    public MySQLIndexMethod getIndexMethod() {
         return this.indexMethod;
     }
 }

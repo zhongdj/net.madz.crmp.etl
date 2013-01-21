@@ -1,18 +1,18 @@
 package net.madz.crmp.db.metadata.mysql.impl;
 
 import net.madz.crmp.db.metadata.jdbc.impl.JdbcTableMetaDataImpl;
-import net.madz.crmp.db.metadata.mysql.MySqlEngine;
-import net.madz.crmp.db.metadata.mysql.MySqlTableMetaData;
-import net.madz.crmp.db.metadata.mysql.MySqlTableType;
+import net.madz.crmp.db.metadata.mysql.MySQLEngineEnum;
+import net.madz.crmp.db.metadata.mysql.MySQLTableMetaData;
+import net.madz.crmp.db.metadata.mysql.MySQLTableTypeEnum;
 
-public class MySqlTableMetaDataImpl extends JdbcTableMetaDataImpl implements MySqlTableMetaData {
+public class MySQLTableMetaDataImpl extends JdbcTableMetaDataImpl implements MySQLTableMetaData {
 
-    private final MySqlTableType tableType;
-    private final MySqlEngine engine;
+    private final MySQLTableTypeEnum tableType;
+    private final MySQLEngineEnum engine;
     private final String characterSet;
     private final String collation;
 
-    public MySqlTableMetaDataImpl(MySqlTableMetaData metaData) {
+    public MySQLTableMetaDataImpl(MySQLTableMetaData metaData) {
         super(metaData);
         this.tableType = metaData.getTableType();
         this.engine = metaData.getEngine();
@@ -21,12 +21,12 @@ public class MySqlTableMetaDataImpl extends JdbcTableMetaDataImpl implements MyS
     }
 
     @Override
-    public MySqlTableType getTableType() {
+    public MySQLTableTypeEnum getTableType() {
         return this.tableType;
     }
 
     @Override
-    public MySqlEngine getEngine() {
+    public MySQLEngineEnum getEngine() {
         return this.engine;
     }
 

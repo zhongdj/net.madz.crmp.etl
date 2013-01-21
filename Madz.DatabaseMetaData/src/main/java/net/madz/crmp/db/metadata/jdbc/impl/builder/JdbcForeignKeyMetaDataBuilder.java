@@ -54,7 +54,6 @@ public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
     }
 
     public JdbcForeignKeyMetaDataBuilder(JdbcSchemaMetaDataBuilder schema, JdbcMetaDataResultSet<JdbcImportKeyDbMetaDataEnum> rsFk) throws SQLException {
-        System.out.println("construct jdbc foreign key metadata");
         this.entryList = new LinkedList<Entry>();
         this.updateRule = JdbcCascadeRule.getImportedKeyRule(rsFk.getInt(JdbcImportKeyDbMetaDataEnum.UPDATE_RULE));
         this.deleteRule = JdbcCascadeRule.getImportedKeyRule(rsFk.getInt(JdbcImportKeyDbMetaDataEnum.DELETE_RULE));

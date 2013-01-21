@@ -1,6 +1,6 @@
 package net.madz.crmp.db.metadata.mysql;
 
-public enum MySqlIndexMethod {
+public enum MySQLIndexMethod {
     btree,
     fulltext,
     hash,

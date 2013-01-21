@@ -82,10 +82,9 @@ public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
         return new JdbcSchemaMetaDataImpl(schemaPath, tables);
     }
 
-    @SuppressWarnings("unchecked")
     protected JdbcTableMetaDataBuilder newTableMetaDataBuilder(DatabaseMetaData dbMetaData, JdbcSchemaMetaData schema,
             JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs) throws SQLException {
-        return ( (JdbcTableMetaDataBuilder) new JdbcTableMetaDataBuilder(connection, dbMetaData, schema, rs) );
+        return new JdbcTableMetaDataBuilder(connection, dbMetaData, schema, rs);
     }
 
     public JdbcForeignKeyMetaDataBuilder newJdbcForeignKeyMetaDataBuilder(JdbcSchemaMetaDataBuilder jdbcSchemaMetaDataBuilder,

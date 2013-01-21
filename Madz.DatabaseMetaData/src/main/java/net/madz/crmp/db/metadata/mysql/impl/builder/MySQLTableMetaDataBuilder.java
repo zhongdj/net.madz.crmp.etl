@@ -12,15 +12,15 @@ import net.madz.crmp.db.metadata.jdbc.impl.JdbcMetaDataResultSet;
 import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcColumnMetaDataBuilder;
 import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcIndexMetaDataBuilder;
 import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcTableMetaDataBuilder;
-import net.madz.crmp.db.metadata.mysql.MySqlEngine;
-import net.madz.crmp.db.metadata.mysql.MySqlTableMetaData;
-import net.madz.crmp.db.metadata.mysql.MySqlTableType;
-import net.madz.crmp.db.metadata.mysql.impl.MySqlTableMetaDataImpl;
+import net.madz.crmp.db.metadata.mysql.MySQLEngineEnum;
+import net.madz.crmp.db.metadata.mysql.MySQLTableMetaData;
+import net.madz.crmp.db.metadata.mysql.MySQLTableTypeEnum;
+import net.madz.crmp.db.metadata.mysql.impl.MySQLTableMetaDataImpl;
 
-public class MySQLTableMetaDataBuilder extends JdbcTableMetaDataBuilder implements MySqlTableMetaData {
+public class MySQLTableMetaDataBuilder extends JdbcTableMetaDataBuilder implements MySQLTableMetaData {
 
-    private MySqlTableType type;
-    private MySqlEngine engine;
+    private MySQLTableTypeEnum type;
+    private MySQLEngineEnum engine;
     private String charSet;
     private String collation;
 
@@ -31,8 +31,8 @@ public class MySQLTableMetaDataBuilder extends JdbcTableMetaDataBuilder implemen
         ResultSet mysqlRs = stmt.executeQuery("select * from TABLES where table_name='" + super.getTableName() + "' and table_schema='" + super.getSchemaName()
                 + "';");
         while ( mysqlRs.next() && mysqlRs.getRow() == 1 ) {
-            engine = MySqlEngine.valueOf(mysqlRs.getString("ENGINE"));
-            type = MySqlTableType.valueOf(mysqlRs.getString("TABLE_TYPE"));
+            engine = MySQLEngineEnum.valueOf(mysqlRs.getString("ENGINE"));
+            type = MySQLTableTypeEnum.getType(mysqlRs.getString("TABLE_TYPE"));
             collation = mysqlRs.getString("TABLE_COLLATION");
             String[] result = collation.split("_");
             collation = result[0];
@@ -43,7 +43,7 @@ public class MySQLTableMetaDataBuilder extends JdbcTableMetaDataBuilder implemen
     public JdbcTableMetaData build() throws SQLException {
         System.out.println("Mysql table builder");
         super.build();
-        return new MySqlTableMetaDataImpl(this);
+        return new MySQLTableMetaDataImpl(this);
     }
 
     @Override
@@ -58,12 +58,12 @@ public class MySQLTableMetaDataBuilder extends JdbcTableMetaDataBuilder implemen
     }
 
     @Override
-    public MySqlTableType getTableType() {
+    public MySQLTableTypeEnum getTableType() {
         return this.type;
     }
 
     @Override
-    public MySqlEngine getEngine() {
+    public MySQLEngineEnum getEngine() {
         return this.engine;
     }
 

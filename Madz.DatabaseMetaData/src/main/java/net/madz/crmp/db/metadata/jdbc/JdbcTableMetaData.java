@@ -12,50 +12,37 @@ public interface JdbcTableMetaData extends JdbcMetaData {
     /** DottedPath of this table (catalog.schema.table) */
     DottedPath getTablePath();
 
-    /**
-     * @return
-     */
+    /** Table name */
     String getTableName();
 
     /**
-     * @return
+     * Type of this table, such as
+     * "TABLE"、"VIEW"、"SYSTEM TABLE"、"GLOBAL TEMPORARY"
+     * 、"LOCAL TEMPORARY"、"ALIAS" 和 "SYNONYM"
      */
-    JdbcIndexMetaData getPrimaryKey();
-
-    /**
-     * @return
-     */
-    List<JdbcColumnMetaData> getColumns();
-
-    /**
-     * @param columnName
-     * @return
-     */
-    JdbcColumnMetaData getColumn(String columnName);
-
-    /**
-     * @return
-     */
-    Collection<JdbcForeignKeyMetaData> getForeignKeySet();
-
-    /**
-     * @return
-     */
-    Collection<JdbcIndexMetaData> getIndexSet();
-
-    /**
-     * @param indexName
-     * @return
-     */
-    JdbcIndexMetaData getIndex(String indexName);
-
     JdbcTableType getType();
 
+    /** Remarks for table */
     String getRemarks();
 
+    /** Column self_referencing_col_name */
     String getIdCol();
 
+    /** Column ref_generation */
     String getIdGeneration();
+
+    /** Primary key */
+    JdbcIndexMetaData getPrimaryKey();
+
+    JdbcColumnMetaData getColumn(String columnName);
+
+    List<JdbcColumnMetaData> getColumns();
+
+    Collection<JdbcForeignKeyMetaData> getForeignKeySet();
+
+    Collection<JdbcIndexMetaData> getIndexSet();
+
+    JdbcIndexMetaData getIndex(String indexName);
 
     Map<String, JdbcColumnMetaData> getColumnMap();
 
