@@ -72,6 +72,10 @@ public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
         this.fkTable.addForeignKey(this);
     }
 
+    @Override
+    public String getForeignKeyName() {
+        return this.fkName;
+    }
     public JdbcForeignKeyMetaData build() throws SQLException {
         System.out.println("Jdbc foreign key metadata builder");
         return new JdbcForeignKeyMetaDataImpl(this);
@@ -137,4 +141,5 @@ public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
         fkColumn.getFkList().add(entry);
         this.entryList.add(entry);
     }
+
 }

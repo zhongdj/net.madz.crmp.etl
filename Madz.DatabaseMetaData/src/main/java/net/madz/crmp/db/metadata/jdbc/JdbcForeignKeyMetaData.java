@@ -5,11 +5,13 @@ import java.util.List;
 import net.madz.crmp.db.metadata.jdbc.type.JdbcCascadeRule;
 import net.madz.crmp.db.metadata.jdbc.type.JdbcKeyDeferrability;
 
-
 /**
  * JDBC DatabaseMetaData about a foreign-key constraint
  */
 public interface JdbcForeignKeyMetaData extends JdbcMetaData {
+
+    /** The name of foreign key */
+    String getForeignKeyName();
 
     /**
      * Foreign key index

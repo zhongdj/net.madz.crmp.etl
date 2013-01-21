@@ -10,7 +10,6 @@ import net.madz.crmp.db.metadata.jdbc.JdbcColumnMetaData;
 import net.madz.crmp.db.metadata.jdbc.JdbcForeignKeyMetaData;
 import net.madz.crmp.db.metadata.jdbc.JdbcIndexMetaData;
 import net.madz.crmp.db.metadata.jdbc.JdbcTableMetaData;
-import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcTableMetaDataBuilder;
 import net.madz.crmp.db.metadata.jdbc.type.JdbcTableType;
 
 public class JdbcTableMetaDataImpl implements JdbcTableMetaData {

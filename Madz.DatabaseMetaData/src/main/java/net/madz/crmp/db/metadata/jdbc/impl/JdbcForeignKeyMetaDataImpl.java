@@ -20,7 +20,7 @@ public class JdbcForeignKeyMetaDataImpl implements JdbcForeignKeyMetaData {
     private final JdbcKeyDeferrability deferrability;
     private final JdbcTableMetaData pkTable, fkTable;
     private final JdbcIndexMetaData pkIndex, fkIndex;
-//    private final String fkName;
+    private final String fkName;
 
     public JdbcForeignKeyMetaDataImpl(JdbcForeignKeyMetaData metaData) throws SQLException {
         this.entryList = (List<Entry>) metaData.getEntrySet();
@@ -29,9 +29,14 @@ public class JdbcForeignKeyMetaDataImpl implements JdbcForeignKeyMetaData {
         this.deferrability = metaData.getKeyDeferrability();
         this.fkTable = metaData.getForeignKeyTable();
         this.pkTable = metaData.getPrimaryKeyTable();
-//        this.fkName = metaData.getForeignKeyIndex().getIndexName();
+        this.fkName = metaData.getForeignKeyName();
         this.fkIndex = metaData.getForeignKeyIndex();
         this.pkIndex = metaData.getPrimaryKeyIndex();
+    }
+
+    @Override
+    public String getForeignKeyName() {
+        return this.fkName;
     }
 
     @Override
