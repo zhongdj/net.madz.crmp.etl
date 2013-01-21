@@ -12,13 +12,10 @@ import net.madz.crmp.db.metadata.jdbc.JdbcIndexMetaData;
 import net.madz.crmp.db.metadata.jdbc.JdbcIndexMetaData.Entry;
 import net.madz.crmp.db.metadata.jdbc.JdbcTableMetaData;
 import net.madz.crmp.db.metadata.jdbc.impl.JdbcColumnMetaDataImpl;
-import net.madz.crmp.db.metadata.jdbc.impl.JdbcForeignKeyMetaDataImpl;
-import net.madz.crmp.db.metadata.jdbc.impl.JdbcIndexMetaDataImpl;
 import net.madz.crmp.db.metadata.jdbc.impl.JdbcMetaDataResultSet;
 import net.madz.crmp.db.metadata.jdbc.impl.enums.JdbcColumnDbMetaDataEnum;
-import net.madz.crmp.db.metadata.jdbc.type.JdbcKeyType;
 
-public class JdbcColumnMetaDataBuilder<M extends JdbcColumnMetaData> implements JdbcColumnMetaData {
+public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
 
     private DottedPath name;
     private JdbcTableMetaData table;
@@ -34,10 +31,10 @@ public class JdbcColumnMetaDataBuilder<M extends JdbcColumnMetaData> implements 
     private List<Entry> nonUniqueIndexList = new LinkedList<Entry>();
     private List<JdbcForeignKeyMetaDataBuilder.Entry> fkList = new LinkedList<JdbcForeignKeyMetaDataBuilder.Entry>();
     private Short ordinalPosition;
-    private JdbcTableMetaDataBuilder<JdbcTableMetaData> jdbcTableMetaDataBuilder;
+    private JdbcTableMetaDataBuilder jdbcTableMetaDataBuilder;
     private JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs;
 
-    public JdbcColumnMetaDataBuilder(JdbcTableMetaDataBuilder<JdbcTableMetaData> jdbcTableMetaDataBuilder, JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs)
+    public JdbcColumnMetaDataBuilder(JdbcTableMetaDataBuilder jdbcTableMetaDataBuilder, JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs)
             throws SQLException {
         this.jdbcTableMetaDataBuilder = jdbcTableMetaDataBuilder;
         this.colRs = colRs;
@@ -55,9 +52,9 @@ public class JdbcColumnMetaDataBuilder<M extends JdbcColumnMetaData> implements 
         this.isAutoIncremented = colRs.getBoolean(JdbcColumnDbMetaDataEnum.IS_AUTOINCREMENT);
     }
 
-    public M build() throws SQLException {
+    public JdbcColumnMetaData build() throws SQLException {
         System.out.println("Jdbc column metadata builder");
-        return (M) new JdbcColumnMetaDataImpl(this);
+        return new JdbcColumnMetaDataImpl(this);
     }
 
     @Override
@@ -125,7 +122,6 @@ public class JdbcColumnMetaDataBuilder<M extends JdbcColumnMetaData> implements 
         }
         return false;
     }
-
 
     @Override
     public Collection<? extends Entry> getUniqueIndexSet() {
@@ -203,7 +199,7 @@ public class JdbcColumnMetaDataBuilder<M extends JdbcColumnMetaData> implements 
         return fkList;
     }
 
-    public JdbcTableMetaDataBuilder<JdbcTableMetaData> getJdbcTableMetaDataBuilder() {
+    public JdbcTableMetaDataBuilder getJdbcTableMetaDataBuilder() {
         return jdbcTableMetaDataBuilder;
     }
 
@@ -226,6 +222,4 @@ public class JdbcColumnMetaDataBuilder<M extends JdbcColumnMetaData> implements 
         this.uniqueIndexList.remove(primaryKey);
         this.primaryKey = entry;
     }
-    
-    
 }

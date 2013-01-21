@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 /**
  * Represents a hierarchical name in which each level is separated by a dot.
  * This class is loosely modeled after java.io.File
@@ -168,31 +166,5 @@ public class DottedPath implements Iterable<DottedPath> {
     @Override
     public String toString() {
         return this.absoluteName;
-    }
-
-    public static class DottedPathTest extends TestCase {
-
-        public void testBaseFunctionality() {
-            String str = null;
-            DottedPath path = null;
-            // Build up
-            for ( char ch = 'a'; ch <= 'l'; ch++ ) {
-                if ( null == str )
-                    str = Character.toString(ch);
-                else
-                    str = str + "." + ch;
-                path = new DottedPath(str);
-                TestCase.assertEquals("Absolute path build up", path.getAbsoluteName(), str);
-                TestCase.assertEquals("Local path", path.getName(), Character.toString(ch));
-            }
-            // Tear down
-            while ( null != path ) {
-                TestCase.assertEquals("Abosolute path tear down", path.getAbsoluteName(), str);
-                path = path.getParent();
-                if ( null != path ) {
-                    str = str.substring(0, str.lastIndexOf('.'));
-                }
-            }
-        }
     }
 }

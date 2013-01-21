@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import net.madz.crmp.db.metadata.DottedPath;
 
-public interface JdbcSchemaMetaData<T extends JdbcTableMetaData<?,?,?>> extends JdbcMetaData {
+public interface JdbcSchemaMetaData extends JdbcMetaData {
 
     /**
      * Dotted path of the schema (catalog.schema)
@@ -14,7 +14,7 @@ public interface JdbcSchemaMetaData<T extends JdbcTableMetaData<?,?,?>> extends 
      */
     DottedPath getSchemaPath();
 
-    Collection<T> getTables();
+    Collection<JdbcTableMetaData> getTables();
 
     /**
      * Return the meta-definition of the specified table
@@ -22,5 +22,5 @@ public interface JdbcSchemaMetaData<T extends JdbcTableMetaData<?,?,?>> extends 
      * @return JdbcTableMetaData definition of table, or null if the table does
      *         not exist
      */
-    T getTable(String name);
+    JdbcTableMetaData getTable(String name);
 }

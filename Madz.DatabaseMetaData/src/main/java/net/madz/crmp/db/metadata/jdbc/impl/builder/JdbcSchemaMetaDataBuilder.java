@@ -22,13 +22,13 @@ import net.madz.crmp.db.metadata.jdbc.impl.enums.JdbcImportKeyDbMetaDataEnum;
 import net.madz.crmp.db.metadata.jdbc.impl.enums.JdbcTableDbMetaDataEnum;
 import net.madz.crmp.db.metadata.jdbc.type.JdbcTableType;
 
-public class JdbcSchemaMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>, B extends JdbcTableMetaDataBuilder<M>> implements JdbcSchemaMetaData<B> {
+public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
 
     protected final Connection connection;
     private DottedPath schemaPath;
     // private Map<String, M> tableMetaDataList = new TreeMap<String,
     // M>(String.CASE_INSENSITIVE_ORDER);
-    private Map<String, B> tableBuilderList = new TreeMap<String, B>(String.CASE_INSENSITIVE_ORDER);
+    private Map<String, JdbcTableMetaDataBuilder> tableBuilderList = new TreeMap<String, JdbcTableMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
 
     public JdbcSchemaMetaDataBuilder(final Connection connection, final DottedPath schemaPath) throws SQLException {
         super();
@@ -39,7 +39,7 @@ public class JdbcSchemaMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>, B e
         JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs = new JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum>(jdbcRs, JdbcTableDbMetaDataEnum.values());
         try {
             while ( rs.next() ) {
-                B tableBuilder = newTableMetaDataBuilder(databaseMetaData, (JdbcSchemaMetaData<M>) this, rs);
+                JdbcTableMetaDataBuilder tableBuilder = newTableMetaDataBuilder(databaseMetaData, (JdbcSchemaMetaData) this, rs);
                 // M table = tableBuilder.build();
                 // tableMetaDataList.put(table.getTableName(), table);
                 tableBuilderList.put(tableBuilder.getName().getName(), tableBuilder);
@@ -66,34 +66,31 @@ public class JdbcSchemaMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>, B e
                 fkBuilder.build();
             }
         }
-        for ( JdbcTableMetaDataBuilder tableBuilder : this.tableBuilderList.values() ) {
-            tableBuilder.build();
-        }
     }
 
-    public JdbcSchemaMetaData<M> build() throws SQLException {
+    public JdbcSchemaMetaData build() throws SQLException {
         System.out.println("Jdbc schema metadata builder");
-        Map<String, M> tables = new HashMap<String, M>();
-        for ( B b : this.tableBuilderList.values() ) {
-            M tableMetaData = b.build();
+        Map<String, JdbcTableMetaData> tables = new HashMap<String, JdbcTableMetaData>();
+        for ( JdbcTableMetaDataBuilder b : this.tableBuilderList.values() ) {
+            JdbcTableMetaData tableMetaData = b.build();
             tables.put(tableMetaData.getTableName(), tableMetaData);
         }
         return newSchemaMetaData(schemaPath, Collections.unmodifiableMap(tables));
     }
 
-    public JdbcSchemaMetaData<M> newSchemaMetaData(DottedPath schemaPath, Map<String, M> tables) {
-        return new JdbcSchemaMetaDataImpl<M>(schemaPath, tables);
+    public JdbcSchemaMetaData newSchemaMetaData(DottedPath schemaPath, Map<String, JdbcTableMetaData> tables) {
+        return new JdbcSchemaMetaDataImpl(schemaPath, tables);
     }
 
     @SuppressWarnings("unchecked")
-    protected B newTableMetaDataBuilder(DatabaseMetaData dbMetaData, JdbcSchemaMetaData<M> schema, JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs)
-            throws SQLException {
-        return ( (B) new JdbcTableMetaDataBuilder<M>(connection, dbMetaData, schema, rs) );
+    protected JdbcTableMetaDataBuilder newTableMetaDataBuilder(DatabaseMetaData dbMetaData, JdbcSchemaMetaData schema,
+            JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs) throws SQLException {
+        return ( (JdbcTableMetaDataBuilder) new JdbcTableMetaDataBuilder(connection, dbMetaData, schema, rs) );
     }
 
-    public JdbcForeignKeyMetaDataBuilder newJdbcForeignKeyMetaDataBuilder(JdbcSchemaMetaDataBuilder<M, B> jdbcSchemaMetaDataBuilder,
+    public JdbcForeignKeyMetaDataBuilder newJdbcForeignKeyMetaDataBuilder(JdbcSchemaMetaDataBuilder jdbcSchemaMetaDataBuilder,
             JdbcMetaDataResultSet<JdbcImportKeyDbMetaDataEnum> rsFk) throws SQLException {
-        return new JdbcForeignKeyMetaDataBuilder<JdbcForeignKeyMetaData>(jdbcSchemaMetaDataBuilder, rsFk);
+        return new JdbcForeignKeyMetaDataBuilder(jdbcSchemaMetaDataBuilder, rsFk);
     }
 
     @Override
@@ -102,12 +99,12 @@ public class JdbcSchemaMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>, B e
     }
 
     @Override
-    public Collection<B> getTables() {
+    public Collection getTables() {
         return this.tableBuilderList.values();
     }
 
     @Override
-    public B getTable(String name) {
+    public JdbcTableMetaDataBuilder getTable(String name) {
         return this.tableBuilderList.get(name);
     }
 

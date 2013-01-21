@@ -8,14 +8,17 @@ import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfter
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
-import net.madz.crmp.db.core.impl.MySQLDatabaseGenerator
 import net.madz.crmp.db.metadata.SchemaMetaData
 import scala.collection.mutable.ListBuffer
+import net.madz.crmp.db.core.impl.mysql.MySqlDatabaseGenerator
+import net.madz.crmp.db.metadata.jdbc.JdbcSchemaMetaData
+import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcSchemaMetaDataBuilder
+import net.madz.crmp.db.metadata.DottedPath
 
 class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach {
 
   var conn: Connection = null
-  var generator: MySQLDatabaseGenerator = null
+  var generator: MySqlDatabaseGenerator = null
 
   def urlRoot = { "jdbc:mysql://localhost:3306/" }
   def user = { "root" }
@@ -23,7 +26,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach {
 
   override def beforeEach {
     conn = Database.forURL(urlRoot, user, password, driver = "com.mysql.jdbc.Driver").createSession.conn
-    generator = new MySQLDatabaseGenerator(conn)
+    generator = new MySqlDatabaseGenerator(conn)
   }
 
   override def afterEach {
@@ -34,7 +37,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach {
     it("should generate an empty database with a specified database name") {
 
       val databaseName = "madz_empty_database_test"
-      val schemaMetaData: SchemaMetaData = new SchemaMetaData(databaseName)
+      val schemaMetaData: JdbcSchemaMetaData = new JdbcSchemaMetaDataBuilder(conn,new DottedPath(databaseName)).build()
       val generatedDbName = generator.generateDatabase(schemaMetaData, databaseName)
 
       Database.forURL(urlRoot + databaseName, user, password, driver = "com.mysql.jdbc.Driver") withSession {
@@ -59,7 +62,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach {
 
     it("should generate with all kinds of data type defined in JDBC specification") {
       val databaseName = "madz_database_test"
-      val schemaMetaData: SchemaMetaData = new SchemaMetaData(databaseName)
+      val schemaMetaData: JdbcSchemaMetaData = new JdbcSchemaMetaDataBuilder(conn,new DottedPath(databaseName)).build()
       //add table meta data into schemaMetaData
       val generatedDbName = generator.generateDatabase(schemaMetaData, databaseName)
 

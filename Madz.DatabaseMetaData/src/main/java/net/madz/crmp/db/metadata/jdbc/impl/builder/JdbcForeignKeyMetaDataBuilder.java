@@ -15,7 +15,7 @@ import net.madz.crmp.db.metadata.jdbc.impl.enums.JdbcImportKeyDbMetaDataEnum;
 import net.madz.crmp.db.metadata.jdbc.type.JdbcCascadeRule;
 import net.madz.crmp.db.metadata.jdbc.type.JdbcKeyDeferrability;
 
-public class JdbcForeignKeyMetaDataBuilder<M extends JdbcForeignKeyMetaData> implements JdbcForeignKeyMetaData {
+public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
 
     private List<Entry> entryList;
     private JdbcCascadeRule updateRule, deleteRule;
@@ -73,9 +73,9 @@ public class JdbcForeignKeyMetaDataBuilder<M extends JdbcForeignKeyMetaData> imp
         this.fkTable.addForeignKey(this);
     }
 
-    public M build() throws SQLException {
+    public JdbcForeignKeyMetaData build() throws SQLException {
         System.out.println("Jdbc foreign key metadata builder");
-        return (M) new JdbcForeignKeyMetaDataImpl(this);
+        return new JdbcForeignKeyMetaDataImpl(this);
     }
 
     @Override

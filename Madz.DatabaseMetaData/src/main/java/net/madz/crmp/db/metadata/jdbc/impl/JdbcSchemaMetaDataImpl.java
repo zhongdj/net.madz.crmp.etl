@@ -7,12 +7,12 @@ import net.madz.crmp.db.metadata.DottedPath;
 import net.madz.crmp.db.metadata.jdbc.JdbcSchemaMetaData;
 import net.madz.crmp.db.metadata.jdbc.JdbcTableMetaData;
 
-public class JdbcSchemaMetaDataImpl<M extends JdbcTableMetaData<?, ?, ?>> implements JdbcSchemaMetaData<M> {
+public class JdbcSchemaMetaDataImpl implements JdbcSchemaMetaData {
 
     private final DottedPath name;
-    private final Map<String, M> tables;
+    private final Map<String, JdbcTableMetaData> tables;
 
-    public JdbcSchemaMetaDataImpl(DottedPath schemaPath, Map<String, M> tables) {
+    public JdbcSchemaMetaDataImpl(DottedPath schemaPath, Map tables) {
         this.name = schemaPath;
         this.tables = tables;
     }
@@ -23,12 +23,12 @@ public class JdbcSchemaMetaDataImpl<M extends JdbcTableMetaData<?, ?, ?>> implem
     }
 
     @Override
-    public Collection<M> getTables() {
+    public Collection getTables() {
         return this.tables.values();
     }
 
     @Override
-    public M getTable(String name) {
+    public JdbcTableMetaData getTable(String name) {
         return this.tables.get(name);
     }
 

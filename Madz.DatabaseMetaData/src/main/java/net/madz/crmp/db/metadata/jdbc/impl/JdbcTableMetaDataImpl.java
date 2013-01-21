@@ -54,7 +54,7 @@ public class JdbcTableMetaDataImpl implements JdbcTableMetaData {
     }
 
     @Override
-    public List<? extends JdbcColumnMetaData> getColumns() {
+    public List getColumns() {
         return this.orderedColumns;
     }
 
@@ -64,12 +64,12 @@ public class JdbcTableMetaDataImpl implements JdbcTableMetaData {
     }
 
     @Override
-    public Collection<? extends JdbcForeignKeyMetaData> getForeignKeySet() {
+    public Collection getForeignKeySet() {
         return this.fkList;
     }
 
     @Override
-    public Collection<? extends JdbcIndexMetaData> getIndexSet() {
+    public Collection getIndexSet() {
         return this.indexMap.values();
     }
 

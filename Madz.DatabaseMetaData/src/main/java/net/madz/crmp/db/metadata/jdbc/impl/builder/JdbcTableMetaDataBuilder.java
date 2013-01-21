@@ -15,7 +15,6 @@ import java.util.TreeSet;
 import net.madz.crmp.db.metadata.DottedPath;
 import net.madz.crmp.db.metadata.jdbc.JdbcColumnMetaData;
 import net.madz.crmp.db.metadata.jdbc.JdbcForeignKeyMetaData;
-import net.madz.crmp.db.metadata.jdbc.JdbcIndexMetaData;
 import net.madz.crmp.db.metadata.jdbc.JdbcSchemaMetaData;
 import net.madz.crmp.db.metadata.jdbc.JdbcTableMetaData;
 import net.madz.crmp.db.metadata.jdbc.impl.JdbcMetaDataResultSet;
@@ -26,11 +25,11 @@ import net.madz.crmp.db.metadata.jdbc.impl.enums.JdbcPrimaryKeyDbMetaDataEnum;
 import net.madz.crmp.db.metadata.jdbc.impl.enums.JdbcTableDbMetaDataEnum;
 import net.madz.crmp.db.metadata.jdbc.type.JdbcTableType;
 
-public class JdbcTableMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>> implements JdbcTableMetaData {
+public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
 
     private final Connection conn;
     private final DatabaseMetaData dbMetaData;
-    private final JdbcSchemaMetaData<M> schema;
+    private final JdbcSchemaMetaData schema;
     private final JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs;
     private DottedPath tablePath; // catalog.schema.name
     private JdbcTableType type;
@@ -42,8 +41,8 @@ public class JdbcTableMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>> impl
     private List<JdbcForeignKeyMetaData> fkList = new LinkedList<JdbcForeignKeyMetaData>();
     private JdbcIndexMetaDataBuilder primaryKey;
 
-    public JdbcTableMetaDataBuilder(Connection conn, DatabaseMetaData dbMetaData, JdbcSchemaMetaData<M> schema,
-            JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs) throws SQLException {
+    public JdbcTableMetaDataBuilder(Connection conn, DatabaseMetaData dbMetaData, JdbcSchemaMetaData schema, JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs)
+            throws SQLException {
         this.conn = conn;
         this.dbMetaData = dbMetaData;
         this.schema = schema;
@@ -106,7 +105,7 @@ public class JdbcTableMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>> impl
         }
     }
 
-    public M build() throws SQLException {
+    public JdbcTableMetaData build() throws SQLException {
         System.out.println("Jdbc Table metadata builder");
         for ( JdbcColumnMetaDataBuilder columnBuilder : this.columnMap.values() ) {
             columnBuilder.build();
@@ -114,15 +113,15 @@ public class JdbcTableMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>> impl
         for ( JdbcIndexMetaDataBuilder indexBuilder : indexMap.values() ) {
             indexBuilder.build();
         }
-        return (M) new JdbcTableMetaDataImpl(this);
+        return new JdbcTableMetaDataImpl(this);
     }
 
-    protected JdbcIndexMetaDataBuilder newJdbcIndexMetaDataBuilder(JdbcTableMetaDataBuilder<M> jdbcTableMetaDataBuilder,
+    protected JdbcIndexMetaDataBuilder newJdbcIndexMetaDataBuilder(JdbcTableMetaDataBuilder jdbcTableMetaDataBuilder,
             JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum> ixRs) throws SQLException {
-        return new JdbcIndexMetaDataBuilder((JdbcTableMetaDataBuilder<JdbcTableMetaData<?, ?, ?>>) jdbcTableMetaDataBuilder, ixRs);
+        return new JdbcIndexMetaDataBuilder(jdbcTableMetaDataBuilder, ixRs);
     }
 
-    protected JdbcColumnMetaDataBuilder newJdbcColumnMetaDataBuilder(JdbcTableMetaDataBuilder<M> jdbcTableMetaDataBuilder,
+    protected JdbcColumnMetaDataBuilder newJdbcColumnMetaDataBuilder(JdbcTableMetaDataBuilder jdbcTableMetaDataBuilder,
             JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs) throws SQLException {
         return new JdbcColumnMetaDataBuilder(this, colRs);
     }
@@ -143,7 +142,7 @@ public class JdbcTableMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>> impl
     }
 
     @Override
-    public List<? extends JdbcColumnMetaData> getColumns() {
+    public List getColumns() {
         return this.orderedColumns;
     }
 
@@ -153,12 +152,12 @@ public class JdbcTableMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>> impl
     }
 
     @Override
-    public Collection<? extends JdbcForeignKeyMetaData> getForeignKeySet() {
+    public Collection getForeignKeySet() {
         return this.fkList;
     }
 
     @Override
-    public Collection<? extends JdbcIndexMetaData> getIndexSet() {
+    public Collection getIndexSet() {
         return this.indexMap.values();
     }
 
@@ -191,7 +190,7 @@ public class JdbcTableMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>> impl
         return dbMetaData;
     }
 
-    public JdbcSchemaMetaData<M> getSchema() {
+    public JdbcSchemaMetaData getSchema() {
         return schema;
     }
 
@@ -219,15 +218,15 @@ public class JdbcTableMetaDataBuilder<M extends JdbcTableMetaData<?, ?, ?>> impl
         return idGeneration;
     }
 
-    public Map<String, JdbcColumnMetaDataBuilder> getColumnMap() {
+    public Map getColumnMap() {
         return Collections.unmodifiableMap(columnMap);
     }
 
-    public List<JdbcColumnMetaDataBuilder> getOrderedColumns() {
+    public List getOrderedColumns() {
         return orderedColumns;
     }
 
-    public Map<String, JdbcIndexMetaDataBuilder> getIndexMap() {
+    public Map getIndexMap() {
         return Collections.unmodifiableMap(indexMap);
     }
 

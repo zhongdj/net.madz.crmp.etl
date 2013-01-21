@@ -18,7 +18,7 @@ import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcSchemaMetaDataBuilder;
 import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcTableMetaDataBuilder;
 import net.madz.crmp.db.metadata.mysql.impl.MySQLSchemaMetaDataImpl;
 
-public class MySQLSchemaMetaDataBuilder<M extends JdbcSchemaMetaData<?>> extends JdbcSchemaMetaDataBuilder {
+public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder {
 
     private Connection conn;
     private DottedPath schemaPath;

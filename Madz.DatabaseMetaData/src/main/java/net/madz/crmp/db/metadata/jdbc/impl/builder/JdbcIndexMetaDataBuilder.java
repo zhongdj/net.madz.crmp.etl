@@ -2,24 +2,20 @@ package net.madz.crmp.db.metadata.jdbc.impl.builder;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeMap;
 
 import net.madz.crmp.db.metadata.jdbc.JdbcColumnMetaData;
 import net.madz.crmp.db.metadata.jdbc.JdbcIndexMetaData;
 import net.madz.crmp.db.metadata.jdbc.JdbcTableMetaData;
 import net.madz.crmp.db.metadata.jdbc.impl.JdbcIndexMetaDataImpl;
 import net.madz.crmp.db.metadata.jdbc.impl.JdbcMetaDataResultSet;
-import net.madz.crmp.db.metadata.jdbc.impl.JdbcTableMetaDataImpl;
-import net.madz.crmp.db.metadata.jdbc.impl.JdbcIndexMetaDataImpl.Entry;
 import net.madz.crmp.db.metadata.jdbc.impl.enums.JdbcIndexDbMetaDataEnum;
 import net.madz.crmp.db.metadata.jdbc.type.JdbcIndexType;
 import net.madz.crmp.db.metadata.jdbc.type.JdbcKeyType;
 import net.madz.crmp.db.metadata.jdbc.type.JdbcSortDirection;
 
-public class JdbcIndexMetaDataBuilder<M extends JdbcIndexMetaData> implements JdbcIndexMetaData {
+public class JdbcIndexMetaDataBuilder implements JdbcIndexMetaData {
 
     private JdbcTableMetaDataBuilder table;
     private String indexName;
@@ -29,7 +25,6 @@ public class JdbcIndexMetaDataBuilder<M extends JdbcIndexMetaData> implements Jd
     private Integer pages;
     private List<Entry> entryList;
     private JdbcKeyType keyType;
-    private JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum> ixRs;
 
     public class Entry implements JdbcIndexMetaData.Entry {
 
@@ -73,10 +68,8 @@ public class JdbcIndexMetaDataBuilder<M extends JdbcIndexMetaData> implements Jd
         }
     }
 
-    public JdbcIndexMetaDataBuilder(JdbcTableMetaDataBuilder<JdbcTableMetaData<?, ?, ?>> metaData, JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum> ixRs)
-            throws SQLException {
+    public JdbcIndexMetaDataBuilder(JdbcTableMetaDataBuilder metaData, JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum> ixRs) throws SQLException {
         this.table = metaData;
-        this.ixRs = ixRs;
         this.entryList = new LinkedList<Entry>();
         boolean unique = ixRs.getBoolean(JdbcIndexDbMetaDataEnum.NON_UNIQUE);
         this.indexName = ixRs.get(JdbcIndexDbMetaDataEnum.INDEX_NAME);
@@ -97,9 +90,9 @@ public class JdbcIndexMetaDataBuilder<M extends JdbcIndexMetaData> implements Jd
             keyType = JdbcKeyType.index;
     }
 
-    public M build() {
+    public JdbcIndexMetaData build() {
         System.out.println("Jdbc index metadata builder");
-        return (M) new JdbcIndexMetaDataImpl(this);
+        return new JdbcIndexMetaDataImpl(this);
     }
 
     void addEntry(JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum> rs) throws SQLException {
@@ -174,7 +167,7 @@ public class JdbcIndexMetaDataBuilder<M extends JdbcIndexMetaData> implements Jd
 
     public void setPrimaryKey() {
         keyType = JdbcKeyType.primaryKey;
-        for (Entry entry: this.entryList) {
+        for ( Entry entry : this.entryList ) {
             entry.column.setPrimaryKey(entry);
         }
     }

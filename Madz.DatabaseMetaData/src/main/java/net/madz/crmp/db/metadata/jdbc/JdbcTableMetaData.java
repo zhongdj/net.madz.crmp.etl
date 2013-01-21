@@ -7,7 +7,7 @@ import java.util.Map;
 import net.madz.crmp.db.metadata.DottedPath;
 import net.madz.crmp.db.metadata.jdbc.type.JdbcTableType;
 
-public interface JdbcTableMetaData<I extends JdbcIndexMetaData, C extends JdbcColumnMetaData, F extends JdbcForeignKeyMetaData> extends JdbcMetaData {
+public interface JdbcTableMetaData extends JdbcMetaData {
 
     /** DottedPath of this table (catalog.schema.table) */
     DottedPath getTablePath();
@@ -20,34 +20,34 @@ public interface JdbcTableMetaData<I extends JdbcIndexMetaData, C extends JdbcCo
     /**
      * @return
      */
-    I getPrimaryKey();
+    JdbcIndexMetaData getPrimaryKey();
 
     /**
      * @return
      */
-    List<C> getColumns();
+    List<JdbcColumnMetaData> getColumns();
 
     /**
      * @param columnName
      * @return
      */
-    C getColumn(String columnName);
+    JdbcColumnMetaData getColumn(String columnName);
 
     /**
      * @return
      */
-    Collection<F> getForeignKeySet();
+    Collection<JdbcForeignKeyMetaData> getForeignKeySet();
 
     /**
      * @return
      */
-    Collection<I> getIndexSet();
+    Collection<JdbcIndexMetaData> getIndexSet();
 
     /**
      * @param indexName
      * @return
      */
-    I getIndex(String indexName);
+    JdbcIndexMetaData getIndex(String indexName);
 
     JdbcTableType getType();
 
