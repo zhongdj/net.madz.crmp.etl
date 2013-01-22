@@ -16,15 +16,15 @@ import net.madz.db.metadata.jdbc.type.JdbcTableType;
 
 public class JdbcTableMetaDataImpl implements JdbcTableMetaData {
 
-    private final DottedPath name; // catalog.schema.name
-    private final JdbcTableType type;
-    private final String remarks;
-    private final String idCol, idGeneration;
-    private final Map<String, JdbcColumnMetaData> columnMap;
-    private final List<JdbcColumnMetaData> orderedColumns;
-    private final Map<String, JdbcIndexMetaData> indexMap;
-    private final List<JdbcForeignKeyMetaData> fkList = new LinkedList<JdbcForeignKeyMetaData>();
-    private JdbcIndexMetaData primaryKey;
+    protected final DottedPath name; // catalog.schema.name
+    protected final JdbcTableType type;
+    protected final String remarks;
+    protected final String idCol, idGeneration;
+    protected final Map<String, JdbcColumnMetaData> columnMap;
+    protected final List<JdbcColumnMetaData> orderedColumns;
+    protected final Map<String, JdbcIndexMetaData> indexMap;
+    protected final List<JdbcForeignKeyMetaData> fkList = new LinkedList<JdbcForeignKeyMetaData>();
+    protected JdbcIndexMetaData primaryKey;
 
     public JdbcTableMetaDataImpl(final JdbcTableMetaData tableMetaData) {
         this.name = tableMetaData.getTablePath();

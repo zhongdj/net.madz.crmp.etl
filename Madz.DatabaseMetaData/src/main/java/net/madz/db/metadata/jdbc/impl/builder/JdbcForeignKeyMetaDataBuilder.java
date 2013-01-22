@@ -17,12 +17,12 @@ import net.madz.db.metadata.jdbc.type.JdbcKeyDeferrability;
 
 public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
 
-    private List<Entry> entryList;
-    private JdbcCascadeRule updateRule, deleteRule;
-    private JdbcKeyDeferrability deferrability;
-    private JdbcTableMetaDataBuilder pkTable, fkTable;
-    private JdbcIndexMetaDataBuilder pkIndex, fkIndex;
-    private String fkName;
+    protected List<Entry> entryList;
+    protected JdbcCascadeRule updateRule, deleteRule;
+    protected JdbcKeyDeferrability deferrability;
+    protected JdbcTableMetaDataBuilder pkTable, fkTable;
+    protected JdbcIndexMetaDataBuilder pkIndex, fkIndex;
+    protected String fkName;
 
     public class Entry implements JdbcForeignKeyMetaData.Entry {
 

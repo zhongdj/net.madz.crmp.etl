@@ -9,8 +9,8 @@ import net.madz.db.metadata.jdbc.JdbcTableMetaData;
 
 public class JdbcSchemaMetaDataImpl implements JdbcSchemaMetaData {
 
-    private final DottedPath name;
-    private final Map<String, JdbcTableMetaData> tables;
+    protected final DottedPath name;
+    protected final Map<String, JdbcTableMetaData> tables;
 
     public JdbcSchemaMetaDataImpl(DottedPath schemaPath, Map tables) {
         this.name = schemaPath;

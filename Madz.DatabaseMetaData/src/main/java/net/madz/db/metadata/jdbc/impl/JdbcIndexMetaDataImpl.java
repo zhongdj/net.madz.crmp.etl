@@ -1,8 +1,6 @@
 package net.madz.db.metadata.jdbc.impl;
 
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.metadata.jdbc.JdbcColumnMetaData;
@@ -14,14 +12,14 @@ import net.madz.db.metadata.jdbc.type.JdbcSortDirection;
 
 public class JdbcIndexMetaDataImpl implements JdbcIndexMetaData {
 
-    private final JdbcTableMetaData table;
-    private final String indexName;
-    private final JdbcIndexType indexType;
-    private final JdbcSortDirection ascending;
-    private final Integer cardinatlity;
-    private final Integer pages;
-    private final List<Entry> entryList;
-    private JdbcKeyType keyType;
+    protected final JdbcTableMetaData table;
+    protected final String indexName;
+    protected final JdbcIndexType indexType;
+    protected final JdbcSortDirection ascending;
+    protected final Integer cardinatlity;
+    protected final Integer pages;
+    protected final List<Entry> entryList;
+    protected JdbcKeyType keyType;
 
     public class Entry implements JdbcIndexMetaData.Entry {
 

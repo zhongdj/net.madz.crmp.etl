@@ -17,22 +17,22 @@ import net.madz.db.metadata.jdbc.impl.enums.JdbcColumnDbMetaDataEnum;
 
 public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
 
-    private DottedPath name;
-    private JdbcTableMetaData table;
-    private Integer sqlType;
-    private String typeName;
-    private Integer size;
-    private boolean isNullable;
-    private boolean isAutoIncremented;
-    private Integer radix, charOctetLength;
-    private String remarks, defaultValue;
-    private Entry primaryKey;
-    private List<Entry> uniqueIndexList = new LinkedList<Entry>();
-    private List<Entry> nonUniqueIndexList = new LinkedList<Entry>();
-    private List<JdbcForeignKeyMetaDataBuilder.Entry> fkList = new LinkedList<JdbcForeignKeyMetaDataBuilder.Entry>();
-    private Short ordinalPosition;
-    private JdbcTableMetaDataBuilder jdbcTableMetaDataBuilder;
-    private JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs;
+    protected DottedPath name;
+    protected JdbcTableMetaData table;
+    protected Integer sqlType;
+    protected String typeName;
+    protected Integer size;
+    protected boolean isNullable;
+    protected boolean isAutoIncremented;
+    protected Integer radix, charOctetLength;
+    protected String remarks, defaultValue;
+    protected Entry primaryKey;
+    protected List<Entry> uniqueIndexList = new LinkedList<Entry>();
+    protected List<Entry> nonUniqueIndexList = new LinkedList<Entry>();
+    protected List<JdbcForeignKeyMetaDataBuilder.Entry> fkList = new LinkedList<JdbcForeignKeyMetaDataBuilder.Entry>();
+    protected Short ordinalPosition;
+    protected JdbcTableMetaDataBuilder jdbcTableMetaDataBuilder;
+    protected JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs;
 
     public JdbcColumnMetaDataBuilder(JdbcTableMetaDataBuilder jdbcTableMetaDataBuilder, JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs)
             throws SQLException {

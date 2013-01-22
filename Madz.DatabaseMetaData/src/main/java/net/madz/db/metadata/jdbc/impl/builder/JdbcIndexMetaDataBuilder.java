@@ -17,14 +17,14 @@ import net.madz.db.metadata.jdbc.type.JdbcSortDirection;
 
 public class JdbcIndexMetaDataBuilder implements JdbcIndexMetaData {
 
-    private JdbcTableMetaDataBuilder table;
-    private String indexName;
-    private JdbcIndexType indexType;
-    private JdbcSortDirection ascending;
-    private Integer cardinatlity;
-    private Integer pages;
-    private List<Entry> entryList;
-    private JdbcKeyType keyType;
+    protected JdbcTableMetaDataBuilder table;
+    protected String indexName;
+    protected JdbcIndexType indexType;
+    protected JdbcSortDirection ascending;
+    protected Integer cardinatlity;
+    protected Integer pages;
+    protected List<Entry> entryList;
+    protected JdbcKeyType keyType;
 
     public class Entry implements JdbcIndexMetaData.Entry {
 

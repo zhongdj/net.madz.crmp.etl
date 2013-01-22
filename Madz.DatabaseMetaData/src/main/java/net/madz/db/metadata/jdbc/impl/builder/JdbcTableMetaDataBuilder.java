@@ -28,19 +28,19 @@ import net.madz.db.metadata.jdbc.type.JdbcTableType;
 
 public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
 
-    private final Connection conn;
-    private final DatabaseMetaData dbMetaData;
-    private final JdbcSchemaMetaData schema;
-    private final JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs;
-    private DottedPath tablePath; // catalog.schema.name
-    private JdbcTableType type;
-    private String remarks;
-    private String idCol, idGeneration;
-    private Map<String, JdbcColumnMetaDataBuilder> columnMap;
-    private List<JdbcColumnMetaDataBuilder> orderedColumns;
-    private Map<String, JdbcIndexMetaDataBuilder> indexMap;
-    private List<JdbcForeignKeyMetaData> fkList = new LinkedList<JdbcForeignKeyMetaData>();
-    private JdbcIndexMetaDataBuilder primaryKey;
+    protected final Connection conn;
+    protected final DatabaseMetaData dbMetaData;
+    protected final JdbcSchemaMetaData schema;
+    protected final JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs;
+    protected DottedPath tablePath; // catalog.schema.name
+    protected JdbcTableType type;
+    protected String remarks;
+    protected String idCol, idGeneration;
+    protected Map<String, JdbcColumnMetaDataBuilder> columnMap;
+    protected List<JdbcColumnMetaDataBuilder> orderedColumns;
+    protected Map<String, JdbcIndexMetaDataBuilder> indexMap;
+    protected List<JdbcForeignKeyMetaData> fkList = new LinkedList<JdbcForeignKeyMetaData>();
+    protected JdbcIndexMetaDataBuilder primaryKey;
 
     public JdbcTableMetaDataBuilder(Connection conn, DatabaseMetaData dbMetaData, JdbcSchemaMetaData schema, JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs)
             throws SQLException {

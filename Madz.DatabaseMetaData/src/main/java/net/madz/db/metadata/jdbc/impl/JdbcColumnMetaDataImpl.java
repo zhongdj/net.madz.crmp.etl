@@ -14,19 +14,19 @@ import net.madz.db.metadata.jdbc.JdbcIndexMetaData.Entry;
 
 public class JdbcColumnMetaDataImpl implements JdbcColumnMetaData {
 
-    private final DottedPath name;
-    private final JdbcTableMetaData table;
-    private final Integer sqlType;
-    private final String typeName;
-    private final Integer size;
-    private final boolean isNullable;
-    private final boolean isAutoIncremented;
-    private final Integer radix, charOctetLength;
-    private final String remarks, defaultValue;
-    private final JdbcIndexMetaData.Entry primaryKey;
-    private final Collection<JdbcIndexMetaData.Entry> uniqueIndexList;
-    private final Collection<JdbcIndexMetaData.Entry> nonUniqueIndexList;
-    private final Short ordinalPosition;
+    protected final DottedPath name;
+    protected final JdbcTableMetaData table;
+    protected final Integer sqlType;
+    protected final String typeName;
+    protected final Integer size;
+    protected final boolean isNullable;
+    protected final boolean isAutoIncremented;
+    protected final Integer radix, charOctetLength;
+    protected final String remarks, defaultValue;
+    protected final JdbcIndexMetaData.Entry primaryKey;
+    protected final Collection<JdbcIndexMetaData.Entry> uniqueIndexList;
+    protected final Collection<JdbcIndexMetaData.Entry> nonUniqueIndexList;
+    protected final Short ordinalPosition;
 
     // private JdbcColumnMetaData jdbcColumnMetaData;
     public JdbcColumnMetaDataImpl(JdbcColumnMetaData metaData) {
