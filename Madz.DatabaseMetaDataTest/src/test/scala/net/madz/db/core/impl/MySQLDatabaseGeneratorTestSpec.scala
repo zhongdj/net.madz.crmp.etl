@@ -12,10 +12,10 @@ import org.scalatest.BeforeAndAfter
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
 
-import net.madz.crmp.db.core.impl.mysql.MySQLDatabaseGenerator
-import net.madz.crmp.db.metadata.DottedPath
-import net.madz.crmp.db.metadata.jdbc.JdbcSchemaMetaData
-import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcSchemaMetaDataBuilder
+import net.madz.db.core.impl.mysql.MySQLDatabaseGenerator
+import net.madz.db.metadata.DottedPath
+import net.madz.db.metadata.jdbc.JdbcSchemaMetaData
+import net.madz.db.metadata.jdbc.impl.builder.JdbcSchemaMetaDataBuilder
 
 class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach {
 
