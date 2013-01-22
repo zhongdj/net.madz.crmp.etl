@@ -33,7 +33,9 @@ public class MySQLTableMetaDataBuilder extends JdbcTableMetaDataBuilder implemen
         System.out.println("Mysql table builder");
         super.build(conn);
         Statement stmt = conn.createStatement();
+        // TODO [Jan 22, 2013][barry] It's better to use UPPER CASE with MySQL Keywords
         stmt.executeQuery("use information_schema");
+        // TODO [Jan 22, 2013][barry] Close Resources ResultSet and Connection before leaving this method
         ResultSet mysqlRs = stmt
                 .executeQuery("select ENGINE,TABLE_COLLATION, TABLE_TYPE,CHARACTER_SET_NAME from Tables inner join COLLATIONS where TABLE_COLLATION = COLLATION_NAME and table_name='"
                         + super.getTableName() + "' and table_schema='" + super.getSchemaName() + "';");

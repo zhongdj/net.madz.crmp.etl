@@ -11,6 +11,7 @@ public class JdbcMetaDataResultSet<O> {
 
     private final HashMap<String, O> enumMap;
     private final HashMap<O, Integer> columnMap;
+    // TODO [Jan 22, 2013][barry] What's the relationship between this class and the following field?
     private final ResultSet rs;
 
     public JdbcMetaDataResultSet(ResultSet rs, O[] values) throws SQLException {
@@ -51,6 +52,7 @@ public class JdbcMetaDataResultSet<O> {
     }
 
     public Integer getInt(O metaData) throws SQLException {
+    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
         Integer colId = columnMap.get(metaData);
         if ( null != colId ) {
             Integer value = rs.getInt(colId.intValue());

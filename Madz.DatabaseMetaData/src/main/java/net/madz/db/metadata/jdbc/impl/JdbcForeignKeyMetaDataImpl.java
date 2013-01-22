@@ -1,7 +1,6 @@
 package net.madz.db.metadata.jdbc.impl;
 
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.metadata.DottedPath;

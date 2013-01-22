@@ -9,6 +9,7 @@ import net.madz.db.metadata.mysql.MySQLSchemaMetaData;
 @SuppressWarnings("unchecked")
 public class MySQLSchemaMetaDataImpl extends JdbcSchemaMetaDataImpl implements MySQLSchemaMetaData {
 
+	// TODO [Jan 22, 2013][barry] Use modifier final with immutable fields
     private String charSet;
     private String collation;
 

@@ -27,7 +27,7 @@ import net.madz.db.metadata.jdbc.impl.enums.JdbcTableDbMetaDataEnum;
 import net.madz.db.metadata.jdbc.type.JdbcTableType;
 
 public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
-
+    // TODO [Jan 22, 2013][barry] Use modifier carefully, all of them are open for subclasses?
     protected final DatabaseMetaData dbMetaData;
     protected final JdbcSchemaMetaData schema;
     protected final JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs;
@@ -49,6 +49,7 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
     }
 
     public void build(Connection connection) throws SQLException {
+    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
         this.tablePath = schema.getSchemaPath().append(rs.get(JdbcTableDbMetaDataEnum.table_name));
         this.type = JdbcTableType.getTableType(rs.get(JdbcTableDbMetaDataEnum.table_type));
         this.remarks = rs.get(JdbcTableDbMetaDataEnum.remarks);
