@@ -20,7 +20,9 @@ public class MySQLSchemaMetaDataParserImpl extends AbsSchemaMetaDataParser {
     @Override
     public MySQLSchemaMetaDataImpl parseSchemaMetaData() throws SQLException {
         DatabaseMetaData metaData = conn.getMetaData();
-        mysqlMetaData = (MySQLSchemaMetaDataImpl) new MySQLSchemaMetaDataBuilder(conn, new DottedPath(databaseName)).build();
-        return mysqlMetaData;
+        MySQLSchemaMetaDataBuilder mySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilder(new DottedPath(databaseName));
+        mySQLSchemaMetaDataBuilder.build(conn);
+        System.out.println(mySQLSchemaMetaDataBuilder.toString());
+        return mySQLSchemaMetaDataBuilder.getCopy();
     }
 }

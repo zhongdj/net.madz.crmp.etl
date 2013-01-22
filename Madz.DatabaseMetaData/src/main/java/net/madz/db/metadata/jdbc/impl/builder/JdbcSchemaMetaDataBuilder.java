@@ -21,25 +21,24 @@ import net.madz.db.metadata.jdbc.type.JdbcTableType;
 
 public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
 
-    protected final Connection connection;
-    private DottedPath schemaPath;
-    // private Map<String, M> tableMetaDataList = new TreeMap<String,
-    // M>(String.CASE_INSENSITIVE_ORDER);
-    private Map<String, JdbcTableMetaDataBuilder> tableBuilderList = new TreeMap<String, JdbcTableMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
+    protected DottedPath schemaPath;
+    protected Map<String, JdbcTableMetaDataBuilder> tableBuilderList = new TreeMap<String, JdbcTableMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
 
-    public JdbcSchemaMetaDataBuilder(final Connection connection, final DottedPath schemaPath) throws SQLException {
+    public JdbcSchemaMetaDataBuilder(final DottedPath schemaPath) throws SQLException {
         super();
-        this.connection = connection;
         this.schemaPath = schemaPath;
+    }
+
+    public void build(final Connection connection) throws SQLException {
+        System.out.println("Jdbc schema metadata builder");
         final DatabaseMetaData databaseMetaData = connection.getMetaData();
         ResultSet jdbcRs = databaseMetaData.getTables(getCatalogName(), getSchemaName(), "%", new String[] { JdbcTableType.table.getJdbcValue() });
         JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs = new JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum>(jdbcRs, JdbcTableDbMetaDataEnum.values());
         try {
             while ( rs.next() ) {
                 JdbcTableMetaDataBuilder tableBuilder = newTableMetaDataBuilder(databaseMetaData, (JdbcSchemaMetaData) this, rs);
-                // M table = tableBuilder.build();
-                // tableMetaDataList.put(table.getTableName(), table);
-                tableBuilderList.put(tableBuilder.getName().getName(), tableBuilder);
+                tableBuilder.build(connection);
+                this.addTable(tableBuilder);
             }
         } finally {
             rs.close();
@@ -55,21 +54,25 @@ public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
                 JdbcForeignKeyMetaDataBuilder fkMetaDataBuilder = fkMap.get(key);
                 if ( null == fkMetaDataBuilder ) {
                     fkMetaDataBuilder = newJdbcForeignKeyMetaDataBuilder(this, rsFk);
+                    fkMetaDataBuilder.build(connection);
                     fkMap.put(key, fkMetaDataBuilder);
                 }
                 fkMetaDataBuilder.addEntry(rsFk);
             }
             for ( JdbcForeignKeyMetaDataBuilder fkBuilder : fkMap.values() ) {
-                fkBuilder.build();
+                fkBuilder.getCopy();
             }
         }
     }
 
-    public JdbcSchemaMetaData build() throws SQLException {
-        System.out.println("Jdbc schema metadata builder");
+    public void addTable(JdbcTableMetaDataBuilder tableBuilder) {
+        tableBuilderList.put(tableBuilder.getName().getName(), tableBuilder);
+    }
+
+    public JdbcSchemaMetaData getCopy() throws SQLException {
         Map<String, JdbcTableMetaData> tables = new HashMap<String, JdbcTableMetaData>();
         for ( JdbcTableMetaDataBuilder b : this.tableBuilderList.values() ) {
-            JdbcTableMetaData tableMetaData = b.build();
+            JdbcTableMetaData tableMetaData = b.getCopy();
             tables.put(tableMetaData.getTableName(), tableMetaData);
         }
         return newSchemaMetaData(schemaPath, Collections.unmodifiableMap(tables));
@@ -81,7 +84,7 @@ public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
 
     protected JdbcTableMetaDataBuilder newTableMetaDataBuilder(DatabaseMetaData dbMetaData, JdbcSchemaMetaData schema,
             JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs) throws SQLException {
-        return new JdbcTableMetaDataBuilder(connection, dbMetaData, schema, rs);
+        return new JdbcTableMetaDataBuilder(dbMetaData, schema, rs);
     }
 
     public JdbcForeignKeyMetaDataBuilder newJdbcForeignKeyMetaDataBuilder(JdbcSchemaMetaDataBuilder jdbcSchemaMetaDataBuilder,
@@ -114,4 +117,10 @@ public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
         }
         return schemaPath.getParent().getName();
     }
+
+    @Override
+    public String toString() {
+        return "JdbcSchemaMetaDataBuilder [schemaPath=" + schemaPath + ", tableBuilderList=" + tableBuilderList + "]";
+    }
+    
 }

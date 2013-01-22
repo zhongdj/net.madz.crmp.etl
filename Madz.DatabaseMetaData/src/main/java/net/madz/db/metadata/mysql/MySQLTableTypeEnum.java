@@ -11,7 +11,6 @@ public enum MySQLTableTypeEnum {
             return null;
         }
         String result = typeName.replaceAll(" ", "_").toLowerCase();
-        System.out.println("===result");
         return valueOf(result);
     }
     

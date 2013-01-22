@@ -1,5 +1,6 @@
 package net.madz.db.metadata.jdbc.impl.builder;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +24,8 @@ public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
     protected JdbcTableMetaDataBuilder pkTable, fkTable;
     protected JdbcIndexMetaDataBuilder pkIndex, fkIndex;
     protected String fkName;
+    private JdbcSchemaMetaDataBuilder schema;
+    private JdbcMetaDataResultSet<JdbcImportKeyDbMetaDataEnum> rsFk;
 
     public class Entry implements JdbcForeignKeyMetaData.Entry {
 
@@ -54,6 +57,16 @@ public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
     }
 
     public JdbcForeignKeyMetaDataBuilder(JdbcSchemaMetaDataBuilder schema, JdbcMetaDataResultSet<JdbcImportKeyDbMetaDataEnum> rsFk) throws SQLException {
+        this.schema = schema;
+        this.rsFk = rsFk;
+    }
+
+    @Override
+    public String getForeignKeyName() {
+        return this.fkName;
+    }
+
+    public void build(Connection connection) throws SQLException {
         this.entryList = new LinkedList<Entry>();
         this.updateRule = JdbcCascadeRule.getImportedKeyRule(rsFk.getInt(JdbcImportKeyDbMetaDataEnum.UPDATE_RULE));
         this.deleteRule = JdbcCascadeRule.getImportedKeyRule(rsFk.getInt(JdbcImportKeyDbMetaDataEnum.DELETE_RULE));
@@ -72,11 +85,7 @@ public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
         this.fkTable.addForeignKey(this);
     }
 
-    @Override
-    public String getForeignKeyName() {
-        return this.fkName;
-    }
-    public JdbcForeignKeyMetaData build() throws SQLException {
+    public JdbcForeignKeyMetaData getCopy() throws SQLException {
         System.out.println("Jdbc foreign key metadata builder");
         return new JdbcForeignKeyMetaDataImpl(this);
     }
@@ -141,5 +150,4 @@ public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
         fkColumn.getFkList().add(entry);
         this.entryList.add(entry);
     }
-
 }

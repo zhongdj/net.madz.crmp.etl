@@ -28,7 +28,6 @@ import net.madz.db.metadata.jdbc.type.JdbcTableType;
 
 public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
 
-    protected final Connection conn;
     protected final DatabaseMetaData dbMetaData;
     protected final JdbcSchemaMetaData schema;
     protected final JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs;
@@ -42,12 +41,14 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
     protected List<JdbcForeignKeyMetaData> fkList = new LinkedList<JdbcForeignKeyMetaData>();
     protected JdbcIndexMetaDataBuilder primaryKey;
 
-    public JdbcTableMetaDataBuilder(Connection conn, DatabaseMetaData dbMetaData, JdbcSchemaMetaData schema, JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs)
+    public JdbcTableMetaDataBuilder(DatabaseMetaData dbMetaData, JdbcSchemaMetaData schema, JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs)
             throws SQLException {
-        this.conn = conn;
         this.dbMetaData = dbMetaData;
         this.schema = schema;
         this.rs = rs;
+    }
+
+    public void build(Connection connection) throws SQLException {
         this.tablePath = schema.getSchemaPath().append(rs.get(JdbcTableDbMetaDataEnum.table_name));
         this.type = JdbcTableType.getTableType(rs.get(JdbcTableDbMetaDataEnum.table_type));
         this.remarks = rs.get(JdbcTableDbMetaDataEnum.remarks);
@@ -61,7 +62,7 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
         try {
             while ( colRs.next() ) {
                 JdbcColumnMetaDataBuilder columnBuilder = newJdbcColumnMetaDataBuilder(this, colRs);
-                // JdbcColumnMetaData column = columnBuilder.build();
+                columnBuilder.build(connection);
                 orderedColumns.add(columnBuilder);
                 columns.put(columnBuilder.getColumnName(), columnBuilder);
             }
@@ -79,7 +80,7 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
                 JdbcIndexMetaDataBuilder ix = indexMap.get(name);
                 if ( null == ix ) {
                     ix = newJdbcIndexMetaDataBuilder(this, ixRs);
-                    // ix = (JdbcIndexMetaDataBuilder) indexBuilder.build();
+                    ix.build(connection);
                     indexMap.put(name, ix);
                 }
                 ix.addEntry(ixRs);
@@ -105,13 +106,13 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
         }
     }
 
-    public JdbcTableMetaData build() throws SQLException {
+    public JdbcTableMetaData getCopy() throws SQLException {
         System.out.println("Jdbc Table metadata builder");
         for ( JdbcColumnMetaDataBuilder columnBuilder : this.columnMap.values() ) {
-            columnBuilder.build();
+            columnBuilder.getCopy();
         }
         for ( JdbcIndexMetaDataBuilder indexBuilder : indexMap.values() ) {
-            indexBuilder.build();
+            indexBuilder.getCopy();
         }
         return new JdbcTableMetaDataImpl(this);
     }
@@ -182,10 +183,6 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
         }
     }
 
-    public Connection getConn() {
-        return conn;
-    }
-
     public DatabaseMetaData getDbMetaData() {
         return dbMetaData;
     }
@@ -225,4 +222,11 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
     public void addForeignKey(JdbcForeignKeyMetaData metaData) {
         this.fkList.add(metaData);
     }
+
+    @Override
+    public String toString() {
+        return "JdbcTableMetaDataBuilder [tablePath=" + tablePath + ", type=" + type + ", remarks=" + remarks + ", idCol=" + idCol + ", idGeneration="
+                + idGeneration + ", primaryKey=" + primaryKey + "]";
+    }
+
 }

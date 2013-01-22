@@ -1,5 +1,6 @@
 package net.madz.db.metadata.jdbc.impl.builder;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,13 +32,17 @@ public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
     protected List<Entry> nonUniqueIndexList = new LinkedList<Entry>();
     protected List<JdbcForeignKeyMetaDataBuilder.Entry> fkList = new LinkedList<JdbcForeignKeyMetaDataBuilder.Entry>();
     protected Short ordinalPosition;
-    protected JdbcTableMetaDataBuilder jdbcTableMetaDataBuilder;
-    protected JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs;
+    protected final JdbcTableMetaDataBuilder jdbcTableMetaDataBuilder;
+    protected final JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs;
 
     public JdbcColumnMetaDataBuilder(JdbcTableMetaDataBuilder jdbcTableMetaDataBuilder, JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs)
             throws SQLException {
         this.jdbcTableMetaDataBuilder = jdbcTableMetaDataBuilder;
         this.colRs = colRs;
+    }
+
+    public void build(Connection connection) throws SQLException {
+        System.out.println("Jdbc column metadata builder");
         this.name = jdbcTableMetaDataBuilder.getTablePath().append(colRs.get(JdbcColumnDbMetaDataEnum.COLUMN_NAME));
         this.table = jdbcTableMetaDataBuilder;
         this.sqlType = colRs.getInt(JdbcColumnDbMetaDataEnum.DATA_TYPE);
@@ -52,8 +57,7 @@ public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
         this.isAutoIncremented = colRs.getBoolean(JdbcColumnDbMetaDataEnum.IS_AUTOINCREMENT);
     }
 
-    public JdbcColumnMetaData build() throws SQLException {
-        System.out.println("Jdbc column metadata builder");
+    public JdbcColumnMetaData getCopy() {
         return new JdbcColumnMetaDataImpl(this);
     }
 

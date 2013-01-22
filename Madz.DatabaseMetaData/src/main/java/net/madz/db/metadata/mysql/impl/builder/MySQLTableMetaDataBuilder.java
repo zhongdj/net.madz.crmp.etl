@@ -24,8 +24,14 @@ public class MySQLTableMetaDataBuilder extends JdbcTableMetaDataBuilder implemen
     private String charSet;
     private String collation;
 
-    public MySQLTableMetaDataBuilder(Connection conn, DatabaseMetaData dbMetaData, JdbcSchemaMetaData schema, JdbcMetaDataResultSet rs) throws SQLException {
-        super(conn, dbMetaData, schema, rs);
+    public MySQLTableMetaDataBuilder(DatabaseMetaData dbMetaData, JdbcSchemaMetaData schema, JdbcMetaDataResultSet rs) throws SQLException {
+        super(dbMetaData, schema, rs);
+    }
+
+    @Override
+    public void build(Connection conn) throws SQLException {
+        System.out.println("Mysql table builder");
+        super.build(conn);
         Statement stmt = conn.createStatement();
         stmt.executeQuery("use information_schema");
         ResultSet mysqlRs = stmt.executeQuery("select * from TABLES where table_name='" + super.getTableName() + "' and table_schema='" + super.getSchemaName()
@@ -40,9 +46,8 @@ public class MySQLTableMetaDataBuilder extends JdbcTableMetaDataBuilder implemen
     }
 
     @Override
-    public JdbcTableMetaData build() throws SQLException {
-        System.out.println("Mysql table builder");
-        super.build();
+    public JdbcTableMetaData getCopy() throws SQLException {
+        super.getCopy();
         return new MySQLTableMetaDataImpl(this);
     }
 

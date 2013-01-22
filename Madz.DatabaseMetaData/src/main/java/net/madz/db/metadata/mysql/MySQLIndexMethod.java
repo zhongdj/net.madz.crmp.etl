@@ -4,5 +4,9 @@ public enum MySQLIndexMethod {
     btree,
     fulltext,
     hash,
-    rtree
+    rtree;
+
+    public static MySQLIndexMethod getIndexMethod(String index) {
+        return valueOf(index.toLowerCase());
+    }
 }

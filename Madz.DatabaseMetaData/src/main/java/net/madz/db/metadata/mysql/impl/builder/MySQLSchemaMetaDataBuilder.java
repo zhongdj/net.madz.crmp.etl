@@ -13,6 +13,7 @@ import net.madz.db.metadata.DottedPath;
 import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
 import net.madz.db.metadata.jdbc.JdbcTableMetaData;
 import net.madz.db.metadata.jdbc.impl.JdbcMetaDataResultSet;
+import net.madz.db.metadata.jdbc.impl.JdbcSchemaMetaDataImpl;
 import net.madz.db.metadata.jdbc.impl.builder.JdbcForeignKeyMetaDataBuilder;
 import net.madz.db.metadata.jdbc.impl.builder.JdbcSchemaMetaDataBuilder;
 import net.madz.db.metadata.jdbc.impl.builder.JdbcTableMetaDataBuilder;
@@ -21,17 +22,20 @@ import net.madz.db.metadata.mysql.impl.MySQLSchemaMetaDataImpl;
 
 public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder implements MySQLSchemaMetaData {
 
-    private Connection conn;
-    private Map<String, JdbcTableMetaData> tables;
     private String charSet;
     private String collation;
 
-    public MySQLSchemaMetaDataBuilder(Connection conn, DottedPath schemaPath) throws SQLException {
-        super(conn, schemaPath);
-        this.conn = conn;
+    public MySQLSchemaMetaDataBuilder(DottedPath schemaPath) throws SQLException {
+        super(schemaPath);
+    }
+
+    @Override
+    public void build(Connection conn) throws SQLException {
+        System.out.println("Mysql schema builder");
+        super.build(conn);
         Statement stmt = conn.createStatement();
         stmt.executeQuery("use information_schema;");
-        ResultSet rs = stmt.executeQuery("select * from SCHEMATA where schema_name = '" + schemaPath.getName() + "'");
+        ResultSet rs = stmt.executeQuery("select * from SCHEMATA where schema_name = '" + super.schemaPath.getName() + "'");
         while ( rs.next() && rs.getRow() == 1 ) {
             charSet = rs.getString("DEFAULT_CHARACTER_SET_NAME");
             collation = rs.getString("DEFAULT_COLLATION_NAME");
@@ -39,10 +43,9 @@ public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder implem
     }
 
     @Override
-    public JdbcSchemaMetaData build() throws SQLException {
-        System.out.println("Mysql schema builder");
-        JdbcSchemaMetaData build = super.build();
-        return build;
+    public MySQLSchemaMetaDataImpl getCopy() throws SQLException {
+        super.getCopy();
+        return new MySQLSchemaMetaDataImpl(schemaPath, super.tableBuilderList, charSet, collation);
     }
 
     @Override
@@ -54,7 +57,7 @@ public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder implem
     @Override
     protected JdbcTableMetaDataBuilder newTableMetaDataBuilder(DatabaseMetaData dbMetaData, JdbcSchemaMetaData schema, JdbcMetaDataResultSet rs)
             throws SQLException {
-        return new MySQLTableMetaDataBuilder(connection, dbMetaData, schema, rs);
+        return new MySQLTableMetaDataBuilder(dbMetaData, schema, rs);
     }
 
     @Override
@@ -63,16 +66,8 @@ public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder implem
         return new MySQLForeignKeyMetaDataBuilder(jdbcSchemaMetaDataBuilder, rsFk);
     }
 
-    public Connection getConn() {
-        return conn;
-    }
-
     public DottedPath getSchemaPath() {
         return super.getSchemaPath();
-    }
-
-    public Collection<JdbcTableMetaData> getTables() {
-        return tables.values();
     }
 
     @Override
@@ -85,13 +80,9 @@ public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder implem
         return collation;
     }
 
-    public static void main(String[] args) {
-        try {
-            MySQLSchemaMetaDataBuilder builder = new MySQLSchemaMetaDataBuilder(DbConfigurationManagement.createConnection("crmp", false), new DottedPath(
-                    "crmp"));
-            builder.build();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public String toString() {
+        return super.toString() + "MySQLSchemaMetaDataBuilder [charSet=" + charSet + ", collation=" + collation + "]";
     }
+    
 }

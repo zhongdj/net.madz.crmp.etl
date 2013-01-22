@@ -19,25 +19,31 @@ public class MySQLIndexMetaDataBuilder extends JdbcIndexMetaDataBuilder implemen
     private boolean isNull;
     private MySQLIndexMethod indexMethod;
     private Connection conn;
+    private JdbcTableMetaDataBuilder metaData;
 
     public MySQLIndexMetaDataBuilder(JdbcTableMetaDataBuilder metaData, JdbcMetaDataResultSet ixRs) throws SQLException {
         super(metaData, ixRs);
-        conn = metaData.getConn();
+        this.metaData = metaData;
+    }
+
+    @Override
+    public void build(Connection conn) throws SQLException {
+        System.out.println("Mysql index builder");
+        super.build(conn);
         Statement stmt = conn.createStatement();
         stmt.executeQuery("use information_schema;");
-        ResultSet rs = stmt.executeQuery("select * from STATISTICS where TABLE_SCHEMA='" + metaData.getCatalogName() + "' and TABLE_NAME = '"
+        ResultSet rs = stmt.executeQuery("select * from STATISTICS where TABLE_SCHEMA='" + metaData.getSchemaName() + "' and TABLE_NAME = '"
                 + metaData.getTableName() + "' and INDEX_NAME='" + super.getIndexName() + "'");
         while ( rs.next() && rs.getRow() == 1 ) {
             subPart = rs.getInt("SUB_PART");
             isNull = rs.getBoolean("NULLABLE");
-            indexMethod = MySQLIndexMethod.valueOf(rs.getString("INDEX_TYPE"));
+            indexMethod = MySQLIndexMethod.getIndexMethod(rs.getString("INDEX_TYPE"));
         }
     }
 
     @Override
-    public JdbcIndexMetaData build() {
-        System.out.println("Mysql index builder");
-        super.build();
+    public JdbcIndexMetaData getCopy() {
+        super.getCopy();
         return new MySQLIndexMetaDataImpl(this);
     }
 

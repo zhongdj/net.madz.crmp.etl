@@ -16,15 +16,19 @@ public class MySQLColumnMetaDataBuilder extends JdbcColumnMetaDataBuilder implem
 
     private String charSet;
     private String collation;
-    private Connection conn;
 
     public MySQLColumnMetaDataBuilder(JdbcTableMetaDataBuilder tableBuilder, JdbcMetaDataResultSet colRs) throws SQLException {
         super(tableBuilder, colRs);
-        conn = tableBuilder.getConn();
+    }
+
+    @Override
+    public void build(Connection conn) throws SQLException {
+        System.out.println("Mysql column builder");
+        super.build(conn);
         Statement stmt = conn.createStatement();
         stmt.executeQuery("use information_schema;");
-        ResultSet result = stmt.executeQuery("select * from COLUMNS WHERE TABLE_SCHEMA= '" + tableBuilder.getSchemaName() + "' and TABLE_NAME='"
-                + tableBuilder.getTableName() + "' and  COLUMN_NAME = '" + super.getColumnName() + "'");
+        ResultSet result = stmt.executeQuery("select * from COLUMNS WHERE TABLE_SCHEMA= '" + super.name.getParent().getParent().getName()
+                + "' and TABLE_NAME='" + super.name.getParent().getName() + "' and  COLUMN_NAME = '" + super.getColumnName() + "'");
         while ( result.next() ) {
             charSet = result.getString("CHARACTER_SET_NAME");
             collation = result.getString("COLLATION_NAME");
@@ -32,9 +36,8 @@ public class MySQLColumnMetaDataBuilder extends JdbcColumnMetaDataBuilder implem
     }
 
     @Override
-    public JdbcColumnMetaData build() throws SQLException {
-        System.out.println("Mysql column builder");
-        super.build();
+    public JdbcColumnMetaData getCopy() {
+        super.getCopy();
         return new MySQLColumnMetaDataImpl(this);
     }
 

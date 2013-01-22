@@ -1,5 +1,6 @@
 package net.madz.db.metadata.jdbc.impl.builder;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -25,6 +26,7 @@ public class JdbcIndexMetaDataBuilder implements JdbcIndexMetaData {
     protected Integer pages;
     protected List<Entry> entryList;
     protected JdbcKeyType keyType;
+    private JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum> ixRs;
 
     public class Entry implements JdbcIndexMetaData.Entry {
 
@@ -70,6 +72,11 @@ public class JdbcIndexMetaDataBuilder implements JdbcIndexMetaData {
 
     public JdbcIndexMetaDataBuilder(JdbcTableMetaDataBuilder metaData, JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum> ixRs) throws SQLException {
         this.table = metaData;
+        this.ixRs = ixRs;
+    }
+
+    public void build(Connection connection) throws SQLException {
+        System.out.println("Jdbc index metadata builder");
         this.entryList = new LinkedList<Entry>();
         boolean unique = ixRs.getBoolean(JdbcIndexDbMetaDataEnum.NON_UNIQUE);
         this.indexName = ixRs.get(JdbcIndexDbMetaDataEnum.INDEX_NAME);
@@ -90,8 +97,7 @@ public class JdbcIndexMetaDataBuilder implements JdbcIndexMetaData {
             keyType = JdbcKeyType.index;
     }
 
-    public JdbcIndexMetaData build() {
-        System.out.println("Jdbc index metadata builder");
+    public JdbcIndexMetaData getCopy() {
         return new JdbcIndexMetaDataImpl(this);
     }
 

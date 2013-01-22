@@ -1,5 +1,6 @@
 package net.madz.db.metadata.mysql.impl.builder;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import net.madz.db.metadata.jdbc.JdbcForeignKeyMetaData;
@@ -16,9 +17,14 @@ public class MySQLForeignKeyMetaDataBuilder extends JdbcForeignKeyMetaDataBuilde
     }
 
     @Override
-    public JdbcForeignKeyMetaData build() throws SQLException {
+    public void build(Connection conn) throws SQLException {
         System.out.println("MySql foreign key builder");
-        super.build();
+        super.build(conn);
+    }
+
+    @Override
+    public JdbcForeignKeyMetaData getCopy() throws SQLException {
+        super.getCopy();
         return new MySQLForeignKeyMetaDataImpl(this);
     }
 }

@@ -12,8 +12,8 @@
 			url="jdbc:mysql://localhost:3306/crmp_copy" user="root" password="1q2w3e4r5t" />
 	</database-copies>
 	<sku-conf sku="MySQL" driverClass="com.mysql.jdbc.Driver"
-		parserClass="net.madz.crmp.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl"
-		generatorClass="net.madz.crmp.db.core.impl.mysql.MySQLDatabaseGenerator" />
+		parserClass="net.madz.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl"
+		generatorClass="net.madz.db.core.impl.mysql.MySQLDatabaseGenerator" />
 	<sku-conf sku="MS Access" driverClass="sun.jdbc.odbc.JdbcOdbcDriver"
 		parserClass="" />
 	<database-copies-server>
