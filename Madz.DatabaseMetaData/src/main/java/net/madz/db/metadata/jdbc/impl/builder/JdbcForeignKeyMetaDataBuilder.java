@@ -17,7 +17,7 @@ import net.madz.db.metadata.jdbc.type.JdbcCascadeRule;
 import net.madz.db.metadata.jdbc.type.JdbcKeyDeferrability;
 
 public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
-
+    // TODO [Jan 22, 2013][barry] Do all of the following fields protected? Do they all open for access with sub classes? 
     protected List<Entry> entryList;
     protected JdbcCascadeRule updateRule, deleteRule;
     protected JdbcKeyDeferrability deferrability;
@@ -27,6 +27,7 @@ public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
     private JdbcSchemaMetaDataBuilder schema;
     private JdbcMetaDataResultSet<JdbcImportKeyDbMetaDataEnum> rsFk;
 
+    // TODO [Jan 22, 2013][barry] What's the relationship between this inner class and the outer class? 
     public class Entry implements JdbcForeignKeyMetaData.Entry {
 
         private JdbcColumnMetaDataBuilder fkColumn, pkColumn;
@@ -141,6 +142,7 @@ public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
     }
 
     public void addEntry(JdbcMetaDataResultSet<JdbcImportKeyDbMetaDataEnum> rsFk) throws SQLException {
+    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
         String fkColumnName = rsFk.get(JdbcImportKeyDbMetaDataEnum.FKCOLUMN_NAME);
         JdbcColumnMetaDataBuilder fkColumn = fkTable.getColumn(fkColumnName);
         String pkColumnName = rsFk.get(JdbcImportKeyDbMetaDataEnum.PKCOLUMN_NAME);

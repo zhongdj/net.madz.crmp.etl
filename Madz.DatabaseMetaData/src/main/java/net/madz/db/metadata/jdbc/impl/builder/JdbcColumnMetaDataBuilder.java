@@ -17,7 +17,7 @@ import net.madz.db.metadata.jdbc.impl.JdbcMetaDataResultSet;
 import net.madz.db.metadata.jdbc.impl.enums.JdbcColumnDbMetaDataEnum;
 
 public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
-
+    // TODO [Jan 22, 2013][barry] Do all of the following fields protected? Do they all open for access with sub classes? 
     protected DottedPath name;
     protected JdbcTableMetaData table;
     protected Integer sqlType;
@@ -28,6 +28,7 @@ public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
     protected Integer radix, charOctetLength;
     protected String remarks, defaultValue;
     protected Entry primaryKey;
+    // TODO [Jan 22, 2013][barry] Can this field be re-assign?
     protected List<Entry> uniqueIndexList = new LinkedList<Entry>();
     protected List<Entry> nonUniqueIndexList = new LinkedList<Entry>();
     protected List<JdbcForeignKeyMetaDataBuilder.Entry> fkList = new LinkedList<JdbcForeignKeyMetaDataBuilder.Entry>();
@@ -98,7 +99,9 @@ public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
 
     @Override
     public boolean isMemberOfPrimaryKey() {
+    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
         JdbcIndexMetaData primaryKey = this.table.getPrimaryKey();
+        // TODO [Jan 22, 2013][barry] Is there any constraint that every table has a primaryKey? 
         if ( primaryKey.containsColumn(this) ) {
             return true;
         }
@@ -107,7 +110,8 @@ public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
 
     @Override
     public boolean isMemberOfIndex() {
-        Collection<? extends JdbcIndexMetaData> indexSet = this.table.getIndexSet();
+    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
+    	Collection<? extends JdbcIndexMetaData> indexSet = this.table.getIndexSet();
         for ( JdbcIndexMetaData index : indexSet ) {
             if ( index.containsColumn(this) ) {
                 return true;
@@ -118,6 +122,7 @@ public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
 
     @Override
     public boolean isMemberOfForeignKey(JdbcForeignKeyMetaData fk) {
+    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables    	
         Collection<? extends JdbcForeignKeyMetaData> foreignKeySet = this.table.getForeignKeySet();
         for ( JdbcForeignKeyMetaData fkMetaData : foreignKeySet ) {
             if ( fkMetaData.getEntrySet().contains(this) ) {

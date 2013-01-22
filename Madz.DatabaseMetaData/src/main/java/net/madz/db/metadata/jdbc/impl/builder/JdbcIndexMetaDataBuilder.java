@@ -17,7 +17,7 @@ import net.madz.db.metadata.jdbc.type.JdbcKeyType;
 import net.madz.db.metadata.jdbc.type.JdbcSortDirection;
 
 public class JdbcIndexMetaDataBuilder implements JdbcIndexMetaData {
-
+    // TODO [Jan 22, 2013][barry] Use modifier final with immutable fields, and consider life cycle. 
     protected JdbcTableMetaDataBuilder table;
     protected String indexName;
     protected JdbcIndexType indexType;

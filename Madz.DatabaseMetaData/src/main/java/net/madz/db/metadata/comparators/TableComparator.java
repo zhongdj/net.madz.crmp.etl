@@ -7,7 +7,10 @@ import net.madz.db.metadata.Table;
 public class TableComparator implements Comparator<Table> {
 
 	@Override
+	// TODO [Jan 22, 2013][barry] Using readable vocabulary such as one and the other instead t1 and t2
 	public int compare(Table t1, Table t2) {
+		
+		// TODO [Jan 22, 2013][barry] It seems a String comparator, is there any Open Source resource?
 		String t1Name = t1.getName();
 		String t2Name = t2.getName();
 		int length = t1Name.length() < t2Name.length() ? t1Name.length() : t2Name.length();
