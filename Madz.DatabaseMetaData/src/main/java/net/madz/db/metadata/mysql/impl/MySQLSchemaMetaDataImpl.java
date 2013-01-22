@@ -6,8 +6,9 @@ import net.madz.db.metadata.DottedPath;
 import net.madz.db.metadata.jdbc.JdbcTableMetaData;
 import net.madz.db.metadata.jdbc.impl.JdbcSchemaMetaDataImpl;
 import net.madz.db.metadata.mysql.MySQLEngineEnum;
+import net.madz.db.metadata.mysql.MySQLSchemaMetaData;
 
-public class MySQLSchemaMetaDataImpl extends JdbcSchemaMetaDataImpl {
+public class MySQLSchemaMetaDataImpl extends JdbcSchemaMetaDataImpl implements MySQLSchemaMetaData {
 
     private String charSet;
     private String collation;
@@ -18,10 +19,12 @@ public class MySQLSchemaMetaDataImpl extends JdbcSchemaMetaDataImpl {
         this.collation = collation;
     }
 
+    @Override
     public String getCharSet() {
         return charSet;
     }
 
+    @Override
     public String getCollation() {
         return collation;
     }

@@ -27,7 +27,26 @@ public interface JdbcColumnMetaData extends JdbcMetaData {
      */
     String getSqlTypeName();
 
+    /** Column size */
+    Integer getSize();
+
+    /** Radix (typically either 10 or 2) */
+    Integer getRadix();
+
+    String getRemarks();
+
+    boolean hasDefaultValue();
+
+    String getDefaultValue();
+
+    Integer getCharOctetLength();
+
+    /** Position of this column in physical table layout (first column=1, ...) */
+    Short getOrdinalPosition();
+
     boolean isNullable();
+
+    boolean isAutoIncremented();
 
     /**
      * Primary key definition utilizing this column
@@ -54,18 +73,6 @@ public interface JdbcColumnMetaData extends JdbcMetaData {
     /** All non-unique indices that include this column */
     Collection<? extends JdbcIndexMetaData.Entry> getNonUniqueIndexSet();
 
-    /** Radix (typically either 10 or 2) */
-    Integer getRadix();
-
-    boolean isAutoIncremented();
-
-    Integer getSize();
-
-    /** Position of this column in physical table layout (first column=1, ...) */
-    Short getOrdinalPosition();
-
-    boolean hasDefaultValue();
-
     /**
      * Sorts JdbcColumnMetaData values by ordinal position
      * 
@@ -78,10 +85,4 @@ public interface JdbcColumnMetaData extends JdbcMetaData {
             return o1.getOrdinalPosition().compareTo(o2.getOrdinalPosition());
         }
     };
-
-    Integer getCharOctetLength();
-
-    String getRemarks();
-
-    String getDefaultValue();
 }

@@ -16,9 +16,10 @@ import net.madz.db.metadata.jdbc.impl.JdbcMetaDataResultSet;
 import net.madz.db.metadata.jdbc.impl.builder.JdbcForeignKeyMetaDataBuilder;
 import net.madz.db.metadata.jdbc.impl.builder.JdbcSchemaMetaDataBuilder;
 import net.madz.db.metadata.jdbc.impl.builder.JdbcTableMetaDataBuilder;
+import net.madz.db.metadata.mysql.MySQLSchemaMetaData;
 import net.madz.db.metadata.mysql.impl.MySQLSchemaMetaDataImpl;
 
-public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder {
+public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder implements MySQLSchemaMetaData {
 
     private Connection conn;
     private Map<String, JdbcTableMetaData> tables;
@@ -74,10 +75,12 @@ public class MySQLSchemaMetaDataBuilder extends JdbcSchemaMetaDataBuilder {
         return tables.values();
     }
 
+    @Override
     public String getCharSet() {
         return charSet;
     }
 
+    @Override
     public String getCollation() {
         return collation;
     }
