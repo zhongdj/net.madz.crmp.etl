@@ -231,4 +231,12 @@ public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
         this.uniqueIndexList.remove(primaryKey);
         this.primaryKey = entry;
     }
+
+    @Override
+    public String toString() {
+        return "JdbcColumnMetaDataBuilder [name=" + name + ", table=" + table.getTableName() + ", sqlType=" + sqlType + ", typeName=" + typeName + ", size=" + size
+                + ", isNullable=" + isNullable + ", isAutoIncremented=" + isAutoIncremented + ", radix=" + radix + ", charOctetLength=" + charOctetLength
+                + ", remarks=" + remarks + ", defaultValue=" + defaultValue + ", ordinalPosition=" + ordinalPosition + "]";
+    }
+    
 }

@@ -7,4 +7,6 @@ public interface MySQLColumnMetaData extends JdbcColumnMetaData {
     String getCharacterSet();
 
     String getCollation();
+    
+    MySQLColumnTypeEnum getColumnType();
 }

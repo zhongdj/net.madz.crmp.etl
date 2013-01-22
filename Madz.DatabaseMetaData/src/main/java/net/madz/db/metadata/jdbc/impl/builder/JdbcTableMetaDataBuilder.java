@@ -227,7 +227,7 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
     @Override
     public String toString() {
         return "JdbcTableMetaDataBuilder [tablePath=" + tablePath + ", type=" + type + ", remarks=" + remarks + ", idCol=" + idCol + ", idGeneration="
-                + idGeneration + ", primaryKey=" + primaryKey + "]";
+                + idGeneration + ", orderedColumns=" + orderedColumns + ", indexMap=" + indexMap + ", primaryKey=" + primaryKey + "]";
     }
 
 }

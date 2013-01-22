@@ -10,12 +10,14 @@ import net.madz.db.metadata.jdbc.impl.JdbcMetaDataResultSet;
 import net.madz.db.metadata.jdbc.impl.builder.JdbcColumnMetaDataBuilder;
 import net.madz.db.metadata.jdbc.impl.builder.JdbcTableMetaDataBuilder;
 import net.madz.db.metadata.mysql.MySQLColumnMetaData;
+import net.madz.db.metadata.mysql.MySQLColumnTypeEnum;
 import net.madz.db.metadata.mysql.impl.MySQLColumnMetaDataImpl;
 
 public class MySQLColumnMetaDataBuilder extends JdbcColumnMetaDataBuilder implements MySQLColumnMetaData {
 
     private String charSet;
     private String collation;
+    private MySQLColumnTypeEnum columnType;
 
     public MySQLColumnMetaDataBuilder(JdbcTableMetaDataBuilder tableBuilder, JdbcMetaDataResultSet colRs) throws SQLException {
         super(tableBuilder, colRs);
@@ -49,5 +51,11 @@ public class MySQLColumnMetaDataBuilder extends JdbcColumnMetaDataBuilder implem
     @Override
     public String getCollation() {
         return this.collation;
+    }
+
+    @Override
+    public MySQLColumnTypeEnum getColumnType() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

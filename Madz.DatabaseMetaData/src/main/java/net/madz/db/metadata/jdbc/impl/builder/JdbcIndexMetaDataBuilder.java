@@ -177,4 +177,11 @@ public class JdbcIndexMetaDataBuilder implements JdbcIndexMetaData {
             entry.column.setPrimaryKey(entry);
         }
     }
+
+    @Override
+    public String toString() {
+        return "JdbcIndexMetaDataBuilder [table=" + table.getTableName() + ", indexName=" + indexName + ", indexType=" + indexType + ", ascending=" + ascending
+                + ", cardinatlity=" + cardinatlity + ", pages=" + pages + ", entryList=" + entryList + ", keyType=" + keyType + "]";
+    }
+    
 }
