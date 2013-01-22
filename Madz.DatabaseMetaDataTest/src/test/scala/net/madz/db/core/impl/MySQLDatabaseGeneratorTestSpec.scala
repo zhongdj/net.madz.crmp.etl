@@ -8,7 +8,6 @@ import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
 
 import org.scalatest.Assertions
-import org.scalatest.BeforeAndAfter
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
 
@@ -17,7 +16,7 @@ import net.madz.db.metadata.DottedPath
 import net.madz.db.metadata.jdbc.JdbcSchemaMetaData
 import net.madz.db.metadata.jdbc.impl.builder.JdbcSchemaMetaDataBuilder
 
-class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach with MySQLConnector {
+class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
   var conn: Connection = null
   var generator: MySQLDatabaseGenerator = null
@@ -40,7 +39,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val builder = new JdbcSchemaMetaDataBuilder(new DottedPath(databaseName))
       builder.build(conn)
       val schemaMetaData: JdbcSchemaMetaData = builder.getCopy()
-      
+
       val generatedDbName = generator.generateDatabase(schemaMetaData, databaseName)
 
       Database.forURL(urlRoot + databaseName, user, password, driver = "com.mysql.jdbc.Driver") withSession {
@@ -67,7 +66,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val builder = new JdbcSchemaMetaDataBuilder(new DottedPath(databaseName))
       builder.build(conn)
       val schemaMetaData: JdbcSchemaMetaData = builder.getCopy()
-      
+
       //add table meta data into schemaMetaData
       val generatedDbName = generator.generateDatabase(schemaMetaData, databaseName)
 
@@ -148,6 +147,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   }
   val databaseName = "madz_database_generator_test"
   val drop_database_query = "DROP DATABASE IF EXISTS " + databaseName + ";"
+  val create_database_query = "CREATE DATABASE " + databaseName + ";"
   val show_tables_query = "SHOW tables;"
 
 }

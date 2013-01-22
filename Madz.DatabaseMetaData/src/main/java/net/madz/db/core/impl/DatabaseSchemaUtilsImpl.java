@@ -17,9 +17,11 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
     public boolean databaseExists(String databaseName, boolean isCopy) {
         Connection conn = null;
         if ( isCopy ) {
+        	// TODO [Jan 22, 2013][barry] Close Resources Connection
             conn = DbConfigurationManagement.createConnection(databaseName, true);
             try {
                 Statement stmt = conn.createStatement();
+                // TODO [Jan 22, 2013][barry] Close Resources ResultSet
                 ResultSet rs = stmt.executeQuery("show databases");
                 while ( rs.next() ) {
                     String dbName = rs.getString("Database");
@@ -32,6 +34,7 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
                 return false;
             }
         } else {
+        	// TODO [Jan 22, 2013][barry] Close Resources Connection
             conn = DbConfigurationManagement.createConnection(databaseName, false);
             return true;
         }
@@ -39,6 +42,7 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
 
     @Override
     public boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException {
+    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
         AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
         AbsSchemaMetaDataParser targetDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(targetDatabaseName, true);
         JdbcSchemaMetaData sourceSchemaMetaData = sourceDbParser.parseSchemaMetaData();
@@ -49,11 +53,13 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
     @Override
     public String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException, SQLException {
         if ( !databaseExists(sourceDatabaseName, false) ) {
+        	// TODO [Jan 22, 2013][barry] Should the text error message distributed everywhere?
             throw new IllegalOperationException("Please make sure configure souce database information.");
         }
         if ( databaseExists(targetDatabaseName, true) ) {
             dropDatabase(targetDatabaseName);
         }
+        // TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
         AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
         JdbcSchemaMetaData schemaMetaData = sourceDbParser.parseSchemaMetaData();
         // Upload schemaMetaData to to writer (local or remote)
@@ -72,6 +78,7 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
                 stmt = conn.createStatement();
                 stmt.execute("drop database " + databaseName + ";");
             } catch (SQLException e) {
+            	// TODO [Jan 22, 2013][barry] use log instead at least and declare ignore
                 e.printStackTrace();
                 return false;
             }

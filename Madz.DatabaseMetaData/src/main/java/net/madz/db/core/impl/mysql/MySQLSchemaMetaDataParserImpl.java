@@ -13,12 +13,14 @@ public class MySQLSchemaMetaDataParserImpl extends AbsSchemaMetaDataParser {
 
     private MySQLSchemaMetaDataImpl mysqlMetaData;
 
+    // TODO [Jan 22, 2013][barry] Reconsider resource lifecycle of conn with this class
     public MySQLSchemaMetaDataParserImpl(String databaseName, Connection conn) {
         super(databaseName, conn);
     }
 
     @Override
     public MySQLSchemaMetaDataImpl parseSchemaMetaData() throws SQLException {
+    	// TODO [Jan 22, 2013][barry] Close Resources Connection somewhere
         DatabaseMetaData metaData = conn.getMetaData();
         MySQLSchemaMetaDataBuilder mySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilder(new DottedPath(databaseName));
         mySQLSchemaMetaDataBuilder.build(conn);

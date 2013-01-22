@@ -12,7 +12,8 @@ import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
  * 
  */
 public abstract class AbsDatabaseGenerator {
-
+	
+	// TODO [Jan 22, 2013][barry] Reconsider resource lifecycle 
     protected final Connection conn;
     protected JdbcSchemaMetaData schemaMetaData;
 

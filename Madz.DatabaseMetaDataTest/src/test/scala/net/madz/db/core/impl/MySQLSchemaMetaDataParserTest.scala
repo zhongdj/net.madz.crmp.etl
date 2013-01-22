@@ -30,8 +30,6 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
   describe("Parse an Empty Database") {
     it("should parse an empty database") {
 
-      exec(drop_database_query :: create_database_query :: Nil)
-
       val result = parser.parseSchemaMetaData()
       Assertions.expectResult(new DottedPath(database_name))(result getSchemaPath)
       Assertions.expectResult(0)(result.getTables size)
@@ -40,15 +38,14 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
     it("should parse an empty database with correction database level default character set and default collation configuration") {
 
       exec(
-           drop_database_query 
-        :: """
+        drop_database_query
+          :: """
            CREATE DATABASE `madz_database_parser_test`	DEFAULT CHARACTER SET = `gbk` DEFAULT COLLATE = `gbk_chinese_ci`;
-           """  
-        :: Nil
-           )
+           """
+          :: Nil)
 
       val result = parser.parseSchemaMetaData()
-     
+
       Assertions.expectResult(new DottedPath(database_name))(result getSchemaPath)
       Assertions.expectResult(0)(result.getTables size)
       Assertions.expectResult("gbk")(result getCharSet)
@@ -59,41 +56,61 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
   }
 
   describe("Parse a single table Database") {
-    
+
     it("should parse correct tableName, charsetEncoding, collation, and storage engine with MySQL Parser") {
       exec(
-          drop_database_query
-        :: """
+        drop_database_query
+          :: """
            CREATE DATABASE `madz_database_parser_test`	DEFAULT CHARACTER SET = `gbk` DEFAULT COLLATE = `gbk_chinese_ci`;
            """
-        :: "USE `madz_database_parser_test`;"
-        :: """
+          :: "USE `madz_database_parser_test`;"
+          :: """
            CREATE TABLE `single_table_test` (
               name VARCHAR(64) DEFAULT NULL
            ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
            """
-        :: Nil
-          )
-          
-       val result = parser.parseSchemaMetaData()
-       
-       Assertions.expectResult(1)(result.getTables() size)
-       val table = result.getTables().toArray[MySQLTableMetaData](Array[MySQLTableMetaData]())(0)
-       Assertions.expectResult("single_table_test")(table getTableName)
-       Assertions.expectResult(MySQLEngineEnum.InnoDB)(table.getEngine)
-       Assertions.expectResult("utf8" toLowerCase)(table getCharacterSet)
-       Assertions.expectResult("utf8_unicode_ci" toLowerCase)(table getCollation)
-       Assertions.expectResult(MySQLTableTypeEnum.base_table)(table getTableType)
+          :: Nil)
+
+      val result = parser.parseSchemaMetaData()
+
+      Assertions.expectResult(1)(result.getTables() size)
+      val table = result.getTables().toArray[MySQLTableMetaData](Array[MySQLTableMetaData]())(0)
+      Assertions.expectResult("single_table_test")(table getTableName)
+      Assertions.expectResult(MySQLEngineEnum.InnoDB)(table.getEngine)
+      Assertions.expectResult("utf8" toLowerCase)(table getCharacterSet)
+      Assertions.expectResult("utf8_unicode_ci" toLowerCase)(table getCollation)
+      Assertions.expectResult(MySQLTableTypeEnum.base_table)(table getTableType)
     }
 
-    it("should parse correct storage engine with MySQL Parser") {
-      pending
-    }
   }
 
   describe("Parse columns from a single table Database") {
-    it("should parse all kinds of data types defined in JDBC specification") {
-      pending
+    it("should parse all kinds of data types defined in MySQL documents") {
+      exec(
+        "USE `madz_database_parser_test`;"
+          :: create_table_with_all_data_types_DDL_1
+          :: create_table_with_all_data_types_DDL_2
+          :: create_table_with_all_data_types_DDL_3
+          :: Nil)
+
+      val result = parser parseSchemaMetaData
+
+      val table1 = result.getTable("table_with_all_data_types_p1")
+      Assertions.expectResult(33)(table1.getColumns size)
+//      val columnNames = 
+//           ("BIT_COLUMN","BIT",1) 
+//        :: ("BIT_PLUS_COLUMN", "BIT", 2) 
+//        :: ("TINYINT_COLUMN", "TINYINT", 1) 
+//        :: ("TINYINT_PLUS_COLUMN", "TINYINT", 8) 
+//        :: Nil
+//      columnNames.foreach(columnName =>
+//        {
+//          val column = table1.getColumn(columnName)
+//          Assertions.expectResult(columnName)(column.getColumnName)
+//          Assertions.expectResult(columnName)(column.getSqlTypeName())
+//          
+//        })
+
     }
 
     it("should parse column with modifier NULLABLE") {
@@ -153,60 +170,4 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
   val database_name = "madz_database_parser_test"
   val drop_database_query = "DROP DATABASE IF EXISTS " + database_name + ";"
   val create_database_query = "CREATE DATABASE " + database_name + ";"
-  val create_table_with_all_data_types_DDL_1 = """
-    CREATE TABLE `table_with_all_data_types_p1` (
-      `BIT_COLUMN`                      BIT(1)                          DEFAULT NULL,
-      `BIT_PLUS_COLUMN`                 BIT(2)                          DEFAULT NULL,
-      `TINYINT_COLUMN`                  TINYINT(1)                      DEFAULT NULL,
-      `TINYINT_PLUS_COLUMN`             TINYINT(8)                      DEFAULT NULL,
-      `TINYINT_UNSIGNED_COLUMN`         TINYINT(8) UNSIGNED             DEFAULT NULL,
-      `BOOL_COLUMN`                     TINYINT(1)                      DEFAULT NULL,
-      `BOOLEAN_COLUMN`                  TINYINT(1)                      DEFAULT NULL,
-      `SMALLINT_COLUMN`                 SMALLINT(16)                    DEFAULT NULL,
-      `SMALLINT_UNSIGNED_COLUMN`        SMALLINT(16) UNSIGNED           DEFAULT NULL,
-      `MEDIUMINT_COLUMN`                MEDIUMINT(24)                   DEFAULT NULL,
-      `MEDIUMINT_UNSIGNED_COLUMN`       MEDIUMINT(24) UNSIGNED          DEFAULT NULL,
-      `INT_COLUMN`                      INT(32)                         DEFAULT NULL,
-      `INT_UNSIGNED_COLUMN`             INT(32) UNSIGNED                DEFAULT NULL,
-      `INTEGER_COLUMN`                  INTEGER(32)                     DEFAULT NULL,
-      `INTEGER_UNSIGNED_COLUMN`         INTEGER(32) UNSIGNED            DEFAULT NULL,
-      `BIGINT_COLUMN`                   BIGINT(64)                      DEFAULT NULL,                   
-      `BIGINT_UNSIGNED_COLUMN`          BIGINT(64) UNSIGNED             DEFAULT NULL,
-      `FLOAT_COLUMN`                    FLOAT(7,4)                      DEFAULT NULL,
-      `DOUBLE_COLUMN`                   DOUBLE PRECISION (64,30)        DEFAULT NULL,
-      `DOUBLE_PLUS_COLUMN`              DOUBLE PRECISION (128,30)       DEFAULT NULL,
-      `DECIMAL_COLUMN`                  DECIMAL                         DEFAULT NULL,
-      `DECIMAL_NO_SCALE_COLUMN`         DECIMAL(65, 0)                  DEFAULT NULL,
-      `DECIMAL_SCALE_COLUMN`            DECIMAL(65, 30)                 DEFAULT NULL,
-      `DATE_COLUMN`                     DATE                            DEFAULT NULL,
-      `DATETIME_COLUMN`                 DATETIME                        DEFAULT NULL,
-      `TIMESTAMP_COLUMN`                TIMESTAMP                       DEFAULT '2010-12-10 14:12:09',
-      `TIME_COLUMN`                     TIME                            DEFAULT NULL,
-      `YEAR_COLUMN`                     YEAR(2)                         DEFAULT NULL,
-      `YEAR_PLUS_COLUMN`                YEAR(4)                         DEFAULT NULL,
-      `CHAR_COLUMN`                     CHAR(255)                       DEFAULT NULL,
-      `VARCHAR_COLUMN`                  VARCHAR(65535)                  DEFAULT NULL,
-      `VARCHAR_BINARY_COLUMN`           VARCHAR(65535)  BINARY          DEFAULT NULL,
-      `BINARY_COLUMN`                   BINARY(255)                     DEFAULT NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
-  """
-  val create_table_with_all_data_types_DDL_2 = """
-    CREATE TABLE `table_with_all_data_types_p2` (
-      `VARBINARY_COLUMN`                VARBINARY(65532)                DEFAULT NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
-  """
-  val create_table_with_all_data_types_DDL_3 = """
-    CREATE TABLE `table_with_all_data_types_p3` (
-      `TINYBLOB_COLUMN`                 TINYBLOB                        DEFAULT NULL,
-      `TINYTEXT_COLUMN`                 TINYTEXT                        DEFAULT NULL,
-      `BLOB_COLUMN`                     BLOB                            DEFAULT NULL,
-      `TEXT_COLUMN`                     TEXT(65535)                     DEFAULT NULL,
-      `MEDIUMBLOB_COLUMN`               MEDIUMBLOB                      DEFAULT NULL,
-      `MEDIUMTEXT_COLUMN`               MEDIUMTEXT                      DEFAULT NULL,
-      `LONGBLOB_COLUMN`                 LONGBLOB                        DEFAULT NULL,
-      `LONGTEXT_COLUMN`                 LONGTEXT                        DEFAULT NULL,
-      `ENUM_COLUMN`                     ENUM('A','B','C')               DEFAULT NULL,
-      `SET_COLUMN`                      SET('HLJ','JX','BJ')            DEFAULT NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
-  """
 }

@@ -19,6 +19,7 @@ public class JdbcSchemaMetaDataParserImpl extends AbsSchemaMetaDataParser {
 
     @Override
     public JdbcSchemaMetaData parseSchemaMetaData() throws SQLException {
+    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variable
         DatabaseMetaData metaData = conn.getMetaData();
         JdbcSchemaMetaDataBuilder jdbcSchemaMetaDataBuilder = new JdbcSchemaMetaDataBuilder(new DottedPath(databaseName));
         jdbcSchemaMetaDataBuilder.build(conn);

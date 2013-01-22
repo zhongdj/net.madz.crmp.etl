@@ -2,15 +2,13 @@ package net.madz.db.metadata.jdbc.impl;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 import net.madz.db.metadata.DottedPath;
 import net.madz.db.metadata.jdbc.JdbcColumnMetaData;
 import net.madz.db.metadata.jdbc.JdbcForeignKeyMetaData;
 import net.madz.db.metadata.jdbc.JdbcIndexMetaData;
-import net.madz.db.metadata.jdbc.JdbcTableMetaData;
 import net.madz.db.metadata.jdbc.JdbcIndexMetaData.Entry;
+import net.madz.db.metadata.jdbc.JdbcTableMetaData;
 
 public class JdbcColumnMetaDataImpl implements JdbcColumnMetaData {
 

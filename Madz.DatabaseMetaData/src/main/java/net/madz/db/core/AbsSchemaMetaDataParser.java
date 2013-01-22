@@ -15,6 +15,7 @@ import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
 public abstract class AbsSchemaMetaDataParser {
 
     protected final String databaseName;
+    // TODO [Jan 22, 2013][barry] Reconsider resource lifecycle of Connection
     protected final Connection conn;
 
     /**

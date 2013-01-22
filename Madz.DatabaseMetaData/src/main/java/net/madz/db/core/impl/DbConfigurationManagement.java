@@ -30,6 +30,7 @@ public class DbConfigurationManagement {
     private static final Map<Sku, SkuConf> skuConfs = new HashMap<Sku, SkuConf>();
     private static DatabaseCopiesServer databaseCopiesServer = null;
     private static DatabaseConfig databaseconfig;
+    // TODO [Jan 22, 2013][barry] is it immutable?
     private static String configurationFile = System.getProperty(DbConfigurationManagement.NET_MADZ_DB_CONFIGURATION, CONFIGURATION_DATA_SOURCES);
     static {
         loadDatabaseConfiguration();
@@ -96,6 +97,7 @@ public class DbConfigurationManagement {
     }
 
     public static String getSchemaMetaDataPaser(String databaseName, boolean isCopy) {
+    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
         Database database;
         if ( isCopy ) {
             database = databaseCopiesCache.get(databaseName);
@@ -110,12 +112,14 @@ public class DbConfigurationManagement {
                 throw new IllegalStateException("Please make sure configure source database information for database:" + databaseName);
             }
         }
+        // TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
         Sku sku = database.getSku();
         SkuConf skuConf = skuConfs.get(sku);
         return skuConf.getParserClass();
     }
 
     public static synchronized boolean removeDatabaseInfo(String databaseName) {
+    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
         Database database = databaseCopiesCache.get(databaseName);
         databaseconfig.getDatabaseCopies().getDatabase().remove(database);
         databaseCopiesCache.remove(database);
@@ -126,6 +130,7 @@ public class DbConfigurationManagement {
             marshaller.marshal(databaseconfig, file);
             return true;
         } catch (JAXBException e) {
+        	// TODO [Jan 22, 2013][barry] How to handle this exception?
             e.printStackTrace();
             return false;
         }
@@ -139,7 +144,9 @@ public class DbConfigurationManagement {
     }
 
     public static synchronized void addDatabaseInfo(String targetDatabaseName) {
+    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
         Database database = databaseCopiesCache.get(targetDatabaseName);
+        // TODO [Jan 22, 2013][barry] How to make the following code more concisely?
         if ( null == database ) {
             database = new Database();
             database.setName(targetDatabaseName);
@@ -149,6 +156,7 @@ public class DbConfigurationManagement {
             database.setUser(databaseCopiesServer.getDatabase().getUser());
             databaseconfig.getDatabaseCopies().getDatabase().add(database);
             databaseCopiesCache.put(targetDatabaseName, database);
+            // TODO [Jan 22, 2013][barry] Reconsider variable lifecycle scope
             JAXBContext context;
             try {
                 context = JAXBContext.newInstance(DatabaseConfig.class);
@@ -156,6 +164,7 @@ public class DbConfigurationManagement {
                 File file = new File("./src/main/resources/" + configurationFile);
                 marshaller.marshal(databaseconfig, file);
             } catch (JAXBException e) {
+            	// TODO [Jan 22, 2013][barry] How to handle this exception
                 e.printStackTrace();
             }
         }
