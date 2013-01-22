@@ -1,9 +1,11 @@
 package net.madz.crmp.db.metadata.jdbc.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import net.madz.crmp.db.metadata.DottedPath;
 import net.madz.crmp.db.metadata.jdbc.JdbcColumnMetaData;
@@ -24,17 +26,26 @@ public class JdbcTableMetaDataImpl implements JdbcTableMetaData {
     private final List<JdbcForeignKeyMetaData> fkList = new LinkedList<JdbcForeignKeyMetaData>();
     private JdbcIndexMetaData primaryKey;
 
-    public JdbcTableMetaDataImpl(JdbcTableMetaData tableBuilder) {
-        this.name = tableBuilder.getTablePath();
-        this.type = tableBuilder.getType();
-        this.remarks = tableBuilder.getRemarks();
-        this.idCol = tableBuilder.getIdCol();
-        this.idGeneration = tableBuilder.getIdGeneration();
-        this.columnMap = tableBuilder.getColumnMap();
-        this.orderedColumns = tableBuilder.getOrderedColumns();
-        this.indexMap = tableBuilder.getIndexMap();
+    public JdbcTableMetaDataImpl(final JdbcTableMetaData tableMetaData) {
+        this.name = tableMetaData.getTablePath();
+        this.type = tableMetaData.getType();
+        this.remarks = tableMetaData.getRemarks();
+        this.idCol = tableMetaData.getIdCol();
+        this.idGeneration = tableMetaData.getIdGeneration();
+        TreeMap<String, JdbcColumnMetaData> columnMap = new TreeMap<String, JdbcColumnMetaData>(String.CASE_INSENSITIVE_ORDER);
+        for ( JdbcColumnMetaData column : tableMetaData.getColumns() ) {
+            columnMap.put(column.getColumnName(), column);
+        }
+        this.columnMap = Collections.unmodifiableMap(columnMap);
+        this.orderedColumns = tableMetaData.getColumns();
+        Collection<JdbcIndexMetaData> indexSet = tableMetaData.getIndexSet();
+        TreeMap<String, JdbcIndexMetaData> indexMap = new TreeMap<String, JdbcIndexMetaData>();
+        for ( JdbcIndexMetaData index : indexSet ) {
+            indexMap.put(index.getIndexName(), index);
+        }
+        this.indexMap = Collections.unmodifiableMap(indexMap);
         // this.fkList = tableBuilder.getFkList();
-        this.primaryKey = tableBuilder.getPrimaryKey();
+        this.primaryKey = tableMetaData.getPrimaryKey();
     }
 
     @Override
@@ -115,21 +126,6 @@ public class JdbcTableMetaDataImpl implements JdbcTableMetaData {
     @Override
     public String getIdGeneration() {
         return this.idGeneration;
-    }
-
-    @Override
-    public Map getColumnMap() {
-        return this.columnMap;
-    }
-
-    @Override
-    public List getOrderedColumns() {
-        return this.orderedColumns;
-    }
-
-    @Override
-    public Map getIndexMap() {
-        return this.indexMap;
     }
 
     @Override

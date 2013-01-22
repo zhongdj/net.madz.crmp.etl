@@ -1,24 +1,26 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
-import scala.slick.jdbc.{ StaticQuery => Q }
+
+import scala.collection.mutable.ListBuffer
+import scala.slick.jdbc.{StaticQuery => Q}
 import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
+
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfter
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
-import net.madz.crmp.db.metadata.SchemaMetaData
-import scala.collection.mutable.ListBuffer
-import net.madz.crmp.db.core.impl.mysql.MySqlDatabaseGenerator
+
+import net.madz.crmp.db.core.impl.mysql.MySQLDatabaseGenerator
+import net.madz.crmp.db.metadata.DottedPath
 import net.madz.crmp.db.metadata.jdbc.JdbcSchemaMetaData
 import net.madz.crmp.db.metadata.jdbc.impl.builder.JdbcSchemaMetaDataBuilder
-import net.madz.crmp.db.metadata.DottedPath
 
 class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach {
 
   var conn: Connection = null
-  var generator: MySqlDatabaseGenerator = null
+  var generator: MySQLDatabaseGenerator = null
 
   def urlRoot = { "jdbc:mysql://localhost:3306/" }
   def user = { "root" }
@@ -26,7 +28,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach {
 
   override def beforeEach {
     conn = Database.forURL(urlRoot, user, password, driver = "com.mysql.jdbc.Driver").createSession.conn
-    generator = new MySqlDatabaseGenerator(conn)
+    generator = new MySQLDatabaseGenerator(conn)
   }
 
   override def afterEach {

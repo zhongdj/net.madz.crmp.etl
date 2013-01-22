@@ -43,10 +43,4 @@ public interface JdbcTableMetaData extends JdbcMetaData {
     Collection<JdbcIndexMetaData> getIndexSet();
 
     JdbcIndexMetaData getIndex(String indexName);
-
-    Map<String, JdbcColumnMetaData> getColumnMap();
-
-    List<JdbcColumnMetaData> getOrderedColumns();
-
-    Map<String, JdbcIndexMetaData> getIndexMap();
 }

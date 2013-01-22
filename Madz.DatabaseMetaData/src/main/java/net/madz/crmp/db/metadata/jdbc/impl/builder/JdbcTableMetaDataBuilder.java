@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -67,8 +68,7 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
         } finally {
             colRs.close();
         }
-        // this.orderedColumns = Collections.unmodifiableList(new
-        // ArrayList<JdbcColumnMetaDataImpl>(orderedColumns));
+        this.orderedColumns = Collections.unmodifiableList(new ArrayList<JdbcColumnMetaDataBuilder>(orderedColumns));
         TreeMap<String, JdbcIndexMetaDataBuilder> indexMap = new TreeMap<String, JdbcIndexMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
         this.indexMap = Collections.unmodifiableMap(indexMap);
         jdbcRs = dbMetaData.getIndexInfo(getCatalogName(), getSchemaName(), getTableName(), false, true);
@@ -216,18 +216,6 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
 
     public String getIdGeneration() {
         return idGeneration;
-    }
-
-    public Map getColumnMap() {
-        return Collections.unmodifiableMap(columnMap);
-    }
-
-    public List getOrderedColumns() {
-        return orderedColumns;
-    }
-
-    public Map getIndexMap() {
-        return Collections.unmodifiableMap(indexMap);
     }
 
     public List<JdbcForeignKeyMetaData> getFkList() {
