@@ -42,6 +42,24 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(new DottedPath(database_name))(result.getSchemaPath())
       Assertions.expectResult(0)(result.getTables().size)
     }
+
+    it("should parse an empty database with correction database level charsetEncoding configuration") {
+      Database.forURL(urlRoot, user, password, prop) withSession {
+        Q.queryNA[String](drop_database_query).execute
+        Q.queryNA[String]("""
+            CREATE DATABASE `madz_database_parser_test`	DEFAULT CHARACTER SET = `gbk`;
+            """).execute
+      }
+      
+      val result = parser.parseSchemaMetaData()
+      Assertions.expectResult(new DottedPath(database_name))(result.getSchemaPath())
+      Assertions.expectResult(0)(result.getTables().size)
+      //Assertions.expectResult("gbk")(result.get)
+
+    }
+    it("should parse an empty database with correction database level collation configuration") {
+
+    }
   }
 
   describe("Parse a single table Database") {
