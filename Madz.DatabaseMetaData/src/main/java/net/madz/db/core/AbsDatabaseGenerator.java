@@ -2,8 +2,6 @@ package net.madz.db.core;
 
 import java.sql.Connection;
 
-import net.madz.db.metadata.SchemaMetaData;
-import net.madz.db.metadata.jdbc.JdbcMetaData;
 import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
 
 /**

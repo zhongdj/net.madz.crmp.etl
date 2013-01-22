@@ -9,8 +9,6 @@ import net.madz.db.core.AbsDatabaseGenerator;
 import net.madz.db.core.AbsSchemaMetaDataParser;
 import net.madz.db.core.DatabaseSchemaUtils;
 import net.madz.db.core.IllegalOperationException;
-import net.madz.db.metadata.SchemaMetaData;
-import net.madz.db.metadata.jdbc.JdbcMetaData;
 import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
 
 public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {

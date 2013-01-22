@@ -3,11 +3,10 @@ package net.madz.db.metadata.mysql.impl;
 import java.util.Map;
 
 import net.madz.db.metadata.DottedPath;
-import net.madz.db.metadata.jdbc.JdbcTableMetaData;
 import net.madz.db.metadata.jdbc.impl.JdbcSchemaMetaDataImpl;
-import net.madz.db.metadata.mysql.MySQLEngineEnum;
 import net.madz.db.metadata.mysql.MySQLSchemaMetaData;
 
+@SuppressWarnings("unchecked")
 public class MySQLSchemaMetaDataImpl extends JdbcSchemaMetaDataImpl implements MySQLSchemaMetaData {
 
     private String charSet;
@@ -15,8 +14,8 @@ public class MySQLSchemaMetaDataImpl extends JdbcSchemaMetaDataImpl implements M
 
     public MySQLSchemaMetaDataImpl(DottedPath schemaPath, Map tables, String charSet2, String collation2) {
         super(schemaPath, tables);
-        this.charSet = charSet;
-        this.collation = collation;
+        this.charSet = charSet2;
+        this.collation = collation2;
     }
 
     @Override
