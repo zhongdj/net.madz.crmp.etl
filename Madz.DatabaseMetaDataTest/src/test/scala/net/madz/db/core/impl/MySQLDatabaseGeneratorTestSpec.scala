@@ -37,7 +37,10 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   describe("Generate an Empty Database") {
     it("should generate an empty database with a specified database name") {
 
-      val schemaMetaData: JdbcSchemaMetaData = new JdbcSchemaMetaDataBuilder(conn, new DottedPath(databaseName)).build()
+      val builder = new JdbcSchemaMetaDataBuilder(new DottedPath(databaseName))
+      builder.build(conn)
+      val schemaMetaData: JdbcSchemaMetaData = builder.getCopy()
+      
       val generatedDbName = generator.generateDatabase(schemaMetaData, databaseName)
 
       Database.forURL(urlRoot + databaseName, user, password, driver = "com.mysql.jdbc.Driver") withSession {
@@ -61,7 +64,10 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   describe("Generate correct columns") {
 
     it("should generate with all kinds of data type defined in JDBC specification") {
-      val schemaMetaData: JdbcSchemaMetaData = new JdbcSchemaMetaDataBuilder(conn, new DottedPath(databaseName)).build()
+      val builder = new JdbcSchemaMetaDataBuilder(new DottedPath(databaseName))
+      builder.build(conn)
+      val schemaMetaData: JdbcSchemaMetaData = builder.getCopy()
+      
       //add table meta data into schemaMetaData
       val generatedDbName = generator.generateDatabase(schemaMetaData, databaseName)
 
