@@ -9,6 +9,7 @@ import net.madz.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl
 import net.madz.db.metadata.DottedPath
 import net.madz.db.metadata.mysql.MySQLTableMetaData
 import net.madz.db.metadata.mysql.MySQLTableTypeEnum
+import net.madz.db.metadata.mysql.MySQLEngineEnum
 
 class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -16,7 +17,8 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
   var parser: MySQLSchemaMetaDataParserImpl = null
 
   override def beforeEach {
-    conn = Database.forURL(urlRoot, user, password, prop).createSession.conn
+    exec(drop_database_query :: create_database_query :: Nil)
+    conn = Database.forURL(urlRoot + database_name, user, password, prop).createSession.conn
     parser = new MySQLSchemaMetaDataParserImpl(database_name, conn)
   }
 
@@ -77,8 +79,8 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
        
        Assertions.expectResult(1)(result.getTables() size)
        val table = result.getTables().toArray[MySQLTableMetaData](Array[MySQLTableMetaData]())(0)
-       Assertions.expectResult("madz_database_parser_test")(table getTableName)
-       Assertions.expectResult("InnoDB" toLowerCase)(table getEngine)
+       Assertions.expectResult("single_table_test")(table getTableName)
+       Assertions.expectResult(MySQLEngineEnum.InnoDB)(table.getEngine)
        Assertions.expectResult("utf8" toLowerCase)(table getCharacterSet)
        Assertions.expectResult("utf8_unicode_ci" toLowerCase)(table getCollation)
        Assertions.expectResult(MySQLTableTypeEnum.base_table)(table getTableType)

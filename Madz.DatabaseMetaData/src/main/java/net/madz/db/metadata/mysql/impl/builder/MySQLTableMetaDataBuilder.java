@@ -34,14 +34,14 @@ public class MySQLTableMetaDataBuilder extends JdbcTableMetaDataBuilder implemen
         super.build(conn);
         Statement stmt = conn.createStatement();
         stmt.executeQuery("use information_schema");
-        ResultSet mysqlRs = stmt.executeQuery("select * from TABLES where table_name='" + super.getTableName() + "' and table_schema='" + super.getSchemaName()
-                + "';");
+        ResultSet mysqlRs = stmt
+                .executeQuery("select ENGINE,TABLE_COLLATION, TABLE_TYPE,CHARACTER_SET_NAME from Tables inner join COLLATIONS where TABLE_COLLATION = COLLATION_NAME and table_name='"
+                        + super.getTableName() + "' and table_schema='" + super.getSchemaName() + "';");
         while ( mysqlRs.next() && mysqlRs.getRow() == 1 ) {
             engine = MySQLEngineEnum.valueOf(mysqlRs.getString("ENGINE"));
             type = MySQLTableTypeEnum.getType(mysqlRs.getString("TABLE_TYPE"));
             collation = mysqlRs.getString("TABLE_COLLATION");
-            String[] result = collation.split("_");
-            collation = result[0];
+            charSet = mysqlRs.getString("CHARACTER_SET_NAME");
         }
     }
 
