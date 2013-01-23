@@ -1,5 +1,10 @@
 package net.madz.db.core.meta.immutable;
 
+import java.util.List;
+
+import net.madz.db.core.meta.immutable.type.CascadeRule;
+import net.madz.db.core.meta.immutable.type.KeyDeferrability;
+
 public interface ForeignKeyMetaData <
 SMD extends SchemaMetaData<?, TMD, CMD, FMD, IMD>,
 TMD extends TableMetaData<SMD, ?, CMD, FMD, IMD>,
@@ -8,4 +13,63 @@ FMD extends ForeignKeyMetaData<SMD, TMD, CMD, ?, IMD>,
 IMD extends IndexMetaData<SMD, TMD, CMD, FMD, ?>
 > {
 
+    /** The name of foreign key */
+    String getForeignKeyName();
+
+    /**
+     * Foreign key index
+     * 
+     * This is the index that is referring to another table
+     * 
+     * @return SqlIndexMetaData or null if there is no foreign key index; MySQL
+     *         appears to always give us a value
+     */
+    IMD getForeignKeyIndex();
+
+    TMD getForeignKeyTable();
+
+    /**
+     * primary key index
+     * 
+     * This is the index that being referred to
+     * 
+     * @return SqlIndexMetaData or null if there is no primary key index; MySQL
+     *         appears to always give us null
+     */
+    IMD getPrimaryKeyIndex();
+
+    TMD getPrimaryKeyTable();
+
+    /**
+     * Defines what is to happen to this record when the referenced record is
+     * deleted.
+     */
+    CascadeRule getDeleteCascadeRule();
+
+    /**
+     * Defines what is to happen to this record when the referenced record's
+     * primary key is updated.
+     */
+    CascadeRule getUpdateCascadeRule();
+
+    /**
+     * Deferrability rule on this key
+     */
+    KeyDeferrability getKeyDeferrability();
+
+    List<FMD.Entry<CMD, FMD>> getEntrySet();
+
+    /**
+     * Number of relationships in the key
+     */
+    Integer size();
+
+    public interface Entry<C, F> {
+
+    	C getForeignKeyColumn();
+
+    	C getPrimaryKeyColumn();
+
+    	F getKey();
+    }
 }
