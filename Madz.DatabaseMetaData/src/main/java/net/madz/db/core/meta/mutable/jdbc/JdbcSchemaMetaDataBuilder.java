@@ -1,6 +1,5 @@
 package net.madz.db.core.meta.mutable.jdbc;
 
-import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcColumnMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcIndexMetaData;
