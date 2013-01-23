@@ -31,8 +31,8 @@ public class DbConfigurationManagement {
     private static final Map<Sku, SkuConf> skuConfs = new HashMap<Sku, SkuConf>();
     private static DatabaseCopiesServer databaseCopiesServer = null;
     private static DatabaseConfig databaseconfig;
-    // TODO [Jan 22, 2013][barry] is it immutable?
-    private static String configurationFile = System.getProperty(DbConfigurationManagement.NET_MADZ_DB_CONFIGURATION, CONFIGURATION_DATA_SOURCES);
+    // TODO [Jan 22, 2013][barry][Done] is it immutable?
+    private static final String configurationFile = System.getProperty(DbConfigurationManagement.NET_MADZ_DB_CONFIGURATION, CONFIGURATION_DATA_SOURCES);
     static {
         loadDatabaseConfiguration();
     }
@@ -147,31 +147,33 @@ public class DbConfigurationManagement {
     }
 
     public static synchronized void addDatabaseInfo(String targetDatabaseName) {
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        Database database = databaseCopiesCache.get(targetDatabaseName);
-        // TODO [Jan 22, 2013][barry] How to make the following code more
+        // TODO [Jan 22, 2013][barry][Done] How to make the following code more
         // concisely?
-        if ( null == database ) {
-            database = new Database();
-            database.setName(targetDatabaseName);
-            database.setPassword(databaseCopiesServer.getDatabase().getPassword());
-            database.setSku(databaseCopiesServer.getDatabase().getSku());
-            database.setUrl(databaseCopiesServer.getDatabase().getUrl() + targetDatabaseName);
-            database.setUser(databaseCopiesServer.getDatabase().getUser());
-            databaseconfig.getDatabaseCopies().getDatabase().add(database);
-            databaseCopiesCache.put(targetDatabaseName, database);
-            // TODO [Jan 22, 2013][barry] Reconsider variable lifecycle scope
-            JAXBContext context;
-            try {
-                context = JAXBContext.newInstance(DatabaseConfig.class);
-                Marshaller marshaller = context.createMarshaller();
-                File file = new File("./src/main/resources/" + configurationFile);
-                marshaller.marshal(databaseconfig, file);
-            } catch (JAXBException e) {
-                // TODO [Jan 22, 2013][barry][Done] How to handle this exception
-                LogUtils.error(DbConfigurationManagement.class, e);
-            }
+        // If target database is configured, just return;
+        if ( null != databaseCopiesCache.get(targetDatabaseName) ) {
+            return;
+        }
+        final Database database = new Database();
+        database.setName(targetDatabaseName);
+        final Database databaseCopyServer = databaseCopiesServer.getDatabase();
+        database.setPassword(databaseCopyServer.getPassword());
+        database.setSku(databaseCopyServer.getSku());
+        database.setUrl(databaseCopyServer.getUrl() + targetDatabaseName);
+        database.setUser(databaseCopyServer.getUser());
+        databaseconfig.getDatabaseCopies().getDatabase().add(database);
+        databaseCopiesCache.put(targetDatabaseName, database);
+        // TODO [Jan 22, 2013][barry] Reconsider variable lifecycle scope
+        final JAXBContext context;
+        try {
+            context = JAXBContext.newInstance(DatabaseConfig.class);
+            final Marshaller marshaller = context.createMarshaller();
+            final File file = new File("./src/main/resources/" + configurationFile);
+            marshaller.marshal(databaseconfig, file);
+        } catch (JAXBException e) {
+            // TODO [Jan 22, 2013][barry][Done] How to handle this exception
+            LogUtils.error(DbConfigurationManagement.class, e);
         }
     }
 }
