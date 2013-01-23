@@ -42,7 +42,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       exec(
         drop_database_query
           :: """
-           CREATE DATABASE `madz_database_parser_test`	DEFAULT CHARACTER SET = `gbk` DEFAULT COLLATE = `gbk_chinese_ci`;
+           CREATE DATABASE `madz_database_parser_test`DEFAULT CHARACTER SET = `gbk` DEFAULT COLLATE = `gbk_chinese_ci`;
            """
           :: Nil)
 
@@ -63,7 +63,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       exec(
         drop_database_query
           :: """
-           CREATE DATABASE `madz_database_parser_test`	DEFAULT CHARACTER SET = `gbk` DEFAULT COLLATE = `gbk_chinese_ci`;
+           CREATE DATABASE `madz_database_parser_test`DEFAULT CHARACTER SET = `gbk` DEFAULT COLLATE = `gbk_chinese_ci`;
            """
           :: "USE `madz_database_parser_test`;"
           :: """
@@ -246,35 +246,35 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
 
   val columns_in_table1 =
     ColumnMetaData("table_with_all_data_types_p1", "BIT_COLUMN", 1, null, true, "bit", null, 1, null, null, null, "bit(1)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "BIT_PLUS_COLUMN", 2, null, true, "bit", null, 2, null, null, null, "bit(2)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "TINYINT_COLUMN", 3, null, true, "tinyint", null, 3, 0, null, null, "tinyint(1)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "TINYINT_PLUS_COLUMN", 4, null, true, "tinyint", null, 3, 0, null, null, "tinyint(8)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "TINYINT_UNSIGNED_COLUMN", 5, null, true, "tinyint", null, 3, 0, null, null, "tinyint(8)unsigned	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "BOOL_COLUMN", 6, null, true, "tinyint", null, 3, 0, null, null, "tinyint(1)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "BOOLEAN_COLUMN", 7, null, true, "tinyint", null, 3, 0, null, null, "tinyint(1)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "SMALLINT_COLUMN", 8, null, true, "smallint", null, 5, 0, null, null, "smallint(16)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "SMALLINT_UNSIGNED_COLUMN", 9, null, true, "smallint", null, 5, 0, null, null, "smallint(16)unsigned	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "MEDIUMINT_COLUMN", 10, null, true, "mediumint", null, 7, 0, null, null, "mediumint(24)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "MEDIUMINT_UNSIGNED_COLUMN", 11, null, true, "mediumint", null, 7, 0, null, null, "mediumint(24)unsigned	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "INT_COLUMN", 12, null, true, "int", null, 10, 0, null, null, "int(32)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "INT_UNSIGNED_COLUMN", 13, null, true, "int", null, 10, 0, null, null, "int(32)unsigned	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "INTEGER_COLUMN", 14, null, true, "int", null, 10, 0, null, null, "int(32)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "INTEGER_UNSIGNED_COLUMN", 15, null, true, "int", null, 10, 0, null, null, "int(32)unsigned	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "BIGINT_COLUMN", 16, null, true, "bigint", null, 19, 0, null, null, "bigint(64)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "BIGINT_UNSIGNED_COLUMN", 17, null, true, "bigint", null, 20, 0, null, null, "bigint(64)unsigned	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "FLOAT_COLUMN", 18, null, true, "float", null, 7, 4, null, null, "float(7,4)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DOUBLE_COLUMN", 19, null, true, "double", null, 64, 30, null, null, "double(64,30)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DOUBLE_PLUS_COLUMN", 20, null, true, "double", null, 128, 30, null, null, "double(128,30)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DECIMAL_COLUMN", 21, null, true, "decimal", null, 10, 0, null, null, "decimal(10,0)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DECIMAL_NO_SCALE_COLUMN", 22, null, true, "decimal", null, 65, 0, null, null, "decimal(65,0)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DECIMAL_SCALE_COLUMN", 23, null, true, "decimal", null, 65, 30, null, null, "decimal(65,30)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DATE_COLUMN", 24, null, true, "date", null, null, null, null, null, "date	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DATETIME_COLUMN", 25, null, true, "datetime", null, null, null, null, null, "datetime	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "TIMESTAMP_COLUMN", 26, "2010-12-1014:12:09", false, "timestamp", null, null, null, null, null, "timestamp	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "TIME_COLUMN", 27, null, true, "time", null, null, null, null, null, "time	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "YEAR_COLUMN", 28, null, true, "year", null, null, null, null, null, "year(2)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "YEAR_PLUS_COLUMN", 29, null, true, "year", null, null, null, null, null, "year(4)	") ::
-      ColumnMetaData("table_with_all_data_types_p1", "CHAR_COLUMN", 30, null, true, "char", 255, null, null, "latin7", "latin7_general_ci", "char(255)	") ::
+      ColumnMetaData("table_with_all_data_types_p1", "BIT_PLUS_COLUMN", 2, null, true, "bit", null, 2, null, null, null, "bit(2)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "TINYINT_COLUMN", 3, null, true, "tinyint", null, 3, 0, null, null, "tinyint(1)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "TINYINT_PLUS_COLUMN", 4, null, true, "tinyint", null, 3, 0, null, null, "tinyint(8)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "TINYINT_UNSIGNED_COLUMN", 5, null, true, "tinyint", null, 3, 0, null, null, "tinyint(8)unsigned") ::
+      ColumnMetaData("table_with_all_data_types_p1", "BOOL_COLUMN", 6, null, true, "tinyint", null, 3, 0, null, null, "tinyint(1)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "BOOLEAN_COLUMN", 7, null, true, "tinyint", null, 3, 0, null, null, "tinyint(1)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "SMALLINT_COLUMN", 8, null, true, "smallint", null, 5, 0, null, null, "smallint(16)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "SMALLINT_UNSIGNED_COLUMN", 9, null, true, "smallint", null, 5, 0, null, null, "smallint(16)unsigned") ::
+      ColumnMetaData("table_with_all_data_types_p1", "MEDIUMINT_COLUMN", 10, null, true, "mediumint", null, 7, 0, null, null, "mediumint(24)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "MEDIUMINT_UNSIGNED_COLUMN", 11, null, true, "mediumint", null, 7, 0, null, null, "mediumint(24)unsigned") ::
+      ColumnMetaData("table_with_all_data_types_p1", "INT_COLUMN", 12, null, true, "int", null, 10, 0, null, null, "int(32)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "INT_UNSIGNED_COLUMN", 13, null, true, "int", null, 10, 0, null, null, "int(32)unsigned") ::
+      ColumnMetaData("table_with_all_data_types_p1", "INTEGER_COLUMN", 14, null, true, "int", null, 10, 0, null, null, "int(32)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "INTEGER_UNSIGNED_COLUMN", 15, null, true, "int", null, 10, 0, null, null, "int(32)unsigned") ::
+      ColumnMetaData("table_with_all_data_types_p1", "BIGINT_COLUMN", 16, null, true, "bigint", null, 19, 0, null, null, "bigint(64)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "BIGINT_UNSIGNED_COLUMN", 17, null, true, "bigint", null, 20, 0, null, null, "bigint(64)unsigned") ::
+      ColumnMetaData("table_with_all_data_types_p1", "FLOAT_COLUMN", 18, null, true, "float", null, 7, 4, null, null, "float(7,4)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "DOUBLE_COLUMN", 19, null, true, "double", null, 64, 30, null, null, "double(64,30)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "DOUBLE_PLUS_COLUMN", 20, null, true, "double", null, 128, 30, null, null, "double(128,30)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "DECIMAL_COLUMN", 21, null, true, "decimal", null, 10, 0, null, null, "decimal(10,0)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "DECIMAL_NO_SCALE_COLUMN", 22, null, true, "decimal", null, 65, 0, null, null, "decimal(65,0)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "DECIMAL_SCALE_COLUMN", 23, null, true, "decimal", null, 65, 30, null, null, "decimal(65,30)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "DATE_COLUMN", 24, null, true, "date", null, null, null, null, null, "date") ::
+      ColumnMetaData("table_with_all_data_types_p1", "DATETIME_COLUMN", 25, null, true, "datetime", null, null, null, null, null, "datetime") ::
+      ColumnMetaData("table_with_all_data_types_p1", "TIMESTAMP_COLUMN", 26, "2010-12-1014:12:09", false, "timestamp", null, null, null, null, null, "timestamp") ::
+      ColumnMetaData("table_with_all_data_types_p1", "TIME_COLUMN", 27, null, true, "time", null, null, null, null, null, "time") ::
+      ColumnMetaData("table_with_all_data_types_p1", "YEAR_COLUMN", 28, null, true, "year", null, null, null, null, null, "year(2)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "YEAR_PLUS_COLUMN", 29, null, true, "year", null, null, null, null, null, "year(4)") ::
+      ColumnMetaData("table_with_all_data_types_p1", "CHAR_COLUMN", 30, null, true, "char", 255, null, null, "latin7", "latin7_general_ci", "char(255)") ::
       ColumnMetaData("table_with_all_data_types_p1", "BINARY_COLUMN", 31, null, true, "binary", 255, null, null, null, null, "binary(255)") :: Nil
 
   val columns_in_table2 =
@@ -284,9 +284,9 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
     ColumnMetaData("table_with_all_data_types_p3", "TINYBLOB_COLUMN", 1, null, true, "tinyblob", 255, null, null, null, null, "tinyblob") ::
       ColumnMetaData("table_with_all_data_types_p3", "TINYTEXT_COLUMN", 2, null, true, "tinytext", 255, null, null, "utf8", "utf8_general_ci", "tinytext") ::
       ColumnMetaData("table_with_all_data_types_p3", "BLOB_COLUMN", 3, null, true, "blob", 65535, null, null, null, null, "blob") ::
-      ColumnMetaData("table_with_all_data_types_p3", "TEXT_COLUMN", 4, null, true, "mediumtext", 16777215, null, null, "utf8", "utf8_general_ci", "mediumtext") ::
-      ColumnMetaData("table_with_all_data_types_p3", "MEDIUMBLOB_COLUMN", 5, null, true, "mediumblob", 16777215, null, null, null, null, "mediumblob") ::
-      ColumnMetaData("table_with_all_data_types_p3", "MEDIUMTEXT_COLUMN", 6, null, true, "mediumtext", 16777215, null, null, "utf8", "utf8_general_ci", "mediumtext") ::
+      ColumnMetaData("table_with_all_data_types_p3", "TEXT_COLUMN", 4, null, true, "mediumtext", 16777215L, null, null, "utf8", "utf8_general_ci", "mediumtext") ::
+      ColumnMetaData("table_with_all_data_types_p3", "MEDIUMBLOB_COLUMN", 5, null, true, "mediumblob", 16777215L, null, null, null, null, "mediumblob") ::
+      ColumnMetaData("table_with_all_data_types_p3", "MEDIUMTEXT_COLUMN", 6, null, true, "mediumtext", 16777215L, null, null, "utf8", "utf8_general_ci", "mediumtext") ::
       ColumnMetaData("table_with_all_data_types_p3", "LONGBLOB_COLUMN", 7, null, true, "longblob", 4294967295L, null, null, null, null, "longblob") ::
       ColumnMetaData("table_with_all_data_types_p3", "LONGTEXT_COLUMN", 8, null, true, "longtext", 4294967295L, null, null, "utf8", "utf8_general_ci", "longtext") ::
       ColumnMetaData("table_with_all_data_types_p3", "ENUM_COLUMN", 9, null, true, "enum", 1, null, null, "utf8", "utf8_general_ci", "enum('A','B','C')") ::
@@ -297,6 +297,6 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
     ColumnMetaData("table_with_all_data_types_p5", "VARCHAR_BINARY_COLUMN", 1, null, true, "varchar", 65532, null, null, "latin7", "latin7_general_ci", "varchar(65532)") :: Nil
 
   def verifyColumns(expectedColumnList: List[ColumnMetaData], actualColumnList: List[MySQLColumnMetaData]) {
-    
+
   }
 }
