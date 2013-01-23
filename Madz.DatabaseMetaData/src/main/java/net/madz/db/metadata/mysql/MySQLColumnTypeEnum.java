@@ -46,6 +46,6 @@ public enum MySQLColumnTypeEnum {
         if ( null == type ) {
             throw new IllegalArgumentException("The type " + type + "is not supported.");
         }
-        return valueOf(type.toUpperCase());
+        return valueOf(type.replaceAll(" ", "_").toUpperCase());
     }
 }
