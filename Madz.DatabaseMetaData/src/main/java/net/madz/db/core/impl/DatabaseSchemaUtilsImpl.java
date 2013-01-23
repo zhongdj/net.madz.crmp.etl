@@ -13,6 +13,7 @@ import net.madz.db.core.DatabaseSchemaUtils;
 import net.madz.db.core.IllegalOperationException;
 import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
 import net.madz.db.utils.LogUtils;
+import net.madz.db.utils.MessageConsts;
 
 public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
 
@@ -77,9 +78,9 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
     @Override
     public String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException, SQLException, JAXBException {
         if ( !databaseExists(sourceDatabaseName, false) ) {
-            // TODO [Jan 22, 2013][barry] Should the text error message
+            // TODO [Jan 22, 2013][barry][Done] Should the text error message
             // distributed everywhere?
-            throw new IllegalOperationException("Please make sure configure souce database information.");
+            throw new IllegalOperationException(MessageConsts.CONFIGURE_DATABASE_INFO);
         }
         if ( databaseExists(targetDatabaseName, true) ) {
             dropDatabase(targetDatabaseName);

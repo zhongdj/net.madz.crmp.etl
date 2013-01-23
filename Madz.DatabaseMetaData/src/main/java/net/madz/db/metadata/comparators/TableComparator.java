@@ -9,7 +9,7 @@ import net.madz.db.utils.LogUtils;
 public class TableComparator implements Comparator<Table> {
 
     @Override
-    // TODO [Jan 22, 2013][barry] [Done]Using readable vocabulary such as one
+    // TODO [Jan 22, 2013][barry][Done] Using readable vocabulary such as one
     // and the other instead t1 and t2
     public int compare(Table one, Table theOther) {
         // TODO [Jan 22, 2013][barry][Done] It seems a String comparator, is
