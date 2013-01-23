@@ -3,7 +3,7 @@ package net.madz.db.metadata.comparators;
 import java.util.Comparator;
 
 import net.madz.db.metadata.Table;
-import net.madz.db.utils.ExceptionMessage;
+import net.madz.db.utils.MessageConsts;
 import net.madz.db.utils.LogUtils;
 
 public class TableComparator implements Comparator<Table> {
@@ -18,8 +18,8 @@ public class TableComparator implements Comparator<Table> {
         String firstName = one.getName();
         String secondName = theOther.getName();
         if ( null == firstName || null == secondName ) {
-            LogUtils.debug(this.getClass(), ExceptionMessage.ArgumentShouldNotBeNull);
-            throw new IllegalStateException(ExceptionMessage.ArgumentShouldNotBeNull);
+            LogUtils.debug(this.getClass(), MessageConsts.ArgumentShouldNotBeNull);
+            throw new IllegalStateException(MessageConsts.ArgumentShouldNotBeNull);
         }
         return firstName.compareTo(secondName);
     }
