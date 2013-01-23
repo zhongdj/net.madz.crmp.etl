@@ -5,44 +5,68 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.xml.bind.JAXBException;
+
 import net.madz.db.core.AbsDatabaseGenerator;
 import net.madz.db.core.AbsSchemaMetaDataParser;
 import net.madz.db.core.DatabaseSchemaUtils;
 import net.madz.db.core.IllegalOperationException;
 import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
+import net.madz.db.utils.LogUtils;
 
 public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
 
     @Override
     public boolean databaseExists(String databaseName, boolean isCopy) {
         Connection conn = null;
-        if ( isCopy ) {
-        	// TODO [Jan 22, 2013][barry] Close Resources Connection
-            conn = DbConfigurationManagement.createConnection(databaseName, true);
-            try {
-                Statement stmt = conn.createStatement();
-                // TODO [Jan 22, 2013][barry] Close Resources ResultSet
-                ResultSet rs = stmt.executeQuery("show databases");
-                while ( rs.next() ) {
-                    String dbName = rs.getString("Database");
-                    if ( databaseName.equals(dbName) ) {
-                        return true;
+        boolean result = false;
+        try {
+            if ( isCopy ) {
+                // TODO [Jan 22, 2013][barry][Done] Close Resources Connection
+                conn = DbConfigurationManagement.createConnection(databaseName, true);
+                ResultSet rs = null;
+                try {
+                    Statement stmt = conn.createStatement();
+                    // TODO [Jan 22, 2013][barry][Done] Close Resources
+                    // ResultSet
+                    rs = stmt.executeQuery("show databases");
+                    while ( rs.next() ) {
+                        String dbName = rs.getString("Database");
+                        if ( databaseName.equals(dbName) ) {
+                            result = true;
+                        }
+                    }
+                    return result;
+                } catch (SQLException e) {
+                    LogUtils.debug(this.getClass(), e.getMessage());
+                } finally {
+                    try {
+                        rs.close();
+                    } catch (SQLException e) {
+                        LogUtils.debug(this.getClass(), e.getMessage());
                     }
                 }
-                return false;
-            } catch (SQLException e) {
-                return false;
+            } else {
+                // TODO [Jan 22, 2013][barry][Done]Close Resources Connection
+                // For non-mysql resource, if connection is created, which
+                // represents the database exists.
+                conn = DbConfigurationManagement.createConnection(databaseName, false);
+                result = true;
             }
-        } else {
-        	// TODO [Jan 22, 2013][barry] Close Resources Connection
-            conn = DbConfigurationManagement.createConnection(databaseName, false);
-            return true;
+            return result;
+        } finally {
+            try {
+                conn.close();
+            } catch (final SQLException e) {
+                LogUtils.debug(this.getClass(), e.getMessage());
+            }
         }
     }
 
     @Override
     public boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException {
-    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
+        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // variables
         AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
         AbsSchemaMetaDataParser targetDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(targetDatabaseName, true);
         JdbcSchemaMetaData sourceSchemaMetaData = sourceDbParser.parseSchemaMetaData();
@@ -51,15 +75,17 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
     }
 
     @Override
-    public String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException, SQLException {
+    public String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException, SQLException, JAXBException {
         if ( !databaseExists(sourceDatabaseName, false) ) {
-        	// TODO [Jan 22, 2013][barry] Should the text error message distributed everywhere?
+            // TODO [Jan 22, 2013][barry] Should the text error message
+            // distributed everywhere?
             throw new IllegalOperationException("Please make sure configure souce database information.");
         }
         if ( databaseExists(targetDatabaseName, true) ) {
             dropDatabase(targetDatabaseName);
         }
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
+        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // variables
         AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
         JdbcSchemaMetaData schemaMetaData = sourceDbParser.parseSchemaMetaData();
         // Upload schemaMetaData to to writer (local or remote)
@@ -70,7 +96,7 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
     }
 
     @Override
-    public boolean dropDatabase(String databaseName) {
+    public boolean dropDatabase(String databaseName) throws JAXBException {
         if ( databaseExists(databaseName, true) ) {
             Connection conn = DbConfigurationManagement.createConnection(databaseName, true);
             Statement stmt;
@@ -78,7 +104,8 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
                 stmt = conn.createStatement();
                 stmt.execute("drop database " + databaseName + ";");
             } catch (SQLException e) {
-            	// TODO [Jan 22, 2013][barry] use log instead at least and declare ignore
+                // TODO [Jan 22, 2013][barry] use log instead at least and
+                // declare ignore
                 e.printStackTrace();
                 return false;
             }
@@ -98,7 +125,8 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
         } catch (IllegalOperationException e) {
             e.printStackTrace();
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (JAXBException e) {
             e.printStackTrace();
         }
     }

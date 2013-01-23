@@ -33,17 +33,24 @@ public class MySQLTableMetaDataBuilder extends JdbcTableMetaDataBuilder implemen
         System.out.println("Mysql table builder");
         super.build(conn);
         Statement stmt = conn.createStatement();
-        // TODO [Jan 22, 2013][barry] It's better to use UPPER CASE with MySQL Keywords
-        stmt.executeQuery("use information_schema");
-        // TODO [Jan 22, 2013][barry] Close Resources ResultSet and Connection before leaving this method
-        ResultSet mysqlRs = stmt
-                .executeQuery("select ENGINE,TABLE_COLLATION, TABLE_TYPE,CHARACTER_SET_NAME from Tables inner join COLLATIONS where TABLE_COLLATION = COLLATION_NAME and table_name='"
-                        + super.getTableName() + "' and table_schema='" + super.getSchemaName() + "';");
-        while ( mysqlRs.next() && mysqlRs.getRow() == 1 ) {
-            engine = MySQLEngineEnum.valueOf(mysqlRs.getString("ENGINE"));
-            type = MySQLTableTypeEnum.getType(mysqlRs.getString("TABLE_TYPE"));
-            collation = mysqlRs.getString("TABLE_COLLATION");
-            charSet = mysqlRs.getString("CHARACTER_SET_NAME");
+        // TODO [Jan 22, 2013][barry][Done] It's better to use UPPER CASE with MySQL
+        // Keywords
+        stmt.executeQuery("USE information_schema");
+        // TODO [Jan 22, 2013][barry][Done] Close Resources ResultSet and Connection
+        // before leaving this method [connection should be closed in the top level]
+        ResultSet mysqlRs = null;
+        try {
+            mysqlRs = stmt
+                    .executeQuery("SELECT engine,table_collation, table_type,character_set_name FROM Tables INNER JOIN collations WHERE table_collation = collation_name AND table_name='"
+                            + super.getTableName() + "' AND table_schema='" + super.getSchemaName() + "';");
+            while ( mysqlRs.next() && mysqlRs.getRow() == 1 ) {
+                engine = MySQLEngineEnum.valueOf(mysqlRs.getString("engine"));
+                type = MySQLTableTypeEnum.getType(mysqlRs.getString("table_type"));
+                collation = mysqlRs.getString("table_collation");
+                charSet = mysqlRs.getString("character_set_name");
+            }
+        } finally {
+            mysqlRs.close();
         }
     }
 

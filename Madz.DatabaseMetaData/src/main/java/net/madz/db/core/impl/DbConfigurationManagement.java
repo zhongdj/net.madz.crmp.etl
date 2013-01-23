@@ -20,6 +20,7 @@ import net.madz.db.metadata.configuration.DatabaseConfig;
 import net.madz.db.metadata.configuration.DatabaseCopiesServer;
 import net.madz.db.metadata.configuration.Sku;
 import net.madz.db.metadata.configuration.SkuConf;
+import net.madz.db.utils.LogUtils;
 
 public class DbConfigurationManagement {
 
@@ -97,7 +98,8 @@ public class DbConfigurationManagement {
     }
 
     public static String getSchemaMetaDataPaser(String databaseName, boolean isCopy) {
-    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
+        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // variables
         Database database;
         if ( isCopy ) {
             database = databaseCopiesCache.get(databaseName);
@@ -112,14 +114,16 @@ public class DbConfigurationManagement {
                 throw new IllegalStateException("Please make sure configure source database information for database:" + databaseName);
             }
         }
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
+        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // variables
         Sku sku = database.getSku();
         SkuConf skuConf = skuConfs.get(sku);
         return skuConf.getParserClass();
     }
 
-    public static synchronized boolean removeDatabaseInfo(String databaseName) {
-    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
+    public static synchronized boolean removeDatabaseInfo(String databaseName) throws JAXBException {
+        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // variables
         Database database = databaseCopiesCache.get(databaseName);
         databaseconfig.getDatabaseCopies().getDatabase().remove(database);
         databaseCopiesCache.remove(database);
@@ -130,9 +134,8 @@ public class DbConfigurationManagement {
             marshaller.marshal(databaseconfig, file);
             return true;
         } catch (JAXBException e) {
-        	// TODO [Jan 22, 2013][barry] How to handle this exception?
-            e.printStackTrace();
-            return false;
+            // TODO [Jan 22, 2013][barry][Done] How to handle this exception?
+            throw e;
         }
     }
 
@@ -144,9 +147,11 @@ public class DbConfigurationManagement {
     }
 
     public static synchronized void addDatabaseInfo(String targetDatabaseName) {
-    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
+        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // variables
         Database database = databaseCopiesCache.get(targetDatabaseName);
-        // TODO [Jan 22, 2013][barry] How to make the following code more concisely?
+        // TODO [Jan 22, 2013][barry] How to make the following code more
+        // concisely?
         if ( null == database ) {
             database = new Database();
             database.setName(targetDatabaseName);
@@ -164,8 +169,8 @@ public class DbConfigurationManagement {
                 File file = new File("./src/main/resources/" + configurationFile);
                 marshaller.marshal(databaseconfig, file);
             } catch (JAXBException e) {
-            	// TODO [Jan 22, 2013][barry] How to handle this exception
-                e.printStackTrace();
+                // TODO [Jan 22, 2013][barry][Done] How to handle this exception
+                LogUtils.error(DbConfigurationManagement.class, e);
             }
         }
     }

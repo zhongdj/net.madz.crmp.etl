@@ -2,6 +2,8 @@ package net.madz.db.core;
 
 import java.sql.SQLException;
 
+import javax.xml.bind.JAXBException;
+
 /**
  * This interface is the facade of this module. It provides checking,comparing,
  * cloning, and dropping database schema features.
@@ -43,8 +45,9 @@ public interface DatabaseSchemaUtils {
      *            , optional
      * @return
      * @throws IllegalOperationException
+     * @throws JAXBException 
      */
-    String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException, SQLException;
+    String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException, SQLException, JAXBException;
 
     /**
      * This method drop database according to specified database name and isCopy
@@ -52,6 +55,7 @@ public interface DatabaseSchemaUtils {
      * 
      * @param databaseName
      * @return
+     * @throws JAXBException 
      */
-    boolean dropDatabase(String databaseName);
+    boolean dropDatabase(String databaseName) throws JAXBException;
 }

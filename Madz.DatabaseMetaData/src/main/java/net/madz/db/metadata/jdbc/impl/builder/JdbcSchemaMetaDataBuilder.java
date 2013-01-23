@@ -21,7 +21,7 @@ import net.madz.db.metadata.jdbc.type.JdbcTableType;
 
 public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
 
-	// TODO [Jan 22, 2013][barry] Use modifier final with immutable fields
+    // TODO [Jan 22, 2013][barry] Use modifier final with immutable fields
     protected DottedPath schemaPath;
     protected Map<String, JdbcTableMetaDataBuilder> tableBuilderList = new TreeMap<String, JdbcTableMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
 
@@ -32,7 +32,8 @@ public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
 
     public void build(final Connection connection) throws SQLException {
         System.out.println("Jdbc schema metadata builder");
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
+        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // variables
         final DatabaseMetaData databaseMetaData = connection.getMetaData();
         ResultSet jdbcRs = databaseMetaData.getTables(getCatalogName(), getSchemaName(), "%", new String[] { JdbcTableType.table.getJdbcValue() });
         JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs = new JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum>(jdbcRs, JdbcTableDbMetaDataEnum.values());
@@ -100,8 +101,9 @@ public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
     }
 
     @Override
-    // TODO [Jan 22, 2013][barry] Can the type parameter information be provided?
-    public Collection getTables() {
+    // TODO [Jan 22, 2013][barry][Done] Can the type parameter information be
+    // provided?
+    public Collection<JdbcTableMetaDataBuilder> getTables() {
         return this.tableBuilderList.values();
     }
 
@@ -125,5 +127,4 @@ public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
     public String toString() {
         return "JdbcSchemaMetaDataBuilder [schemaPath=" + schemaPath + ", tableBuilderList=" + tableBuilderList + "]";
     }
-    
 }

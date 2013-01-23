@@ -14,7 +14,7 @@ public interface JdbcSchemaMetaData extends JdbcMetaData {
      */
     DottedPath getSchemaPath();
 
-    Collection<JdbcTableMetaData> getTables();
+    Collection<? extends JdbcTableMetaData> getTables();
 
     /**
      * Return the meta-definition of the specified table
