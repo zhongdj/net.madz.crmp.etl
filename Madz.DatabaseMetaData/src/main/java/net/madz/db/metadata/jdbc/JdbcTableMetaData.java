@@ -2,7 +2,6 @@ package net.madz.db.metadata.jdbc;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import net.madz.db.metadata.DottedPath;
 import net.madz.db.metadata.jdbc.type.JdbcTableType;

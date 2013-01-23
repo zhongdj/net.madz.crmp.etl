@@ -22,5 +22,5 @@ public interface JdbcSchemaMetaData extends JdbcMetaData {
      * @return JdbcTableMetaData definition of table, or null if the table does
      *         not exist
      */
-    JdbcTableMetaData getTable(String name);
+    <DB_DEPENDENT_TABLE_META extends JdbcTableMetaData> DB_DEPENDENT_TABLE_META getTable(String name);
 }

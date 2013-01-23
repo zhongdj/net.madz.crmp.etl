@@ -10,7 +10,7 @@ import net.madz.db.metadata.jdbc.JdbcTableMetaData;
 public class JdbcSchemaMetaDataImpl implements JdbcSchemaMetaData {
 
     protected final DottedPath name;
-    protected final Map<String, JdbcTableMetaData> tables;
+    protected final Map<String, ? extends JdbcTableMetaData> tables;
 
     public JdbcSchemaMetaDataImpl(DottedPath schemaPath, Map tables) {
         this.name = schemaPath;
@@ -23,13 +23,13 @@ public class JdbcSchemaMetaDataImpl implements JdbcSchemaMetaData {
     }
 
     @Override
-    public Collection getTables() {
+    public Collection<? extends JdbcTableMetaData> getTables() {
         return this.tables.values();
     }
 
     @Override
-    public JdbcTableMetaData getTable(String name) {
-        return this.tables.get(name);
+    public <DB_DEPENDENT_TABLE_META extends JdbcTableMetaData> DB_DEPENDENT_TABLE_META getTable(String name) {
+        return (DB_DEPENDENT_TABLE_META) this.tables.get(name);
     }
 
     @Override
