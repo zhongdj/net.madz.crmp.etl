@@ -101,9 +101,9 @@ public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
 
     @Override
     public boolean isMemberOfPrimaryKey() {
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        JdbcIndexMetaData primaryKey = this.table.getPrimaryKey();
+        final JdbcIndexMetaData primaryKey = this.table.getPrimaryKey();
         // TODO [Jan 22, 2013][barry] Is there any constraint that every table
         // has a primaryKey?
         if ( primaryKey.containsColumn(this) ) {

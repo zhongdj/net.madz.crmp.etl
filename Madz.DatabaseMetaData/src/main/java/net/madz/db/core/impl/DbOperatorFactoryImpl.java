@@ -6,16 +6,16 @@ import net.madz.db.core.AbsDatabaseGenerator;
 import net.madz.db.core.AbsSchemaMetaDataParser;
 import net.madz.db.core.DbOperatorFactory;
 
-// TODO [Jan 22, 2013][barry] Is there any chance to extend this class with subClass?
-public class DbOperatorFactoryImpl implements DbOperatorFactory {
-    // TODO [Jan 22, 2013][barry] What's the naming convention of const? 
-    private static final DbOperatorFactoryImpl instance = new DbOperatorFactoryImpl();
+// TODO [Jan 22, 2013][barry][Done] Is there any chance to extend this class with subClass?
+public final class DbOperatorFactoryImpl implements DbOperatorFactory {
+    // TODO [Jan 22, 2013][barry][Done] What's the naming convention of const? 
+    private static final DbOperatorFactoryImpl INSTANCE = new DbOperatorFactoryImpl();
 
     private DbOperatorFactoryImpl() {
     }
 
     public static DbOperatorFactoryImpl getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Override
