@@ -3,25 +3,24 @@ package net.madz.db.metadata.comparators;
 import java.util.Comparator;
 
 import net.madz.db.metadata.Table;
+import net.madz.db.utils.ExceptionMessage;
+import net.madz.db.utils.LogUtils;
 
 public class TableComparator implements Comparator<Table> {
 
-	@Override
-	// TODO [Jan 22, 2013][barry] Using readable vocabulary such as one and the other instead t1 and t2
-	public int compare(Table t1, Table t2) {
-		
-		// TODO [Jan 22, 2013][barry] It seems a String comparator, is there any Open Source resource?
-		String t1Name = t1.getName();
-		String t2Name = t2.getName();
-		int length = t1Name.length() < t2Name.length() ? t1Name.length() : t2Name.length();
-		for (int i = 0; i < length; i++) {
-			if (t1Name.charAt(i) - t2Name.charAt(i) == 0) {
-				continue;
-			} else {
-				return t1Name.charAt(i) - t2Name.charAt(i);
-			}
-		}
-		return 0;
-	}
-
+    @Override
+    // TODO [Jan 22, 2013][barry] [Done]Using readable vocabulary such as one
+    // and the other instead t1 and t2
+    public int compare(Table one, Table theOther) {
+        // TODO [Jan 22, 2013][barry][Done] It seems a String comparator, is
+        // there any
+        // Open Source resource?
+        String firstName = one.getName();
+        String secondName = theOther.getName();
+        if ( null == firstName || null == secondName ) {
+            LogUtils.debug(this.getClass(), ExceptionMessage.ArgumentShouldNotBeNull);
+            throw new IllegalStateException(ExceptionMessage.ArgumentShouldNotBeNull);
+        }
+        return firstName.compareTo(secondName);
+    }
 }
