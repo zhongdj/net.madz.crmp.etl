@@ -6,13 +6,14 @@ import net.madz.db.core.meta.immutable.type.IndexType;
 import net.madz.db.core.meta.immutable.type.KeyType;
 import net.madz.db.core.meta.immutable.type.SortDirection;
 
-public interface IndexMetaData <
-SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>,
-TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>,
-CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>,
-FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>,
-IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>
->  {
+public interface IndexMetaData 
+	<
+		SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>,
+		TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>,
+		CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>,
+		FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>,
+		IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>
+	>  {
 
     public interface Entry<I, C> {
 
