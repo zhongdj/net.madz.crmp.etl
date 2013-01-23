@@ -19,8 +19,8 @@ public class JdbcIndexMetaDataImpl implements JdbcIndexMetaData {
     protected final Integer cardinatlity;
     protected final Integer pages;
     protected final List<Entry> entryList;
-    // TODO [Jan 22, 2013][barry] ONLY keyType can be re-assign?
-    protected JdbcKeyType keyType;
+    // TODO [Jan 22, 2013][barry][Done] ONLY keyType can be re-assign?
+    protected final JdbcKeyType keyType;
 
     public class Entry implements JdbcIndexMetaData.Entry {
 

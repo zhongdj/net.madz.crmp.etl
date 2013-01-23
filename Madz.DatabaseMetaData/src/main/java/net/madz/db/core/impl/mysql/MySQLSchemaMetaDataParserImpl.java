@@ -12,8 +12,6 @@ import net.madz.db.metadata.mysql.impl.builder.MySQLSchemaMetaDataBuilder;
 
 public class MySQLSchemaMetaDataParserImpl extends AbsSchemaMetaDataParser {
 
-    private MySQLSchemaMetaDataImpl mysqlMetaData;
-
     // TODO [Jan 22, 2013][barry] Reconsider resource lifecycle of conn with
     // this class
     public MySQLSchemaMetaDataParserImpl(String databaseName, Connection conn) {
@@ -23,7 +21,8 @@ public class MySQLSchemaMetaDataParserImpl extends AbsSchemaMetaDataParser {
     @Override
     public MySQLSchemaMetaDataImpl parseSchemaMetaData() throws SQLException {
         try {
-            // TODO [Jan 22, 2013][barry][Done] Close Resources Connection somewhere
+            // TODO [Jan 22, 2013][barry][Done] Close Resources Connection
+            // somewhere
             DatabaseMetaData metaData = conn.getMetaData();
             MySQLSchemaMetaDataBuilder mySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilder(new DottedPath(databaseName));
             mySQLSchemaMetaDataBuilder.build(conn);

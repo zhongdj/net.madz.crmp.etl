@@ -28,12 +28,14 @@ public class MySQLColumnMetaDataBuilder extends JdbcColumnMetaDataBuilder implem
         System.out.println("Mysql column builder");
         super.build(conn);
         Statement stmt = conn.createStatement();
-        stmt.executeQuery("use information_schema;");
-        ResultSet result = stmt.executeQuery("select * from COLUMNS WHERE TABLE_SCHEMA= '" + super.name.getParent().getParent().getName()
-                + "' and TABLE_NAME='" + super.name.getParent().getName() + "' and  COLUMN_NAME = '" + super.getColumnName() + "'");
+        stmt.executeQuery("USE information_schema;");
+        ResultSet result = stmt.executeQuery("SELECT character_set_name,collation_name, column_type FROM columns WHERE table_schema= '"
+                + super.name.getParent().getParent().getName() + "' AND table_name='" + super.name.getParent().getName() + "' AND column_name = '"
+                + super.getColumnName() + "'");
         while ( result.next() ) {
-            charSet = result.getString("CHARACTER_SET_NAME");
-            collation = result.getString("COLLATION_NAME");
+            charSet = result.getString("character_set_name");
+            collation = result.getString("collation_name");
+            columnType = MySQLColumnTypeEnum.getMySQLColumnType(result.getString("column_type"));
         }
     }
 
@@ -55,7 +57,6 @@ public class MySQLColumnMetaDataBuilder extends JdbcColumnMetaDataBuilder implem
 
     @Override
     public MySQLColumnTypeEnum getColumnType() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.columnType;
     }
 }
