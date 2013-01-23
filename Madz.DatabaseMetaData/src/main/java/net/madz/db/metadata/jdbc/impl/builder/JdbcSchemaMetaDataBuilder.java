@@ -21,9 +21,9 @@ import net.madz.db.metadata.jdbc.type.JdbcTableType;
 
 public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
 
-    // TODO [Jan 22, 2013][barry] Use modifier final with immutable fields
-    protected DottedPath schemaPath;
-    protected Map<String, JdbcTableMetaDataBuilder> tableBuilderList = new TreeMap<String, JdbcTableMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
+    // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable fields
+    protected final DottedPath schemaPath;
+    protected final Map<String, JdbcTableMetaDataBuilder> tableBuilderList = new TreeMap<String, JdbcTableMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
 
     public JdbcSchemaMetaDataBuilder(final DottedPath schemaPath) throws SQLException {
         super();
@@ -32,28 +32,28 @@ public class JdbcSchemaMetaDataBuilder implements JdbcSchemaMetaData {
 
     public void build(final Connection connection) throws SQLException {
         System.out.println("Jdbc schema metadata builder");
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
         final DatabaseMetaData databaseMetaData = connection.getMetaData();
         ResultSet jdbcRs = databaseMetaData.getTables(getCatalogName(), getSchemaName(), "%", new String[] { JdbcTableType.table.getJdbcValue() });
-        JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs = new JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum>(jdbcRs, JdbcTableDbMetaDataEnum.values());
+        final JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs = new JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum>(jdbcRs, JdbcTableDbMetaDataEnum.values());
         try {
             while ( rs.next() ) {
-                JdbcTableMetaDataBuilder tableBuilder = newTableMetaDataBuilder(databaseMetaData, (JdbcSchemaMetaData) this, rs);
+                final JdbcTableMetaDataBuilder tableBuilder = newTableMetaDataBuilder(databaseMetaData, (JdbcSchemaMetaData) this, rs);
                 tableBuilder.build(connection);
                 this.addTable(tableBuilder);
             }
         } finally {
             rs.close();
         }
-        HashMap<DottedPath, JdbcForeignKeyMetaDataBuilder> fkMap = new HashMap<DottedPath, JdbcForeignKeyMetaDataBuilder>();
+        final HashMap<DottedPath, JdbcForeignKeyMetaDataBuilder> fkMap = new HashMap<DottedPath, JdbcForeignKeyMetaDataBuilder>();
         for ( JdbcTableMetaDataBuilder tableBuilder : this.tableBuilderList.values() ) {
             fkMap.clear();
             jdbcRs = databaseMetaData.getImportedKeys(getCatalogName(), getSchemaName(), tableBuilder.getTableName());
-            JdbcMetaDataResultSet<JdbcImportKeyDbMetaDataEnum> rsFk = new JdbcMetaDataResultSet<JdbcImportKeyDbMetaDataEnum>(jdbcRs,
+            final JdbcMetaDataResultSet<JdbcImportKeyDbMetaDataEnum> rsFk = new JdbcMetaDataResultSet<JdbcImportKeyDbMetaDataEnum>(jdbcRs,
                     JdbcImportKeyDbMetaDataEnum.values());
             while ( rsFk.next() ) {
-                DottedPath key = JdbcForeignKeyMetaDataBuilder.getKey(rsFk);
+                final DottedPath key = JdbcForeignKeyMetaDataBuilder.getKey(rsFk);
                 JdbcForeignKeyMetaDataBuilder fkMetaDataBuilder = fkMap.get(key);
                 if ( null == fkMetaDataBuilder ) {
                     fkMetaDataBuilder = newJdbcForeignKeyMetaDataBuilder(this, rsFk);

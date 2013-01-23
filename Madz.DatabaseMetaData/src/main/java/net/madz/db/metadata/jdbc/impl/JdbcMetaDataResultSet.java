@@ -52,10 +52,10 @@ public class JdbcMetaDataResultSet<O> {
     }
 
     public Integer getInt(O metaData) throws SQLException {
-    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
-        Integer colId = columnMap.get(metaData);
+    	// TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable variables
+        final Integer colId = columnMap.get(metaData);
         if ( null != colId ) {
-            Integer value = rs.getInt(colId.intValue());
+            final Integer value = rs.getInt(colId.intValue());
             if ( !rs.wasNull() ) {
                 return value;
             }

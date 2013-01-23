@@ -27,7 +27,9 @@ import net.madz.db.metadata.jdbc.impl.enums.JdbcTableDbMetaDataEnum;
 import net.madz.db.metadata.jdbc.type.JdbcTableType;
 
 public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
-    // TODO [Jan 22, 2013][barry] Use modifier carefully, all of them are open for subclasses?
+
+    // TODO [Jan 22, 2013][barry] Use modifier carefully, all of them are open
+    // for subclasses?
     protected final DatabaseMetaData dbMetaData;
     protected final JdbcSchemaMetaData schema;
     protected final JdbcMetaDataResultSet<JdbcTableDbMetaDataEnum> rs;
@@ -49,20 +51,22 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
     }
 
     public void build(Connection connection) throws SQLException {
-    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
+        // variables
         this.tablePath = schema.getSchemaPath().append(rs.get(JdbcTableDbMetaDataEnum.table_name));
         this.type = JdbcTableType.getTableType(rs.get(JdbcTableDbMetaDataEnum.table_type));
         this.remarks = rs.get(JdbcTableDbMetaDataEnum.remarks);
         this.idCol = rs.get(JdbcTableDbMetaDataEnum.self_referencing_col_name);
         this.idGeneration = rs.get(JdbcTableDbMetaDataEnum.ref_generation);
-        TreeSet<JdbcColumnMetaDataBuilder> orderedColumns = new TreeSet<JdbcColumnMetaDataBuilder>(JdbcColumnMetaData.ORDINAL_COMPARATOR);
-        TreeMap<String, JdbcColumnMetaDataBuilder> columns = new TreeMap<String, JdbcColumnMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
+        final TreeSet<JdbcColumnMetaDataBuilder> orderedColumns = new TreeSet<JdbcColumnMetaDataBuilder>(JdbcColumnMetaData.ORDINAL_COMPARATOR);
+        final TreeMap<String, JdbcColumnMetaDataBuilder> columns = new TreeMap<String, JdbcColumnMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
         this.columnMap = Collections.unmodifiableMap(columns);
         ResultSet jdbcRs = dbMetaData.getColumns(getCatalogName(), getSchemaName(), getTableName(), "%");
-        JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs = new JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum>(jdbcRs, JdbcColumnDbMetaDataEnum.values());
+        final JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum> colRs = new JdbcMetaDataResultSet<JdbcColumnDbMetaDataEnum>(jdbcRs,
+                JdbcColumnDbMetaDataEnum.values());
         try {
             while ( colRs.next() ) {
-                JdbcColumnMetaDataBuilder columnBuilder = newJdbcColumnMetaDataBuilder(this, colRs);
+                final JdbcColumnMetaDataBuilder columnBuilder = newJdbcColumnMetaDataBuilder(this, colRs);
                 columnBuilder.build(connection);
                 orderedColumns.add(columnBuilder);
                 columns.put(columnBuilder.getColumnName(), columnBuilder);
@@ -71,13 +75,13 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
             colRs.close();
         }
         this.orderedColumns = Collections.unmodifiableList(new ArrayList<JdbcColumnMetaDataBuilder>(orderedColumns));
-        TreeMap<String, JdbcIndexMetaDataBuilder> indexMap = new TreeMap<String, JdbcIndexMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
+        final TreeMap<String, JdbcIndexMetaDataBuilder> indexMap = new TreeMap<String, JdbcIndexMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
         this.indexMap = Collections.unmodifiableMap(indexMap);
         jdbcRs = dbMetaData.getIndexInfo(getCatalogName(), getSchemaName(), getTableName(), false, true);
-        JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum> ixRs = new JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum>(jdbcRs, JdbcIndexDbMetaDataEnum.values());
+        final JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum> ixRs = new JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum>(jdbcRs, JdbcIndexDbMetaDataEnum.values());
         try {
             while ( ixRs.next() ) {
-                String name = JdbcIndexMetaDataBuilder.getName(ixRs);
+                final String name = JdbcIndexMetaDataBuilder.getName(ixRs);
                 JdbcIndexMetaDataBuilder ix = indexMap.get(name);
                 if ( null == ix ) {
                     ix = newJdbcIndexMetaDataBuilder(this, ixRs);
@@ -92,11 +96,11 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
         // PK
         //
         jdbcRs = dbMetaData.getPrimaryKeys(getCatalogName(), getSchemaName(), getTableName());
-        JdbcMetaDataResultSet<JdbcPrimaryKeyDbMetaDataEnum> pkRs = new JdbcMetaDataResultSet<JdbcPrimaryKeyDbMetaDataEnum>(jdbcRs,
+        final JdbcMetaDataResultSet<JdbcPrimaryKeyDbMetaDataEnum> pkRs = new JdbcMetaDataResultSet<JdbcPrimaryKeyDbMetaDataEnum>(jdbcRs,
                 JdbcPrimaryKeyDbMetaDataEnum.values());
         try {
             while ( pkRs.next() && null == primaryKey ) {
-                String pkName = pkRs.get(JdbcPrimaryKeyDbMetaDataEnum.PK_NAME);
+                final String pkName = pkRs.get(JdbcPrimaryKeyDbMetaDataEnum.PK_NAME);
                 primaryKey = indexMap.get(pkName);
                 if ( null != primaryKey ) {
                     primaryKey.setPrimaryKey();
@@ -229,5 +233,4 @@ public class JdbcTableMetaDataBuilder implements JdbcTableMetaData {
         return "JdbcTableMetaDataBuilder [tablePath=" + tablePath + ", type=" + type + ", remarks=" + remarks + ", idCol=" + idCol + ", idGeneration="
                 + idGeneration + ", orderedColumns=" + orderedColumns + ", indexMap=" + indexMap + ", primaryKey=" + primaryKey + "]";
     }
-
 }

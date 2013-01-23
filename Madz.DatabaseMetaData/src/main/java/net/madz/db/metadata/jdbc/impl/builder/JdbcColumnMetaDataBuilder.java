@@ -114,9 +114,9 @@ public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
 
     @Override
     public boolean isMemberOfIndex() {
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        Collection<? extends JdbcIndexMetaData> indexSet = this.table.getIndexSet();
+        final Collection<? extends JdbcIndexMetaData> indexSet = this.table.getIndexSet();
         for ( JdbcIndexMetaData index : indexSet ) {
             if ( index.containsColumn(this) ) {
                 return true;
@@ -127,9 +127,9 @@ public class JdbcColumnMetaDataBuilder implements JdbcColumnMetaData {
 
     @Override
     public boolean isMemberOfForeignKey(JdbcForeignKeyMetaData fk) {
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        Collection<? extends JdbcForeignKeyMetaData> foreignKeySet = this.table.getForeignKeySet();
+        final Collection<? extends JdbcForeignKeyMetaData> foreignKeySet = this.table.getForeignKeySet();
         for ( JdbcForeignKeyMetaData fkMetaData : foreignKeySet ) {
             if ( fkMetaData.getEntrySet().contains(this) ) {
                 return true;

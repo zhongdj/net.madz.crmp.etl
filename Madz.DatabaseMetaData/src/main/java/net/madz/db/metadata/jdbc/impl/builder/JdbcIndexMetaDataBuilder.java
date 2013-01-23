@@ -17,8 +17,8 @@ import net.madz.db.metadata.jdbc.type.JdbcKeyType;
 import net.madz.db.metadata.jdbc.type.JdbcSortDirection;
 
 public class JdbcIndexMetaDataBuilder implements JdbcIndexMetaData {
-    // TODO [Jan 22, 2013][barry] Use modifier final with immutable fields, and consider life cycle. 
-    protected JdbcTableMetaDataBuilder table;
+    // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable fields, and consider life cycle. 
+    protected final JdbcTableMetaDataBuilder table;
     protected String indexName;
     protected JdbcIndexType indexType;
     protected JdbcSortDirection ascending;
@@ -26,7 +26,7 @@ public class JdbcIndexMetaDataBuilder implements JdbcIndexMetaData {
     protected Integer pages;
     protected List<Entry> entryList;
     protected JdbcKeyType keyType;
-    private JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum> ixRs;
+    private final JdbcMetaDataResultSet<JdbcIndexDbMetaDataEnum> ixRs;
 
     public class Entry implements JdbcIndexMetaData.Entry {
 

@@ -66,12 +66,12 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
 
     @Override
     public boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException {
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
-        AbsSchemaMetaDataParser targetDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(targetDatabaseName, true);
-        JdbcSchemaMetaData sourceSchemaMetaData = sourceDbParser.parseSchemaMetaData();
-        JdbcSchemaMetaData targetSchemaMetaData = targetDbParser.parseSchemaMetaData();
+        final AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
+        final AbsSchemaMetaDataParser targetDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(targetDatabaseName, true);
+        final JdbcSchemaMetaData sourceSchemaMetaData = sourceDbParser.parseSchemaMetaData();
+        final JdbcSchemaMetaData targetSchemaMetaData = targetDbParser.parseSchemaMetaData();
         return sourceSchemaMetaData.equals(targetSchemaMetaData);
     }
 
@@ -85,14 +85,14 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
         if ( databaseExists(targetDatabaseName, true) ) {
             dropDatabase(targetDatabaseName);
         }
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
-        JdbcSchemaMetaData schemaMetaData = sourceDbParser.parseSchemaMetaData();
+        final AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
+        final JdbcSchemaMetaData schemaMetaData = sourceDbParser.parseSchemaMetaData();
         // Upload schemaMetaData to to writer (local or remote)
         //
-        AbsDatabaseGenerator databaseGenerator = DbOperatorFactoryImpl.getInstance().createDatabaseGenerator(targetDatabaseName);
-        String databaseName = databaseGenerator.generateDatabase(schemaMetaData, targetDatabaseName);
+        final AbsDatabaseGenerator databaseGenerator = DbOperatorFactoryImpl.getInstance().createDatabaseGenerator(targetDatabaseName);
+        final String databaseName = databaseGenerator.generateDatabase(schemaMetaData, targetDatabaseName);
         return databaseName;
     }
 

@@ -98,9 +98,9 @@ public class DbConfigurationManagement {
     }
 
     public static String getSchemaMetaDataPaser(String databaseName, boolean isCopy) {
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        Database database;
+        final Database database;
         if ( isCopy ) {
             database = databaseCopiesCache.get(databaseName);
             if ( null == database ) {
@@ -114,23 +114,23 @@ public class DbConfigurationManagement {
                 throw new IllegalStateException("Please make sure configure source database information for database:" + databaseName);
             }
         }
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        Sku sku = database.getSku();
-        SkuConf skuConf = skuConfs.get(sku);
+        final Sku sku = database.getSku();
+        final SkuConf skuConf = skuConfs.get(sku);
         return skuConf.getParserClass();
     }
 
     public static synchronized boolean removeDatabaseInfo(String databaseName) throws JAXBException {
-        // TODO [Jan 22, 2013][barry] Use modifier final with immutable
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        Database database = databaseCopiesCache.get(databaseName);
+        final Database database = databaseCopiesCache.get(databaseName);
         databaseconfig.getDatabaseCopies().getDatabase().remove(database);
         databaseCopiesCache.remove(database);
         try {
             final JAXBContext context = JAXBContext.newInstance(DatabaseConfig.class);
             Marshaller marshaller = context.createMarshaller();
-            File file = new File("./src/main/resources/" + configurationFile);
+            final File file = new File("./src/main/resources/" + configurationFile);
             marshaller.marshal(databaseconfig, file);
             return true;
         } catch (JAXBException e) {

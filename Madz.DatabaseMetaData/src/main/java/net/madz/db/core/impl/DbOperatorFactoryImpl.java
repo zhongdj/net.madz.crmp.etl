@@ -20,8 +20,8 @@ public final class DbOperatorFactoryImpl implements DbOperatorFactory {
 
     @Override
     public AbsSchemaMetaDataParser createSchemaParser(String databaseName, boolean isCopy) {
-    	// TODO [Jan 22, 2013][barry] Use modifier final to immutable variables
-        String schemaMetaDataPaser = DbConfigurationManagement.getSchemaMetaDataPaser(databaseName, isCopy);
+    	// TODO [Jan 22, 2013][barry][Done] Use modifier final to immutable variables
+        final String schemaMetaDataPaser = DbConfigurationManagement.getSchemaMetaDataPaser(databaseName, isCopy);
         try {
             Class<?> parserClassObj = Class.forName(schemaMetaDataPaser);
             Constructor<?> constructor = parserClassObj.getConstructor(String.class, java.sql.Connection.class);
@@ -33,8 +33,8 @@ public final class DbOperatorFactoryImpl implements DbOperatorFactory {
 
     @Override
     public AbsDatabaseGenerator createDatabaseGenerator(String targetDatabaseName) {
-    	// TODO [Jan 22, 2013][barry] Use modifier final to immutable variables
-        String databaseGeneratorClass = DbConfigurationManagement.getDatabaseGeneratorClass();
+    	// TODO [Jan 22, 2013][barry][Done] Use modifier final to immutable variables
+        final String databaseGeneratorClass = DbConfigurationManagement.getDatabaseGeneratorClass();
         try {
             Class<?> generatorClassObj = Class.forName(databaseGeneratorClass);
             Constructor<?> constructor = generatorClassObj.getConstructor(java.sql.Connection.class);

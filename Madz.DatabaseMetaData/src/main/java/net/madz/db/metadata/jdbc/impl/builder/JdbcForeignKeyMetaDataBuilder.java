@@ -142,13 +142,13 @@ public class JdbcForeignKeyMetaDataBuilder implements JdbcForeignKeyMetaData {
     }
 
     public void addEntry(JdbcMetaDataResultSet<JdbcImportKeyDbMetaDataEnum> rsFk) throws SQLException {
-    	// TODO [Jan 22, 2013][barry] Use modifier final with immutable variables
-        String fkColumnName = rsFk.get(JdbcImportKeyDbMetaDataEnum.FKCOLUMN_NAME);
-        JdbcColumnMetaDataBuilder fkColumn = fkTable.getColumn(fkColumnName);
-        String pkColumnName = rsFk.get(JdbcImportKeyDbMetaDataEnum.PKCOLUMN_NAME);
-        JdbcColumnMetaDataBuilder pkColumn = pkTable.getColumn(pkColumnName);
-        short keySeq = rsFk.getShort(JdbcImportKeyDbMetaDataEnum.KEY_SEQ);
-        Entry entry = new Entry(this, fkColumn, pkColumn, keySeq);
+    	// TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable variables
+        final String fkColumnName = rsFk.get(JdbcImportKeyDbMetaDataEnum.FKCOLUMN_NAME);
+        final JdbcColumnMetaDataBuilder fkColumn = fkTable.getColumn(fkColumnName);
+        final String pkColumnName = rsFk.get(JdbcImportKeyDbMetaDataEnum.PKCOLUMN_NAME);
+        final JdbcColumnMetaDataBuilder pkColumn = pkTable.getColumn(pkColumnName);
+        final short keySeq = rsFk.getShort(JdbcImportKeyDbMetaDataEnum.KEY_SEQ);
+        final Entry entry = new Entry(this, fkColumn, pkColumn, keySeq);
         fkColumn.getFkList().add(entry);
         this.entryList.add(entry);
     }
