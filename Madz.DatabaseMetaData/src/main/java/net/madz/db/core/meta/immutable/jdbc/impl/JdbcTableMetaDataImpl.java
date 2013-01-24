@@ -9,4 +9,8 @@ import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 
 public final class JdbcTableMetaDataImpl extends
         TableMetaDataImpl<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> implements JdbcTableMetaData {
+
+    public JdbcTableMetaDataImpl(JdbcTableMetaData tableMetaData) {
+        super(tableMetaData);
+    }
 }
