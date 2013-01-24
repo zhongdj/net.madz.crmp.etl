@@ -9,5 +9,6 @@ import net.madz.db.core.meta.mutable.ColumnMetaDataBuilder;
 
 public interface MySQLColumnMetaDataBuilder
         extends
+        MySQLColumnMetaData,
         ColumnMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
 }

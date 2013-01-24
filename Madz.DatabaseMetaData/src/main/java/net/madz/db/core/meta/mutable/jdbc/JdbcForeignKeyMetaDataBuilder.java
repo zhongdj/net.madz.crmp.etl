@@ -9,5 +9,6 @@ import net.madz.db.core.meta.mutable.ForeignKeyMetaDataBuilder;
 
 public interface JdbcForeignKeyMetaDataBuilder
         extends
+        JdbcForeignKeyMetaData,
         ForeignKeyMetaDataBuilder<JdbcSchemaMetaDataBuilder, JdbcTableMetaDataBuilder, JdbcColumnMetaDataBuilder, JdbcForeignKeyMetaDataBuilder, JdbcIndexMetaDataBuilder, JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> {
 }

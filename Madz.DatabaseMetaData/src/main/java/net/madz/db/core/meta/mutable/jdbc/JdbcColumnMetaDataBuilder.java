@@ -9,5 +9,6 @@ import net.madz.db.core.meta.mutable.ColumnMetaDataBuilder;
 
 public interface JdbcColumnMetaDataBuilder
         extends
+        JdbcColumnMetaData,
         ColumnMetaDataBuilder<JdbcSchemaMetaDataBuilder, JdbcTableMetaDataBuilder, JdbcColumnMetaDataBuilder, JdbcForeignKeyMetaDataBuilder, JdbcIndexMetaDataBuilder, JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> {
 }
