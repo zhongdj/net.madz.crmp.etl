@@ -3,7 +3,11 @@ package net.madz.db.core;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
+import net.madz.db.core.meta.immutable.ColumnMetaData;
+import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.IndexMetaData;
+import net.madz.db.core.meta.immutable.SchemaMetaData;
+import net.madz.db.core.meta.immutable.TableMetaData;
 
 /**
  * This class is responsible for creating DatabaseMetadata instance of specified
@@ -12,7 +16,7 @@ import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
  * @author tracy
  * 
  */
-public abstract class AbsSchemaMetaDataParser {
+public abstract class AbsSchemaMetaDataParser<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> {
 
     protected final String databaseName;
     // TODO [Jan 22, 2013][barry] Reconsider resource lifecycle of Connection
@@ -30,5 +34,5 @@ public abstract class AbsSchemaMetaDataParser {
      * @param dbName
      * @return
      */
-    public abstract JdbcSchemaMetaData parseSchemaMetaData() throws SQLException;
+    public abstract SMD parseSchemaMetaData() throws SQLException;
 }

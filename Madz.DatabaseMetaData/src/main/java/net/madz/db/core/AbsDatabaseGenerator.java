@@ -2,7 +2,11 @@ package net.madz.db.core;
 
 import java.sql.Connection;
 
-import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
+import net.madz.db.core.meta.immutable.ColumnMetaData;
+import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.IndexMetaData;
+import net.madz.db.core.meta.immutable.SchemaMetaData;
+import net.madz.db.core.meta.immutable.TableMetaData;
 
 /**
  * This class is responsible for cloning the database schema into MySQL
@@ -11,11 +15,11 @@ import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
  * @author tracy
  * 
  */
-public abstract class AbsDatabaseGenerator {
-	
-	// TODO [Jan 22, 2013][barry] Reconsider resource lifecycle 
+public abstract class AbsDatabaseGenerator<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> {
+
+    // TODO [Jan 22, 2013][barry] Reconsider resource lifecycle
     protected final Connection conn;
-    protected JdbcSchemaMetaData schemaMetaData;
+    protected SMD schemaMetaData;
 
     /**
      * @param conn
@@ -28,5 +32,5 @@ public abstract class AbsDatabaseGenerator {
      * @param metadata
      * @return generated database name
      */
-    public abstract String generateDatabase(JdbcSchemaMetaData metadata, String targetDatabaseName);
+    public abstract String generateDatabase(SMD metadata, String targetDatabaseName);
 }

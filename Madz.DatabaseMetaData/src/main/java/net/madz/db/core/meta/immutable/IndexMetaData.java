@@ -6,26 +6,7 @@ import net.madz.db.core.meta.immutable.type.IndexType;
 import net.madz.db.core.meta.immutable.type.KeyType;
 import net.madz.db.core.meta.immutable.type.SortDirection;
 
-public interface IndexMetaData 
-	<
-		SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>,
-		TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>,
-		CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>,
-		FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>,
-		IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>
-	>  {
-
-    public interface Entry<I, C> {
-
-        /** Index this entry belongs to */
-        public I getKey();
-
-        /** Column definition */
-        public C getColumn();
-
-        /** Column position in index */
-        public Integer getPosition();
-    }
+public interface IndexMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> {
 
     /** Name of the index */
     String getIndexName();
@@ -52,7 +33,19 @@ public interface IndexMetaData
     boolean containsColumn(CMD column);
 
     /** All columns in index */
-    Collection<IMD.Entry<IMD, CMD>> getEntrySet();
+    Collection<Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet();
 
     TMD getTable();
+    
+    public interface Entry<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> {
+
+        /** Index this entry belongs to */
+        public IMD getKey();
+
+        /** Column definition */
+        public CMD getColumn();
+
+        /** Column position in index */
+        public Integer getPosition();
+    }
 }

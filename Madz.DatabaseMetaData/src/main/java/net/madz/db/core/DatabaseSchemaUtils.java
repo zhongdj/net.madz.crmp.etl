@@ -45,7 +45,7 @@ public interface DatabaseSchemaUtils {
      *            , optional
      * @return
      * @throws IllegalOperationException
-     * @throws JAXBException 
+     * @throws JAXBException
      */
     String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException, SQLException, JAXBException;
 
@@ -55,7 +55,7 @@ public interface DatabaseSchemaUtils {
      * 
      * @param databaseName
      * @return
-     * @throws JAXBException 
+     * @throws JAXBException
      */
     boolean dropDatabase(String databaseName) throws JAXBException;
 }

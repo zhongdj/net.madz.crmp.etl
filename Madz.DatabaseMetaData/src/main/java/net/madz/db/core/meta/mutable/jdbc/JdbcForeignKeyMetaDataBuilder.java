@@ -8,7 +8,6 @@ import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 import net.madz.db.core.meta.mutable.ForeignKeyMetaDataBuilder;
 
 public interface JdbcForeignKeyMetaDataBuilder
-		extends
-		ForeignKeyMetaDataBuilder<JdbcSchemaMetaDataBuilder, JdbcTableMetaDataBuilder, JdbcColumnMetaDataBuilder, JdbcForeignKeyMetaDataBuilder, JdbcIndexMetaDataBuilder, JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> {
-
+        extends
+        ForeignKeyMetaDataBuilder<JdbcSchemaMetaDataBuilder, JdbcTableMetaDataBuilder, JdbcColumnMetaDataBuilder, JdbcForeignKeyMetaDataBuilder, JdbcIndexMetaDataBuilder, JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> {
 }

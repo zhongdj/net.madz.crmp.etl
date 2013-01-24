@@ -5,15 +5,8 @@ import java.util.Comparator;
 
 import net.madz.db.core.meta.DottedPath;
 
-public interface ColumnMetaData
-	<
-		SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>,
-		TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>,
-		CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>,
-		FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>,
-		IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>
-	>  {
-	
+public interface ColumnMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> {
+
     /** Dotted path of this column (catalog.schema.table.column) */
     DottedPath getColumnPath();
 
@@ -55,11 +48,11 @@ public interface ColumnMetaData
     /**
      * Primary key definition utilizing this column
      * 
-     * @return IndexMetaData.Entry primary key entry utilizing this column,
-     *         or null if this column is not part of the primary key
+     * @return IndexMetaData.Entry primary key entry utilizing this column, or
+     *         null if this column is not part of the primary key
      */
-    IMD.Entry<IMD, CMD> getPrimaryKey();
-
+    IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> getPrimaryKey();
+    
     /** Does the table's primary key include this column? */
     boolean isMemberOfPrimaryKey();
 
@@ -69,13 +62,13 @@ public interface ColumnMetaData
     boolean isMemberOfForeignKey(FMD fk);
 
     /** All unique indices that include this column */
-    Collection<IMD.Entry<IMD, CMD>> getUniqueIndexSet();
+    Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> getUniqueIndexSet();
 
     /** Is this column a member of a unique index? */
     boolean isMemberOfUniqueIndex();
 
     /** All non-unique indices that include this column */
-    Collection<IMD.Entry<IMD, CMD>> getNonUniqueIndexSet();
+    Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> getNonUniqueIndexSet();
 
     /**
      * Sorts ColumnMetaData values by ordinal position
@@ -83,7 +76,7 @@ public interface ColumnMetaData
      * @see #getOrdinalPosition()
      */
     @SuppressWarnings("rawtypes")
-	public final static Comparator<ColumnMetaData> ORDINAL_COMPARATOR = new Comparator<ColumnMetaData>() {
+    public final static Comparator<ColumnMetaData> ORDINAL_COMPARATOR = new Comparator<ColumnMetaData>() {
 
         @Override
         public int compare(ColumnMetaData o1, ColumnMetaData o2) {

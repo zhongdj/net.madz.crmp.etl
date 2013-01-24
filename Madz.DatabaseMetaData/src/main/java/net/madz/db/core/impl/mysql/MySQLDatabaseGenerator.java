@@ -3,7 +3,7 @@ package net.madz.db.core.impl.mysql;
 import java.sql.Connection;
 
 import net.madz.db.core.AbsDatabaseGenerator;
-import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
+import net.madz.db.core.meta.immutable.SchemaMetaData;
 
 public class MySQLDatabaseGenerator extends AbsDatabaseGenerator {
 
@@ -13,7 +13,7 @@ public class MySQLDatabaseGenerator extends AbsDatabaseGenerator {
     }
 
     @Override
-    public String generateDatabase(JdbcSchemaMetaData metadata, String targetDatabaseName) {
+    public String generateDatabase(SchemaMetaData metadata, String targetDatabaseName) {
         return null;
     }
 }

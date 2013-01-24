@@ -8,7 +8,8 @@ import net.madz.db.core.DbOperatorFactory;
 
 // TODO [Jan 22, 2013][barry][Done] Is there any chance to extend this class with subClass?
 public final class DbOperatorFactoryImpl implements DbOperatorFactory {
-    // TODO [Jan 22, 2013][barry][Done] What's the naming convention of const? 
+
+    // TODO [Jan 22, 2013][barry][Done] What's the naming convention of const?
     private static final DbOperatorFactoryImpl INSTANCE = new DbOperatorFactoryImpl();
 
     private DbOperatorFactoryImpl() {
@@ -20,7 +21,8 @@ public final class DbOperatorFactoryImpl implements DbOperatorFactory {
 
     @Override
     public AbsSchemaMetaDataParser createSchemaParser(String databaseName, boolean isCopy) {
-    	// TODO [Jan 22, 2013][barry][Done] Use modifier final to immutable variables
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final to immutable
+        // variables
         final String schemaMetaDataPaser = DbConfigurationManagement.getSchemaMetaDataPaser(databaseName, isCopy);
         try {
             Class<?> parserClassObj = Class.forName(schemaMetaDataPaser);
@@ -33,7 +35,8 @@ public final class DbOperatorFactoryImpl implements DbOperatorFactory {
 
     @Override
     public AbsDatabaseGenerator createDatabaseGenerator(String targetDatabaseName) {
-    	// TODO [Jan 22, 2013][barry][Done] Use modifier final to immutable variables
+        // TODO [Jan 22, 2013][barry][Done] Use modifier final to immutable
+        // variables
         final String databaseGeneratorClass = DbConfigurationManagement.getDatabaseGeneratorClass();
         try {
             Class<?> generatorClassObj = Class.forName(databaseGeneratorClass);

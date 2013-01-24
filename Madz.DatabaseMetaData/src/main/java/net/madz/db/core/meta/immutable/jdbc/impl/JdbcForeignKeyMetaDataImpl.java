@@ -8,7 +8,6 @@ import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 
 public final class JdbcForeignKeyMetaDataImpl extends
-		ForeignKeyMetaDataImpl<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> implements
-		JdbcForeignKeyMetaData {
-	
+        ForeignKeyMetaDataImpl<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> implements
+        JdbcForeignKeyMetaData {
 }

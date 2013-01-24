@@ -5,14 +5,7 @@ import java.util.List;
 import net.madz.db.core.meta.immutable.type.CascadeRule;
 import net.madz.db.core.meta.immutable.type.KeyDeferrability;
 
-public interface ForeignKeyMetaData 
-	<
-		SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>,
-		TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>,
-		CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>,
-		FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>,
-		IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>
-	> {
+public interface ForeignKeyMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> {
 
     /** The name of foreign key */
     String getForeignKeyName();
@@ -58,19 +51,19 @@ public interface ForeignKeyMetaData
      */
     KeyDeferrability getKeyDeferrability();
 
-    List<FMD.Entry<CMD, FMD>> getEntrySet();
+    List<Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet();
 
     /**
      * Number of relationships in the key
      */
     Integer size();
+    
+    public interface Entry<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> {
 
-    public interface Entry<C, F> {
+        CMD getForeignKeyColumn();
 
-    	C getForeignKeyColumn();
+        CMD getPrimaryKeyColumn();
 
-    	C getPrimaryKeyColumn();
-
-    	F getKey();
+        FMD getKey();
     }
 }

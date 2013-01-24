@@ -29,7 +29,7 @@ public class MySQLColumnMetaDataBuilder extends JdbcColumnMetaDataBuilder implem
         super.build(conn);
         Statement stmt = conn.createStatement();
         stmt.executeQuery("USE information_schema;");
-        ResultSet result = stmt.executeQuery("SELECT character_set_name,collation_name, column_type FROM columns WHERE table_schema= '"
+        ResultSet result = stmt.executeQuery("SELECT character_set_name,collation_name, DATA_TYPE, FROM columns WHERE table_schema= '"
                 + super.getName().getParent().getParent().getName() + "' AND table_name='" + super.getName().getParent().getName() + "' AND column_name = '"
                 + super.getColumnName() + "'");
         while ( result.next() ) {

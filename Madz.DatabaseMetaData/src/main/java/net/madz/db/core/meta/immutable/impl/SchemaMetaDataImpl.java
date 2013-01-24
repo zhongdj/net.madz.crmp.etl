@@ -9,33 +9,24 @@ import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
 
-public class SchemaMetaDataImpl
-<
-SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>,
-TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>,
-CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>,
-FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>,
-IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>
-> 
-implements
-		SchemaMetaData<SMD, TMD, CMD, FMD, IMD>{
+public class SchemaMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
+        implements SchemaMetaData<SMD, TMD, CMD, FMD, IMD> {
 
-	@Override
-	public DottedPath getSchemaPath() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public DottedPath getSchemaPath() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public Collection<TMD> getTables() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Collection<TMD> getTables() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public TMD getTable(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+    @Override
+    public TMD getTable(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

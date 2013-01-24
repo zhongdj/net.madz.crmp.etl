@@ -7,8 +7,7 @@ import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 
-public class MySQLForeignKeyMetaDataImpl
-		extends
-		ForeignKeyMetaDataImpl<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
-		implements MySQLForeignKeyMetaData {
+public class MySQLForeignKeyMetaDataImpl extends
+        ForeignKeyMetaDataImpl<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> implements
+        MySQLForeignKeyMetaData {
 }

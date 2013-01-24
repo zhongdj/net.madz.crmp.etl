@@ -11,11 +11,16 @@ import net.madz.db.core.AbsDatabaseGenerator;
 import net.madz.db.core.AbsSchemaMetaDataParser;
 import net.madz.db.core.DatabaseSchemaUtils;
 import net.madz.db.core.IllegalOperationException;
-import net.madz.db.metadata.jdbc.JdbcSchemaMetaData;
+import net.madz.db.core.meta.immutable.ColumnMetaData;
+import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.IndexMetaData;
+import net.madz.db.core.meta.immutable.SchemaMetaData;
+import net.madz.db.core.meta.immutable.TableMetaData;
 import net.madz.db.utils.LogUtils;
 import net.madz.db.utils.MessageConsts;
 
-public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
+public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
+        implements DatabaseSchemaUtils {
 
     @Override
     public boolean databaseExists(String databaseName, boolean isCopy) {
@@ -65,13 +70,16 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException {
         // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        final AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
-        final AbsSchemaMetaDataParser targetDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(targetDatabaseName, true);
-        final JdbcSchemaMetaData sourceSchemaMetaData = sourceDbParser.parseSchemaMetaData();
-        final JdbcSchemaMetaData targetSchemaMetaData = targetDbParser.parseSchemaMetaData();
+        final AbsSchemaMetaDataParser<SMD, TMD, CMD, FMD, IMD> sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName,
+                false);
+        final AbsSchemaMetaDataParser<SMD, TMD, CMD, FMD, IMD> targetDbParser = DbOperatorFactoryImpl.getInstance()
+                .createSchemaParser(targetDatabaseName, true);
+        final SMD sourceSchemaMetaData = sourceDbParser.parseSchemaMetaData();
+        final SMD targetSchemaMetaData = targetDbParser.parseSchemaMetaData();
         return sourceSchemaMetaData.equals(targetSchemaMetaData);
     }
 
@@ -87,11 +95,12 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
         }
         // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        final AbsSchemaMetaDataParser sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName, false);
-        final JdbcSchemaMetaData schemaMetaData = sourceDbParser.parseSchemaMetaData();
+        final AbsSchemaMetaDataParser<SMD, TMD, CMD, FMD, IMD> sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName,
+                false);
+        final SMD schemaMetaData = sourceDbParser.parseSchemaMetaData();
         // Upload schemaMetaData to to writer (local or remote)
         //
-        final AbsDatabaseGenerator databaseGenerator = DbOperatorFactoryImpl.getInstance().createDatabaseGenerator(targetDatabaseName);
+        final AbsDatabaseGenerator<SMD, TMD, CMD, FMD, IMD> databaseGenerator = DbOperatorFactoryImpl.getInstance().createDatabaseGenerator(targetDatabaseName);
         final String databaseName = databaseGenerator.generateDatabase(schemaMetaData, targetDatabaseName);
         return databaseName;
     }
@@ -117,6 +126,7 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
         return false;
     }
 
+    @SuppressWarnings("rawtypes")
     public static void main(String[] args) {
         DatabaseSchemaUtilsImpl impl = new DatabaseSchemaUtilsImpl();
         // boolean result = impl.compareDatabaseSchema("crmp", "crmp2");

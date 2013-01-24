@@ -9,23 +9,24 @@ import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod;
 
 public class MySQLIndexMetaDataImpl extends
-		IndexMetaDataImpl<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> implements
-		MySQLIndexMetaData {
+        IndexMetaDataImpl<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> implements
+        MySQLIndexMetaData {
 
-	@Override
-	public int getSubPart() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    @Override
+    public int getSubPart() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	@Override
-	public boolean isNull() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean isNull() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public MySQLIndexMethod getIndexMethod() {
-		// TODO Auto-generated method stub
-		return null;
-	}}
+    @Override
+    public MySQLIndexMethod getIndexMethod() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+}
