@@ -52,7 +52,7 @@ public interface ColumnMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
      *         null if this column is not part of the primary key
      */
     IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> getPrimaryKey();
-    
+
     /** Does the table's primary key include this column? */
     boolean isMemberOfPrimaryKey();
 

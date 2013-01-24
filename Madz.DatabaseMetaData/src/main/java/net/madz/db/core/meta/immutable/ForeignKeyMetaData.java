@@ -57,7 +57,7 @@ public interface ForeignKeyMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
      * Number of relationships in the key
      */
     Integer size();
-    
+
     public interface Entry<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> {
 
         CMD getForeignKeyColumn();

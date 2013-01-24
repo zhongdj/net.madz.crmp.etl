@@ -24,7 +24,7 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
     protected final String fkName;
 
     public ForeignKeyMetaDataImpl(FMD metaData) throws SQLException {
-        this.entryList =  metaData.getEntrySet();
+        this.entryList = metaData.getEntrySet();
         this.updateRule = metaData.getUpdateCascadeRule();
         this.deleteRule = metaData.getDeleteCascadeRule();
         this.deferrability = metaData.getKeyDeferrability();
@@ -91,13 +91,13 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
     }
 
     @SuppressWarnings("unchecked")
-	public void addEntry(MetaDataResultSet<ImportKeyDbMetaDataEnum> rsFk) throws SQLException {
+    public void addEntry(MetaDataResultSet<ImportKeyDbMetaDataEnum> rsFk) throws SQLException {
         final String fkColumnName = rsFk.get(ImportKeyDbMetaDataEnum.FKCOLUMN_NAME);
         final CMD fkColumn = fkTable.getColumn(fkColumnName);
         final String pkColumnName = rsFk.get(ImportKeyDbMetaDataEnum.PKCOLUMN_NAME);
         final CMD pkColumn = pkTable.getColumn(pkColumnName);
         final short keySeq = rsFk.getShort(ImportKeyDbMetaDataEnum.KEY_SEQ);
-        final Entry entry = new Entry((FMD)this, fkColumn, pkColumn, keySeq);
+        final Entry entry = new Entry((FMD) this, fkColumn, pkColumn, keySeq);
         this.entryList.add(entry);
     }
 

@@ -36,7 +36,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         }
 
         @SuppressWarnings("unchecked")
-		public IMD getKey() {
+        public IMD getKey() {
             return (IMD) IndexMetaDataImpl.this;
         }
 
@@ -67,8 +67,6 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
             return indexName + "." + position;
         }
     }
-
-    
 
     @Override
     public boolean equals(Object obj) {
@@ -126,7 +124,6 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     public Integer getPageCount() {
         return this.pages;
     }
-
 
     @Override
     public boolean containsColumn(CMD column) {
