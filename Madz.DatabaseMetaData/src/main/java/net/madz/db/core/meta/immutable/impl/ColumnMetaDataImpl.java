@@ -27,9 +27,7 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
     protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> nonUniqueIndexList;
     protected final Short ordinalPosition;
 
-    // private ColumnMetaData jdbcColumnMetaData;
     public ColumnMetaDataImpl(CMD metaData) {
-        // this.jdbcColumnMetaData = metaData;
         this.name = metaData.getColumnPath();
         this.table = metaData.getTableMetaData();
         this.sqlType = metaData.getSqlType();

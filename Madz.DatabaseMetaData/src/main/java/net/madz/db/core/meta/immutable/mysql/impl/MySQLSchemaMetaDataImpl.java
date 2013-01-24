@@ -1,6 +1,7 @@
 package net.madz.db.core.meta.immutable.mysql.impl;
 
-import net.madz.db.core.meta.DottedPath;
+import java.util.Collection;
+
 import net.madz.db.core.meta.immutable.impl.SchemaMetaDataImpl;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -12,21 +13,33 @@ public final class MySQLSchemaMetaDataImpl extends
         SchemaMetaDataImpl<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> implements
         MySQLSchemaMetaData {
 
-    @Override
-    public DottedPath getSchemaPath() {
-        // TODO Auto-generated method stub
-        return null;
+    // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable fields
+    private final String charSet;
+    private final String collation;
+
+    public MySQLSchemaMetaDataImpl(MySQLSchemaMetaData metaData) {
+        super(metaData);
+        this.charSet = metaData.getCharSet();
+        this.collation = metaData.getCollation();
     }
 
     @Override
     public String getCharSet() {
-        // TODO Auto-generated method stub
-        return null;
+        return charSet;
     }
 
     @Override
     public String getCollation() {
-        // TODO Auto-generated method stub
-        return null;
+        return collation;
+    }
+
+    @Override
+    public Collection<MySQLTableMetaData> getTables() {
+        return this.getTables();
+    }
+
+    @Override
+    public MySQLTableMetaData getTable(String name) {
+        return this.getTable(name);
     }
 }

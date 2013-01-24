@@ -8,25 +8,33 @@ import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod;
 
-public class MySQLIndexMetaDataImpl extends
+public final class MySQLIndexMetaDataImpl extends
         IndexMetaDataImpl<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> implements
         MySQLIndexMetaData {
 
+    private final int subPart;
+    private final boolean isNull;
+    private final MySQLIndexMethod indexMethod;
+
+    public MySQLIndexMetaDataImpl(MySQLIndexMetaData metaData) {
+        super(metaData);
+        this.subPart = metaData.getSubPart();
+        this.isNull = metaData.isNull();
+        this.indexMethod = metaData.getIndexMethod();
+    }
+
     @Override
     public int getSubPart() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.subPart;
     }
 
     @Override
     public boolean isNull() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.isNull;
     }
 
     @Override
     public MySQLIndexMethod getIndexMethod() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.indexMethod;
     }
 }

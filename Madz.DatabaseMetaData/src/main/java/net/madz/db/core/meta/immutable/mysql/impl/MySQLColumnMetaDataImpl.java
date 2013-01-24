@@ -8,29 +8,33 @@ import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLColumnTypeEnum;
 
-public class MySQLColumnMetaDataImpl extends
+public final class MySQLColumnMetaDataImpl extends
         ColumnMetaDataImpl<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> implements
         MySQLColumnMetaData {
 
+    private String characterSet;
+    private String collation;
+    private MySQLColumnTypeEnum columnType;
+
     public MySQLColumnMetaDataImpl(MySQLColumnMetaData metaData) {
         super(metaData);
+        this.characterSet = metaData.getCharacterSet();
+        this.collation = metaData.getCollation();
+        this.columnType = metaData.getColumnType();
     }
 
     @Override
     public String getCharacterSet() {
-        // TODO Auto-generated method stub
-        return null;
+        return characterSet;
     }
 
     @Override
     public String getCollation() {
-        // TODO Auto-generated method stub
-        return null;
+        return collation;
     }
 
     @Override
     public MySQLColumnTypeEnum getColumnType() {
-        // TODO Auto-generated method stub
-        return null;
+        return columnType;
     }
 }

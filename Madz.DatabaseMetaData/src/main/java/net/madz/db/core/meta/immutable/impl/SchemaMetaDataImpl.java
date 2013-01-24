@@ -1,6 +1,8 @@
 package net.madz.db.core.meta.immutable.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import net.madz.db.core.meta.DottedPath;
@@ -14,11 +16,15 @@ public class SchemaMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
         implements SchemaMetaData<SMD, TMD, CMD, FMD, IMD> {
 
     protected final DottedPath name;
-    protected final Map<String, TMD> tables;
+    protected final Collection<TMD> tables = new ArrayList<TMD>();
+    protected final Map<String, TMD> tablesIndex = new HashMap<String, TMD>();
 
-    public SchemaMetaDataImpl(DottedPath schemaPath, Map<String, TMD> tables) {
-        this.name = schemaPath;
-        this.tables = tables;
+    public SchemaMetaDataImpl(SMD metaData) {
+        this.name = metaData.getSchemaPath();
+        this.tables.addAll(metaData.getTables());
+        for ( TMD t : metaData.getTables() ) {
+            tablesIndex.put(t.getTableName(), t);
+        }
     }
 
     @Override
@@ -28,12 +34,12 @@ public class SchemaMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
 
     @Override
     public Collection<TMD> getTables() {
-        return this.tables.values();
+        return this.tables;
     }
 
     @Override
     public TMD getTable(String name) {
-        return this.tables.get(name);
+        return this.tablesIndex.get(name);
     }
 
     @Override
