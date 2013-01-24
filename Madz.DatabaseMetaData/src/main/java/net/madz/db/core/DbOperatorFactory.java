@@ -18,5 +18,10 @@ public interface DbOperatorFactory {
     AbsSchemaMetaDataParser createSchemaParser(String databaseName, boolean isCopy);
 
     // TODO [Jan 22, 2013][barry] More comments
+    /***
+     * 
+     * @param databaseName
+     * @return
+     */
     AbsDatabaseGenerator createDatabaseGenerator(String databaseName);
 }

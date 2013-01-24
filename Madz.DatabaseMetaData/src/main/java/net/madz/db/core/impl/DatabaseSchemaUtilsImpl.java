@@ -104,10 +104,10 @@ public class DatabaseSchemaUtilsImpl implements DatabaseSchemaUtils {
             try {
                 stmt = conn.createStatement();
                 stmt.execute("drop database " + databaseName + ";");
-            } catch (SQLException e) {
-                // TODO [Jan 22, 2013][barry] use log instead at least and
+            } catch (SQLException ignored) {
+                // TODO [Jan 22, 2013][barry][Done] use log instead at least and
                 // declare ignore
-                e.printStackTrace();
+                LogUtils.debug(this.getClass(), ignored.getMessage());
                 return false;
             }
             DbConfigurationManagement.removeDatabaseInfo(databaseName);
