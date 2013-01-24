@@ -1,17 +1,21 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
+
 import scala.collection.immutable.List
 import scala.slick.session.Database
+
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
+
 import net.madz.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl
-import net.madz.db.metadata.DottedPath
-import net.madz.db.metadata.mysql.MySQLTableMetaData
-import net.madz.db.metadata.mysql.MySQLTableTypeEnum
-import net.madz.db.metadata.mysql.MySQLEngineEnum
-import net.madz.db.metadata.mysql.MySQLColumnMetaData
+import net.madz.db.core.meta.DottedPath
+import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData
+import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
+import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData
+import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum
+import net.madz.db.core.meta.immutable.mysql.enums.MySQLTableTypeEnum
 
 class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -97,7 +101,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
           :: create_table_with_all_data_types_DDL_5
           :: Nil)
 
-      val result = parser parseSchemaMetaData
+      val result : MySQLSchemaMetaData = parser parseSchemaMetaData
 
       val table1 = result.getTable("table_with_all_data_types_p1")
       val table2 = result.getTable("table_with_all_data_types_p2")
@@ -109,6 +113,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(10)(table3.getColumns size)
       Assertions.expectResult(1)(table4.getColumns size)
       Assertions.expectResult(1)(table5.getColumns size)
+      
       verifyColumns(columns_in_table1, table1.getColumns)
       verifyColumns(columns_in_table2, table1.getColumns)
       verifyColumns(columns_in_table3, table1.getColumns)
@@ -296,7 +301,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
   val columns_in_table5 =
     ColumnMetaData("table_with_all_data_types_p5", "VARCHAR_BINARY_COLUMN", 1, null, true, "varchar", 65532, null, null, "latin7", "latin7_general_ci", "varchar(65532)") :: Nil
 
-  def verifyColumns(expectedColumnList: List[ColumnMetaData], actualColumnList: List[MySQLColumnMetaData]) {
+  def verifyColumns(expectedColumnList: List[ColumnMetaData], actualColumnList: java.util.List[MySQLColumnMetaData]) {
 
   }
 }
