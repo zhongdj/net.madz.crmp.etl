@@ -92,7 +92,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(MySQLEngineEnum.InnoDB)(table.getEngine)
       Assertions.expectResult("utf8" toLowerCase)(table getCharacterSet)
       Assertions.expectResult("utf8_unicode_ci" toLowerCase)(table getCollation)
-      Assertions.expectResult(MySQLTableTypeEnum.base_table)(table getTableType)
+      Assertions.expectResult(MySQLTableTypeEnum.base_table)(table getType)
     }
 
   }

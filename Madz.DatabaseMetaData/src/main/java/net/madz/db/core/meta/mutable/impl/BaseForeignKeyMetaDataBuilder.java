@@ -1,4 +1,4 @@
-package net.madz.db.core.meta.mutable.base.impl;
+package net.madz.db.core.meta.mutable.impl;
 
 import java.util.List;
 
@@ -15,10 +15,8 @@ import net.madz.db.core.meta.mutable.IndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.SchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
 
-
-public class ForeignKeyMetaDataBuilderImpl<SMDB extends SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TMDB extends TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, CMDB extends ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, FMDB extends ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IMDB extends IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
-implements ForeignKeyMetaDataBuilder <SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>
-{
+public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TMDB extends TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, CMDB extends ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, FMDB extends ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IMDB extends IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
+        implements ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD> {
 
     @Override
     public String getForeignKeyName() {
@@ -69,7 +67,7 @@ implements ForeignKeyMetaDataBuilder <SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CM
     }
 
     @Override
-    public List getEntrySet() {
+    public List<Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -81,8 +79,7 @@ implements ForeignKeyMetaDataBuilder <SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CM
     }
 
     @Override
-    public void addEntry(Entry entry) {
+    public void addEntry(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
         // TODO Auto-generated method stub
-        
     }
 }

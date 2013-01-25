@@ -8,9 +8,24 @@ import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.mutable.SchemaMetaDataBuilder;
 
 public interface MySQLSchemaMetaDataBuilder
-        extends
-        MySQLSchemaMetaData
+        extends MySQLSchemaMetaData,
+        SchemaMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
+        
+        /*
+        MySQLSchemaMetaData<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder>
         ,
-        SchemaMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> 
-{
+        SchemaMetaDataBuilder <MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, 
+        MySQLSchemaMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>, 
+        MySQLTableMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>, 
+        MySQLColumnMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>, 
+        MySQLForeignKeyMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>, 
+        MySQLIndexMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> {
+    */
 }
+
+/*
+The interface SchemaMetaData cannot be implemented more than once with different arguments: 
+ SchemaMetaData<MySQLSchemaMetaDataBuilder,MySQLTableMetaDataBuilder,MySQLColumnMetaDataBuilder,MySQLForeignKeyMetaDataBuilder,MySQLIndexMetaDataBuilder> 
+ SchemaMetaData<MySQLSchemaMetaData,MySQLTableMetaData,MySQLColumnMetaData,MySQLForeignKeyMetaData,MySQLIndexMetaData>
+
+*/

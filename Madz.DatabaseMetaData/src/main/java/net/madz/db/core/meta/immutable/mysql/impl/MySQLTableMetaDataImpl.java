@@ -7,28 +7,20 @@ import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum;
-import net.madz.db.core.meta.immutable.mysql.enums.MySQLTableTypeEnum;
 
 public final class MySQLTableMetaDataImpl extends
         TableMetaDataImpl<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> implements
         MySQLTableMetaData {
 
-    private final MySQLTableTypeEnum tableType;
     private final MySQLEngineEnum engine;
     private final String characterSet;
     private final String collation;
 
     public MySQLTableMetaDataImpl(MySQLTableMetaData metaData) {
         super(metaData);
-        this.tableType = metaData.getTableType();
         this.engine = metaData.getEngine();
         this.characterSet = metaData.getCharacterSet();
         this.collation = metaData.getCollation();
-    }
-
-    @Override
-    public MySQLTableTypeEnum getTableType() {
-        return this.tableType;
     }
 
     @Override

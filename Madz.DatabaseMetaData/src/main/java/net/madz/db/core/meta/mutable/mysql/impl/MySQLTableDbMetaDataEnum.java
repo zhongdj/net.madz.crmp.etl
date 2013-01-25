@@ -21,5 +21,6 @@ public enum MySQLTableDbMetaDataEnum {
     TABLE_COLLATION,
     // CHECKSUM,
     // CREATE_OPTIONS,
+    CHARACTER_SET_NAME,
     TABLE_COMMENT;
 }

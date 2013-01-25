@@ -7,6 +7,13 @@ import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
 
 public interface ColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TMDB extends TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, CMDB extends ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, FMDB extends ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IMDB extends IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
-        extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD> {
+        extends
+        // ColumnMetaData<SMDB, TMDB, CMDB, FMDB, IMDB> ,
+        MetaDataBuilder<CMD>, SQLBasedMetaDataBuilder<CMDB> {
 
+    String getColumnName();
+
+    CMDB appendNonUniqueIndexEntry(IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
+
+    CMDB appendUniqueIndexEntry(IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
 }

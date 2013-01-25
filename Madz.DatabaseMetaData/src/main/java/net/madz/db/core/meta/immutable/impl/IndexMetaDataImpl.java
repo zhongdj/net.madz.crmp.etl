@@ -1,7 +1,6 @@
 package net.madz.db.core.meta.immutable.impl;
 
 import java.util.Collection;
-import java.util.List;
 
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;

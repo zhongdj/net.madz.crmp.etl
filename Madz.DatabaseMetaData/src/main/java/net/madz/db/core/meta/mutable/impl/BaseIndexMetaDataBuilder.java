@@ -1,4 +1,4 @@
-package net.madz.db.core.meta.mutable.base.impl;
+package net.madz.db.core.meta.mutable.impl;
 
 import java.util.Collection;
 
@@ -16,9 +16,9 @@ import net.madz.db.core.meta.mutable.IndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.SchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
 
-public class IndexMetaDataBuilderImpl<SMDB extends SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TMDB extends TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, CMDB extends ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, FMDB extends ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IMDB extends IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
+public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TMDB extends TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, CMDB extends ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, FMDB extends ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IMDB extends IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
 implements IndexMetaDataBuilder 
-<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>
+<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IndexMetaData<SMD, TMD, CMD, FMD, IMD>
 {
 
     @Override
@@ -64,13 +64,13 @@ implements IndexMetaDataBuilder
     }
 
     @Override
-    public boolean containsColumn(ColumnMetaData column) {
+    public boolean containsColumn(CMD column) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public Collection getEntrySet() {
+    public Collection<Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -82,7 +82,7 @@ implements IndexMetaDataBuilder
     }
 
     @Override
-    public void addEntry(Entry entry) {
+    public void addEntry(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
         // TODO Auto-generated method stub
         
     }
