@@ -41,7 +41,7 @@ public class MySQLSchemaMetaDataBuilderImpl
             charSet = rs.getString("DEFAULT_CHARACTER_SET_NAME");
             collation = rs.getString("DEFAULT_COLLATION_NAME");
         }
-        rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN character_sets ON default_collate_name = table_collation WHERE schema_name = '" + schemaPath.getName() + "'");
+        rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN character_sets ON default_collate_name = table_collation WHERE table_schema = '" + schemaPath.getName() + "'");
         MetaDataResultSet<MySQLTableDbMetaDataEnum> rsMd = new MetaDataResultSet<MySQLTableDbMetaDataEnum>(rs, MySQLTableDbMetaDataEnum.values());
         while ( rsMd.next() ) {
             final MySQLTableMetaDataBuilder table = new MySQLTableMetaDataBuilderImpl(this).build(rsMd,conn);
