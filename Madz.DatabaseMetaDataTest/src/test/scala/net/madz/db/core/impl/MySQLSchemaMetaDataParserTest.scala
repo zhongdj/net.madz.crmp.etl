@@ -133,12 +133,14 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       exec(
         """
            USE `madz_database_parser_test`;
-           CREATE TABLE `table_with_nullable_option` (
+        """
+          :: """
+          CREATE TABLE `table_with_nullable_option` (
              `nullable_column_name` VARCHAR(32) NULL,
              `not_nullable_column_name` VARCHAR(32) NOT NULL
            ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
           """
-          )
+          :: Nil)
 
       val result = parser parseSchemaMetaData
 
@@ -151,12 +153,13 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       exec(
         """
            USE `madz_database_parser_test`;
+          """ 
+          :: """
            CREATE TABLE `table_with_default_option` (
-             `defaulted_column_name` VARCHAR(32) DEFAULT `Hello`,
+             `defaulted_column_name` VARCHAR(32) DEFAULT 'Hello',
              `not_defaulted_column_name` VARCHAR(32) NOT NULL
            ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
-          """
-          )
+          """ :: Nil)
 
       val result = parser parseSchemaMetaData
 
@@ -168,12 +171,12 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       exec(
         """
            USE `madz_database_parser_test`;
+          """ :: """
            CREATE TABLE `table_with_column_comment` (
-             `column_comment_column` VARCHAR(32) COMMENT `should have a comment`,
+             `column_comment_column` VARCHAR(32) COMMENT 'should have a comment',
              `no_column_comment_column` VARCHAR(32) 
            ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
-          """
-          )
+          """ :: Nil)
 
       val result = parser parseSchemaMetaData
 
@@ -189,6 +192,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       exec(
         """
            USE `madz_database_parser_test`;
+          """ :: """
            CREATE TABLE `table_with_single_column_pk` (
              `single_column_pk` VARCHAR(32) CHARACTER SET `latin7` COLLATE `latin7_general_ci` PRIMARY KEY,
              `common_column` VARCHAR(32) 
@@ -235,14 +239,14 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       exec(
         """
            USE `madz_database_parser_test`;
+          """ :: """
            CREATE TABLE `table_with_auto_incremental_index` (
              `single_column_pk` INTEGER(32) AUTO_INCREMENT PRIMARY KEY,
              `common_column` VARCHAR(32) 
            ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
-          """
-          )
+          """ :: Nil)
 
-        /*
+      /*
           mysql> select * from statistics where table_schema = 'madz_database_parser_test';
           +---------------+---------------------------+-----------------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
           | TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME                        | NON_UNIQUE | INDEX_SCHEMA              | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME      | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
@@ -284,7 +288,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(0)(pk getCardinality)
       Assertions.expectResult(IndexType.clustered)(pk getIndexType)
       Assertions.expectResult(KeyType.primaryKey)(pk getKeyType)
-      
+
       val column = result.getTable("table_with_auto_incremental_index").getColumn("single_column_pk")
       Assertions.expectResult(true)(column isAutoIncremented)
       Assertions.expectResult(true)(column isMemberOfPrimaryKey)
@@ -292,7 +296,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(true)(column isMemberOfUniqueIndex)
       Assertions.expectResult(false)(column isNullable)
       Assertions.expectResult(null)(column getCollation)
-      
+
     }
 
     it("should parse composite PK with multiple columns") {

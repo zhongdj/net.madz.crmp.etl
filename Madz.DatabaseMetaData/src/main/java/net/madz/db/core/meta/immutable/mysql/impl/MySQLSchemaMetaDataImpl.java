@@ -1,7 +1,5 @@
 package net.madz.db.core.meta.immutable.mysql.impl;
 
-import java.util.Collection;
-
 import net.madz.db.core.meta.immutable.impl.SchemaMetaDataImpl;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -33,13 +31,4 @@ public final class MySQLSchemaMetaDataImpl extends
         return collation;
     }
 
-    @Override
-    public Collection<MySQLTableMetaData> getTables() {
-        return this.getTables();
-    }
-
-    @Override
-    public MySQLTableMetaData getTable(String name) {
-        return this.getTable(name);
-    }
 }
