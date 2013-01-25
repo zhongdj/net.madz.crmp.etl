@@ -138,7 +138,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
              `not_nullable_column_name` VARCHAR(32) NOT NULL
            ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
           """
-          :: Nil)
+          )
 
       val result = parser parseSchemaMetaData
 
@@ -156,7 +156,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
              `not_defaulted_column_name` VARCHAR(32) NOT NULL
            ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
           """
-          :: Nil)
+          )
 
       val result = parser parseSchemaMetaData
 
@@ -173,7 +173,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
              `no_column_comment_column` VARCHAR(32) 
            ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
           """
-          :: Nil)
+          )
 
       val result = parser parseSchemaMetaData
 
@@ -190,7 +190,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
         """
            USE `madz_database_parser_test`;
            CREATE TABLE `table_with_single_column_pk` (
-             `single_column_pk` VARCHAR(32) CHARACTER SET `latin7` COLLATE `latin7_general_cs` PRIMARY KEY,
+             `single_column_pk` VARCHAR(32) CHARACTER SET `latin7` COLLATE `latin7_general_ci` PRIMARY KEY,
              `common_column` VARCHAR(32) 
            ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
           """
@@ -235,23 +235,23 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       exec(
         """
            USE `madz_database_parser_test`;
-           CREATE TABLE `table_with_single_column_pk` (
+           CREATE TABLE `table_with_auto_incremental_index` (
              `single_column_pk` INTEGER(32) AUTO_INCREMENT PRIMARY KEY,
              `common_column` VARCHAR(32) 
            ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
           """
-          :: Nil)
+          )
 
         /*
           mysql> select * from statistics where table_schema = 'madz_database_parser_test';
-          +---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
-          | TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME                  | NON_UNIQUE | INDEX_SCHEMA              | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME      | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
-          +---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
-          | def           | madz_database_parser_test | table_with_single_column_pk |          0 | madz_database_parser_test | PRIMARY    |            1 | single_column_pk | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
-          +---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+          +---------------+---------------------------+-----------------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+          | TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME                        | NON_UNIQUE | INDEX_SCHEMA              | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME      | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+          +---------------+---------------------------+-----------------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+          | def           | madz_database_parser_test | table_with_auto_incremental_index |          0 | madz_database_parser_test | PRIMARY    |            1 | single_column_pk | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+          +---------------+---------------------------+-----------------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
           1 row in set (0.00 sec)
           
-          mysql> select * from columns where table_schema = 'madz_database_parser_test' and table_name = 'table_with_single_column_pk'\G
+          mysql> select * from columns where table_schema = 'madz_database_parser_test' and table_name = 'table_with_auto_incremental_index'\G
 		*************************** 1. row ***************************
 		           TABLE_CATALOG: def
 		            TABLE_SCHEMA: madz_database_parser_test
@@ -274,8 +274,25 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
 		          COLUMN_COMMENT: 
         */
       val result = parser parseSchemaMetaData
-      val pk = result.getTable("table_with_single_column_pk").getPrimaryKey()
-      val column = result.getTable("table_with_single_column_pk").getColumn("single_column_pk")
+      val pk = result.getTable("table_with_auto_incremental_index").getPrimaryKey()
+      Assertions.expectResult("table_with_auto_incremental_index")(pk.getTable.getTableName)
+      Assertions.expectResult("PRIMARY")(pk getIndexName)
+      Assertions.expectResult(SortDirection.ascending)(pk getSortDirection)
+      Assertions.expectResult(true)(pk isUnique)
+      Assertions.expectResult(null)(pk isNull)
+      Assertions.expectResult(null)(pk getSubPart)
+      Assertions.expectResult(0)(pk getCardinality)
+      Assertions.expectResult(IndexType.clustered)(pk getIndexType)
+      Assertions.expectResult(KeyType.primaryKey)(pk getKeyType)
+      
+      val column = result.getTable("table_with_auto_incremental_index").getColumn("single_column_pk")
+      Assertions.expectResult(true)(column isAutoIncremented)
+      Assertions.expectResult(true)(column isMemberOfPrimaryKey)
+      Assertions.expectResult(true)(column isMemberOfIndex)
+      Assertions.expectResult(true)(column isMemberOfUniqueIndex)
+      Assertions.expectResult(false)(column isNullable)
+      Assertions.expectResult(null)(column getCollation)
+      
     }
 
     it("should parse composite PK with multiple columns") {
