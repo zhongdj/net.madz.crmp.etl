@@ -1,5 +1,7 @@
 package net.madz.db.core.meta.immutable.type;
 
+import net.madz.db.core.meta.immutable.mysql.enums.MySQLTableTypeEnum;
+
 public enum TableType {
     table,
     view,
@@ -24,5 +26,21 @@ public enum TableType {
             return null;
         }
         return valueOf(jdbcValue.replaceAll(" ", "_").toLowerCase());
+    }
+
+    public final static TableType convertTableType(MySQLTableTypeEnum jdbcValue) {
+        TableType result = null;
+        switch (jdbcValue) {
+        case base_table:
+            result = TableType.table;
+            break;
+        case system_table:
+            result = TableType.table;
+            break;
+        case view:
+            result = TableType.view;
+            break;
+        }
+        return result;
     }
 }
