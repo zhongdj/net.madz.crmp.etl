@@ -196,17 +196,17 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
           """
           :: Nil)
 
-          val console_out_put = 
-"""
-mysql> select * from statistics where table_schema = 'madz_database_parser_test'    -> ;
-+---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
-| TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME                  | NON_UNIQUE | INDEX_SCHEMA              | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME      | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
-+---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
-| def           | madz_database_parser_test | table_with_single_column_pk |          0 | madz_database_parser_test | PRIMARY    |            1 | single_column_pk | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
-+---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
-1 row in set (0.01 sec)
-"""
-          
+      /* 
+	  """
+	  mysql> select * from statistics where table_schema = 'madz_database_parser_test';
+	  +---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	  | TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME                  | NON_UNIQUE | INDEX_SCHEMA              | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME      | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+	  +---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	  | def           | madz_database_parser_test | table_with_single_column_pk |          0 | madz_database_parser_test | PRIMARY    |            1 | single_column_pk | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+	  +---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	  1 row in set (0.01 sec)
+	  """
+      */
       val result = parser parseSchemaMetaData
       val pk = result.getTable("table_with_single_column_pk").getPrimaryKey()
       val column = result.getTable("table_with_single_column_pk").getColumn("single_column_pk")
@@ -217,7 +217,7 @@ mysql> select * from statistics where table_schema = 'madz_database_parser_test'
       Assertions.expectResult("PRIMARY")(pk getIndexName)
       Assertions.expectResult(IndexType.clustered)(pk getIndexType)
       Assertions.expectResult(KeyType.primaryKey)(pk getKeyType)
-      Assertions.expectResult(0 /*"unknown"*/)(pk getPageCount)
+      Assertions.expectResult(0 /*"unknown"*/ )(pk getPageCount)
       Assertions.expectResult(SortDirection.ascending)(pk getSortDirection)
       Assertions.expectResult("table_with_single_column_pk")(pk.getTable getTableName)
       Assertions.expectResult(false)(pk.isNull)
@@ -232,7 +232,50 @@ mysql> select * from statistics where table_schema = 'madz_database_parser_test'
     }
 
     it("should parse auto incremental index") {
-      pending
+      exec(
+        """
+           USE `madz_database_parser_test`;
+           CREATE TABLE `table_with_single_column_pk` (
+             `single_column_pk` INTEGER(32) AUTO_INCREMENT PRIMARY KEY,
+             `common_column` VARCHAR(32) 
+           ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
+          """
+          :: Nil)
+
+        /*
+          mysql> select * from statistics where table_schema = 'madz_database_parser_test';
+          +---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+          | TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME                  | NON_UNIQUE | INDEX_SCHEMA              | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME      | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+          +---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+          | def           | madz_database_parser_test | table_with_single_column_pk |          0 | madz_database_parser_test | PRIMARY    |            1 | single_column_pk | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+          +---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+          1 row in set (0.00 sec)
+          
+          mysql> select * from columns where table_schema = 'madz_database_parser_test' and table_name = 'table_with_single_column_pk'\G
+		*************************** 1. row ***************************
+		           TABLE_CATALOG: def
+		            TABLE_SCHEMA: madz_database_parser_test
+		              TABLE_NAME: table_with_single_column_pk
+		             COLUMN_NAME: single_column_pk
+		        ORDINAL_POSITION: 1
+		          COLUMN_DEFAULT: NULL
+		             IS_NULLABLE: NO
+		               DATA_TYPE: int
+		CHARACTER_MAXIMUM_LENGTH: NULL
+		  CHARACTER_OCTET_LENGTH: NULL
+		       NUMERIC_PRECISION: 10
+		           NUMERIC_SCALE: 0
+		      CHARACTER_SET_NAME: NULL
+		          COLLATION_NAME: NULL
+		             COLUMN_TYPE: int(32)
+		              COLUMN_KEY: PRI
+		                   EXTRA: auto_increment
+		              PRIVILEGES: select,insert,update,references
+		          COLUMN_COMMENT: 
+        */
+      val result = parser parseSchemaMetaData
+      val pk = result.getTable("table_with_single_column_pk").getPrimaryKey()
+      val column = result.getTable("table_with_single_column_pk").getColumn("single_column_pk")
     }
 
     it("should parse composite PK with multiple columns") {
