@@ -2,6 +2,8 @@ package net.madz.db.core.impl
 
 import java.sql.Connection
 
+import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.collection.immutable.List
 import scala.slick.session.Database
 
@@ -11,10 +13,15 @@ import org.scalatest.FunSpec
 
 import net.madz.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl
 import net.madz.db.core.meta.DottedPath
+import net.madz.db.core.meta.immutable.IndexMetaData
+import net.madz.db.core.meta.immutable.`type`.IndexType
+import net.madz.db.core.meta.immutable.`type`.KeyType
+import net.madz.db.core.meta.immutable.`type`.SortDirection
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum
+import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLTableTypeEnum
 
 class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
@@ -72,7 +79,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
           :: "USE `madz_database_parser_test`;"
           :: """
            CREATE TABLE `single_table_test` (
-              name VARCHAR(64) DEFAULT null
+              name VARCHAR(64) DEFAULT NULL
            ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
            """
           :: Nil)
@@ -101,7 +108,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
           :: create_table_with_all_data_types_DDL_5
           :: Nil)
 
-      val result : MySQLSchemaMetaData = parser parseSchemaMetaData
+      val result = parser parseSchemaMetaData
 
       val table1 = result.getTable("table_with_all_data_types_p1")
       val table2 = result.getTable("table_with_all_data_types_p2")
@@ -113,7 +120,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(10)(table3.getColumns size)
       Assertions.expectResult(1)(table4.getColumns size)
       Assertions.expectResult(1)(table5.getColumns size)
-      
+
       verifyColumns(columns_in_table1, table1.getColumns)
       verifyColumns(columns_in_table2, table1.getColumns)
       verifyColumns(columns_in_table3, table1.getColumns)
@@ -122,22 +129,106 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
 
     }
 
-    it("should parse column with modifier nullABLE") {
-      pending
+    it("should parse column with column option NULLABLE") {
+      exec(
+        """
+           USE `madz_database_parser_test`;
+           CREATE TABLE `table_with_nullable_option` (
+             `nullable_column_name` VARCHAR(32) NULL,
+             `not_nullable_column_name` VARCHAR(32) NOT NULL
+           ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
+          """
+          :: Nil)
+
+      val result = parser parseSchemaMetaData
+
+      Assertions.expectResult(true)(result.getTable("table_with_nullable_option").getColumn("nullable_column_name").isNullable())
+      Assertions.expectResult(false)(result.getTable("table_with_nullable_option").getColumn("not_nullable_column_name").isNullable())
+
     }
 
-    it("should parse column with modifier DEFAULT") {
-      pending
+    it("should parse column with column option DEFAULT") {
+      exec(
+        """
+           USE `madz_database_parser_test`;
+           CREATE TABLE `table_with_default_option` (
+             `defaulted_column_name` VARCHAR(32) DEFAULT `Hello`,
+             `not_defaulted_column_name` VARCHAR(32) NOT NULL
+           ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
+          """
+          :: Nil)
+
+      val result = parser parseSchemaMetaData
+
+      Assertions.expectResult("Hello")(result.getTable("table_with_default_option").getColumn("defaulted_column_name").getDefaultValue())
+      Assertions.expectResult(null)(result.getTable("table_with_default_option").getColumn("not_defaulted_column_name").getDefaultValue())
     }
 
-    it("should parse column with correct collation") {
-      pending
+    it("should parse column with column comment") {
+      exec(
+        """
+           USE `madz_database_parser_test`;
+           CREATE TABLE `table_with_column_comment` (
+             `column_comment_column` VARCHAR(32) COMMENT `should have a comment`,
+             `no_column_comment_column` VARCHAR(32) 
+           ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
+          """
+          :: Nil)
+
+      val result = parser parseSchemaMetaData
+
+      Assertions.expectResult("should have a comment")(result.getTable("table_with_column_comment").getColumn("column_comment_column").getRemarks)
+      Assertions.expectResult(null)(result.getTable("table_with_column_comment").getColumn("no_column_comment_column").getRemarks)
+
     }
+
   }
 
   describe("Parse indexes from Database") {
     it("should parse single column PK index") {
-      pending
+      exec(
+        """
+           USE `madz_database_parser_test`;
+           CREATE TABLE `table_with_single_column_pk` (
+             `single_column_pk` VARCHAR(32) CHARACTER SET `latin7` COLLATE `latin7_general_cs` PRIMARY KEY,
+             `common_column` VARCHAR(32) 
+           ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
+          """
+          :: Nil)
+
+          val console_out_put = 
+"""
+mysql> select * from statistics where table_schema = 'madz_database_parser_test'    -> ;
++---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME                  | NON_UNIQUE | INDEX_SCHEMA              | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME      | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
++---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| def           | madz_database_parser_test | table_with_single_column_pk |          0 | madz_database_parser_test | PRIMARY    |            1 | single_column_pk | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
++---------------+---------------------------+-----------------------------+------------+---------------------------+------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+1 row in set (0.01 sec)
+"""
+          
+      val result = parser parseSchemaMetaData
+      val pk = result.getTable("table_with_single_column_pk").getPrimaryKey()
+      val column = result.getTable("table_with_single_column_pk").getColumn("single_column_pk")
+      Assertions.expectResult(MySQLIndexMethod.btree)(pk getIndexMethod)
+      Assertions.expectResult(true)(pk isUnique)
+      Assertions.expectResult(null)(pk getSubPart)
+      Assertions.expectResult(0)(pk getCardinality)
+      Assertions.expectResult("PRIMARY")(pk getIndexName)
+      Assertions.expectResult(IndexType.clustered)(pk getIndexType)
+      Assertions.expectResult(KeyType.primaryKey)(pk getKeyType)
+      Assertions.expectResult(0 /*"unknown"*/)(pk getPageCount)
+      Assertions.expectResult(SortDirection.ascending)(pk getSortDirection)
+      Assertions.expectResult("table_with_single_column_pk")(pk.getTable getTableName)
+      Assertions.expectResult(false)(pk.isNull)
+      Assertions.expectResult(true)(pk.containsColumn(column))
+      Assertions.expectResult(true)(column.isMemberOfPrimaryKey)
+      val pkEntry = collectionAsScalaIterable(pk.getEntrySet).toList.get(0)
+      Assertions.expectResult(pkEntry.getColumn)(column)
+      Assertions.expectResult(pkEntry.getKey)(pk)
+      Assertions.expectResult(pkEntry.getKey.getIndexName)(pk.getIndexName)
+      Assertions.expectResult(pkEntry.getColumn.getColumnName)(column.getColumnName)
+      Assertions.expectResult(1)(pkEntry.getPosition)
     }
 
     it("should parse auto incremental index") {
@@ -245,9 +336,12 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
   ) ENGINE=InnoDB DEFAULT CHARSET=latin7;
   """
 
-  case class ColumnMetaData(val TABLE_NAME: String, val COLUMN_NAME: String, val ORDINAL_POSITION: Integer,
-    val COLUMN_DEFAULT: String, val IS_nullABLE: Boolean, val DATA_TYPE: String, val CHARACTER_MAXIMUM_LENGTH: java.lang.Long,
-    val NUMERIC_PRECISION: Integer, val NUMERIC_SCALE: Integer, val CHARACTER_SET_NAME: String, val COLLATION_NAME: String, val COLUMN_TYPE: String)
+  case class ColumnMetaData(
+    val TABLE_NAME: String, val COLUMN_NAME: String, val ORDINAL_POSITION: Integer,
+    val COLUMN_DEFAULT: String, val IS_NULLABLE: Boolean, val DATA_TYPE: String,
+    val CHARACTER_MAXIMUM_LENGTH: java.lang.Long, val NUMERIC_PRECISION: Integer,
+    val NUMERIC_SCALE: Integer, val CHARACTER_SET_NAME: String, val COLLATION_NAME: String,
+    val COLUMN_TYPE: String)
 
   val columns_in_table1 =
     ColumnMetaData("table_with_all_data_types_p1", "BIT_COLUMN", 1, null, true, "bit", null, 1, null, null, null, "bit(1)") ::
@@ -302,6 +396,25 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
     ColumnMetaData("table_with_all_data_types_p5", "VARCHAR_BINARY_COLUMN", 1, null, true, "varchar", 65532, null, null, "latin7", "latin7_general_ci", "varchar(65532)") :: Nil
 
   def verifyColumns(expectedColumnList: List[ColumnMetaData], actualColumnList: java.util.List[MySQLColumnMetaData]) {
+    val actualScalaList = collectionAsScalaIterable[MySQLColumnMetaData](actualColumnList).toList
+    Assertions.assert(expectedColumnList.length == actualScalaList.length)
+    val tuples = expectedColumnList zip actualScalaList
+    tuples.foreach(pair =>
+      compare(pair._1, pair._2))
+  }
 
+  def compare(expect: ColumnMetaData, actual: MySQLColumnMetaData) {
+    Assertions.expectResult(expect.TABLE_NAME)(actual.getTableMetaData getTableName)
+    Assertions.expectResult(expect.COLUMN_NAME)(actual getColumnName)
+    Assertions.expectResult(expect.ORDINAL_POSITION)(actual getOrdinalPosition)
+    Assertions.expectResult(expect.COLUMN_DEFAULT)(actual getDefaultValue)
+    Assertions.expectResult(expect.IS_NULLABLE)(actual isNullable)
+    Assertions.expectResult(expect.DATA_TYPE)(actual getSqlTypeName)
+    Assertions.expectResult(expect.CHARACTER_MAXIMUM_LENGTH)(actual getSize)
+    Assertions.expectResult(expect.NUMERIC_PRECISION)(actual)
+    Assertions.expectResult(expect.NUMERIC_SCALE)(actual)
+    Assertions.expectResult(expect.CHARACTER_SET_NAME)(actual getCharacterSet)
+    Assertions.expectResult(expect.COLLATION_NAME)(actual getCollation)
+    Assertions.expectResult(expect.COLUMN_TYPE)(actual.getColumnType.name.replaceAll("_", " "))
   }
 }
