@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -29,28 +30,38 @@ public class MySQLTableMetaDataBuilderImpl
     private MySQLEngineEnum engine;
     private String characterSet;
     private String collation;
+    private final String tableName;
+    private DottedPath tablePath;
 
-    public MySQLTableMetaDataBuilderImpl(MySQLSchemaMetaDataBuilder schema) {
+    public MySQLTableMetaDataBuilderImpl(MySQLSchemaMetaDataBuilder schema, String tableName) {
         super(schema);
+        this.tableName = tableName;
+        tablePath = schema.getSchemaPath().append(tableName);
     }
 
-    public MySQLTableMetaDataBuilder build(MetaDataResultSet<MySQLTableDbMetaDataEnum> rs, Connection conn) throws SQLException {
-        this.tablePath = this.schema.getSchemaPath().append(rs.get(MySQLTableDbMetaDataEnum.TABLE_NAME));
-        this.remarks = rs.get(MySQLTableDbMetaDataEnum.TABLE_COMMENT);
-        this.type = TableType.convertTableType(MySQLTableTypeEnum.getType(rs.get(MySQLTableDbMetaDataEnum.TABLE_TYPE)));
-        this.idCol = null;
-        this.idGeneration = null;
-        this.collation = rs.get(MySQLTableDbMetaDataEnum.TABLE_COLLATION);
-        this.engine = MySQLEngineEnum.valueOf(rs.get(MySQLTableDbMetaDataEnum.ENGINE));
-        this.characterSet = rs.get(MySQLTableDbMetaDataEnum.CHARACTER_SET_NAME);
-        // Parse Columns
+    public MySQLTableMetaDataBuilder build(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
-        ResultSet columnsRs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + super.schema.getSchemaPath().getName() + "' AND table_name='"
-                + this.tablePath.getName() + "';");
-        MetaDataResultSet<MySQLColumnDbMetaDataEnum> colRs = new MetaDataResultSet<MySQLColumnDbMetaDataEnum>(columnsRs, MySQLColumnDbMetaDataEnum.values());
-        while ( colRs.next() ) {
-            //final MySQLColumnMetaDataBuilder columnBuilder = new MySQLColumnMetaDataBuilderImpl(colRs);
-            //appendColumnMetaDataBuilder(columnBuilder);
+        ResultSet rs = null;
+        rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN character_sets ON default_collate_name = table_collation WHERE schema_name = '"
+                + super.schema.getSchemaPath().getName() + "' AND table_name='" + this.tableName + "';" );
+        while ( rs.next() ) {
+            this.remarks = rs.getString(MySQLTableDbMetaDataEnum.TABLE_COMMENT.name());
+            this.type = TableType.convertTableType(MySQLTableTypeEnum.getType(rs.getString(MySQLTableDbMetaDataEnum.TABLE_TYPE.name())));
+            this.idCol = null;
+            this.idGeneration = null;
+            this.collation = rs.getString(MySQLTableDbMetaDataEnum.TABLE_COLLATION.name());
+            this.engine = MySQLEngineEnum.valueOf(rs.getString(MySQLTableDbMetaDataEnum.ENGINE.name()));
+            this.characterSet = rs.getString(MySQLTableDbMetaDataEnum.CHARACTER_SET_NAME.name());
+            // Parse Columns
+            stmt = conn.createStatement();
+            ResultSet columnsRs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + super.schema.getSchemaPath().getName()
+                    + "' AND table_name='" + this.tablePath.getName() + "';");
+            MetaDataResultSet<MySQLColumnDbMetaDataEnum> colRs = new MetaDataResultSet<MySQLColumnDbMetaDataEnum>(columnsRs, MySQLColumnDbMetaDataEnum.values());
+            while ( colRs.next() ) {
+                // final MySQLColumnMetaDataBuilder columnBuilder = new
+                // MySQLColumnMetaDataBuilderImpl(colRs);
+                // appendColumnMetaDataBuilder(columnBuilder);
+            }
         }
         // Parse Index
         // Define PK
@@ -74,12 +85,6 @@ public class MySQLTableMetaDataBuilderImpl
 
     @Override
     public MySQLTableMetaData getMetaData() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public MySQLTableMetaDataBuilder build(Connection conn) throws SQLException {
         // TODO Auto-generated method stub
         return null;
     }

@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
@@ -45,11 +47,17 @@ public class MySQLSchemaMetaDataBuilderImpl
                 collation = rs.getString("DEFAULT_COLLATION_NAME");
             }
             // Construct Table builders and append
-            rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN character_sets ON default_collate_name = table_collation WHERE schema_name = '"
+            rs = stmt.executeQuery("SELECT * FROM tables WHERE schema_name = '"
                     + schemaPath.getName() + "'");
-            MetaDataResultSet<MySQLTableDbMetaDataEnum> rsMd = new MetaDataResultSet<MySQLTableDbMetaDataEnum>(rs, MySQLTableDbMetaDataEnum.values());
-            while ( rsMd.next() ) {
-                final MySQLTableMetaDataBuilder table = new MySQLTableMetaDataBuilderImpl(this).build(rsMd, conn);
+//            rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN character_sets ON default_collate_name = table_collation WHERE schema_name = '"
+//                    + schemaPath.getName() + "'");
+            List<String> tableNames = new LinkedList<String>();
+            while (rs.next()) {
+                tableNames.add(rs.getString("table_name"));
+            }
+//            MetaDataResultSet<MySQLTableDbMetaDataEnum> rsMd = new MetaDataResultSet<MySQLTableDbMetaDataEnum>(rs, MySQLTableDbMetaDataEnum.values());
+            for ( String name : tableNames ) {
+                final MySQLTableMetaDataBuilder table = new MySQLTableMetaDataBuilderImpl(this, name).build(conn);
                 appendTableMetaDataBuilder(table);
             }
             // Construct foreignKeys
