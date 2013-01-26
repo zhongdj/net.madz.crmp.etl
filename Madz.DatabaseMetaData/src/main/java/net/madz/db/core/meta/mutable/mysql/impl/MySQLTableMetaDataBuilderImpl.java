@@ -4,9 +4,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.mysql.jdbc.PreparedStatement;
 
 import net.madz.db.core.meta.DottedPath;
-import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
+import net.madz.db.core.meta.immutable.IndexMetaData.Entry;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -42,29 +47,52 @@ public class MySQLTableMetaDataBuilderImpl
     public MySQLTableMetaDataBuilder build(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
         ResultSet rs = null;
-        rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN character_sets ON default_collate_name = table_collation WHERE schema_name = '"
-                + super.schema.getSchemaPath().getName() + "' AND table_name='" + this.tableName + "';" );
-        while ( rs.next() ) {
-            this.remarks = rs.getString(MySQLTableDbMetaDataEnum.TABLE_COMMENT.name());
-            this.type = TableType.convertTableType(MySQLTableTypeEnum.getType(rs.getString(MySQLTableDbMetaDataEnum.TABLE_TYPE.name())));
-            this.idCol = null;
-            this.idGeneration = null;
-            this.collation = rs.getString(MySQLTableDbMetaDataEnum.TABLE_COLLATION.name());
-            this.engine = MySQLEngineEnum.valueOf(rs.getString(MySQLTableDbMetaDataEnum.ENGINE.name()));
-            this.characterSet = rs.getString(MySQLTableDbMetaDataEnum.CHARACTER_SET_NAME.name());
-            // Parse Columns
-            stmt = conn.createStatement();
-            ResultSet columnsRs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + super.schema.getSchemaPath().getName()
-                    + "' AND table_name='" + this.tablePath.getName() + "';");
-            MetaDataResultSet<MySQLColumnDbMetaDataEnum> colRs = new MetaDataResultSet<MySQLColumnDbMetaDataEnum>(columnsRs, MySQLColumnDbMetaDataEnum.values());
-            while ( colRs.next() ) {
-                // final MySQLColumnMetaDataBuilder columnBuilder = new
-                // MySQLColumnMetaDataBuilderImpl(colRs);
-                // appendColumnMetaDataBuilder(columnBuilder);
+        try {
+            final String schemaName = super.schema.getSchemaPath().getName();
+            rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN character_sets ON default_collate_name = table_collation WHERE schema_name = '"
+                    + schemaName + "' AND table_name='" + this.tableName + "';");
+            while ( rs.next() ) {
+                this.remarks = rs.getString(MySQLTableDbMetaDataEnum.TABLE_COMMENT.name());
+                this.type = TableType.convertTableType(MySQLTableTypeEnum.getType(rs.getString(MySQLTableDbMetaDataEnum.TABLE_TYPE.name())));
+                this.idCol = null;
+                this.idGeneration = null;
+                this.collation = rs.getString(MySQLTableDbMetaDataEnum.TABLE_COLLATION.name());
+                this.engine = MySQLEngineEnum.valueOf(rs.getString(MySQLTableDbMetaDataEnum.ENGINE.name()));
+                this.characterSet = rs.getString(MySQLTableDbMetaDataEnum.CHARACTER_SET_NAME.name());
             }
+            // Parse Columns
+            rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + schemaName + "' AND table_name='" + this.tableName + "';");
+            List<String> colNames = new LinkedList<String>();
+            while ( rs.next() ) {
+                colNames.add(rs.getString("column_name"));
+            }
+            for ( String colName : colNames ) {
+                MySQLColumnMetaDataBuilder columnBuilder = new MySQLColumnMetaDataBuilderImpl(this, this.tablePath.append(colName)).build(conn);
+                appendColumnMetaDataBuilder(columnBuilder);
+            }
+            // Parse Index
+            rs = stmt.executeQuery("SELECT * FROM statistics WHERE table_schema='" + schemaName + "' AND table_name='" + this.tableName + "';");
+            List<String> indexNames = new LinkedList<String>();
+            while ( rs.next() ) {
+                indexNames.add(rs.getString("index_name"));
+            }
+            for ( String indexName : indexNames ) {
+                MySQLIndexMetaDataBuilder indexBuilder = new MySQLIndexMetaDataBuilderImpl(this, this.tablePath.append(indexName)).build(conn);
+                appendIndexMetaDataBuilder(indexBuilder);
+            }
+            // Parse Primary Key
+            MySQLIndexMetaDataBuilder pk = this.indexMap.get(( "PRIMARY" ));
+            if ( null != pk ) {
+                Collection<Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = pk
+                        .getEntrySet();
+                for ( Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
+                    MySQLColumnMetaDataBuilder columnBuilder = this.columnMap.get(entry.getColumn().getColumnName());
+                    columnBuilder.setPrimaryKey(entry);
+                }
+            }
+        } finally {
+            rs.close();
         }
-        // Parse Index
-        // Define PK
         return this;
     }
 

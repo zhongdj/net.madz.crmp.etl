@@ -31,7 +31,7 @@ public abstract class BaseTableMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
     protected List<CMDB> orderedColumns;
     protected Map<String, IMDB> indexMap;
     protected List<FMDB> fkList = new LinkedList<FMDB>();
-    protected IMDB primaryKey;
+    protected IMD primaryKey;
 
     public BaseTableMetaDataBuilder(SMDB schema) {
         super();
@@ -91,7 +91,7 @@ public abstract class BaseTableMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
 
     @Override
     public IMD getPrimaryKey() {
-        return this.primaryKey.getMetaData();
+        return this.primaryKey;
     }
 
     @Override

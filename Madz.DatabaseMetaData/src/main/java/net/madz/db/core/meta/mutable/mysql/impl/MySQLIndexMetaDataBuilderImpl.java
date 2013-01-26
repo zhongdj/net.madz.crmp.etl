@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -25,6 +26,10 @@ public class MySQLIndexMetaDataBuilderImpl
         extends
         BaseIndexMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
         implements MySQLIndexMetaDataBuilder {
+
+    public MySQLIndexMetaDataBuilderImpl(MySQLTableMetaDataBuilder tableBuilder, DottedPath indexPath) {
+        // TODO Auto-generated constructor stub
+    }
 
     @Override
     public boolean isNull() {
@@ -114,6 +119,11 @@ public class MySQLIndexMetaDataBuilderImpl
     public MySQLIndexMetaDataBuilder build(Connection conn) throws SQLException {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public void setPrimaryKey() {
+        // TODO Auto-generated method stub
+        
     }
     
 }

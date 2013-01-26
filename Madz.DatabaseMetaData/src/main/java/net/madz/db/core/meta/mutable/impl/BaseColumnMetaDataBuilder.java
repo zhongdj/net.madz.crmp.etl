@@ -21,7 +21,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
         implements ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, ColumnMetaData<SMD, TMD, CMD, FMD, IMD> {
 
     protected DottedPath columnPath;
-    protected TMDB table;
+    protected TMDB tableBuilder;
     protected Integer sqlType;
     protected String sqlTypeName;
     protected Integer size;
@@ -38,8 +38,9 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
 
     // protected final TMDB jdbcTableMetaDataBuilder;
     // protected final MetaDataResultSet<ColumnDbMetaDataEnum> colRs;
-    public BaseColumnMetaDataBuilder(DottedPath name) {
+    public BaseColumnMetaDataBuilder(TMDB tableBuilder, DottedPath name) {
         super();
+        this.tableBuilder = tableBuilder;
         this.columnPath = name;
     }
 
@@ -50,7 +51,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
 
     @Override
     public TMD getTableMetaData() {
-        return this.table.getMetaData();
+        return this.tableBuilder.getMetaData();
     }
 
     @Override
@@ -123,7 +124,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     public boolean isMemberOfPrimaryKey() {
         // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        final IMD primaryKey = this.table.getMetaData().getPrimaryKey();
+        final IMD primaryKey = this.tableBuilder.getMetaData().getPrimaryKey();
         // TODO [Jan 22, 2013][barry] Is there any constraint that every table
         // has a primaryKey?
         if ( primaryKey.containsColumn((CMD) this) ) {
@@ -137,7 +138,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     public boolean isMemberOfIndex() {
         // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        final Collection<IMD> indexSet = this.table.getMetaData().getIndexSet();
+        final Collection<IMD> indexSet = this.tableBuilder.getMetaData().getIndexSet();
         for ( IMD index : indexSet ) {
             if ( index.containsColumn((CMD) this) ) {
                 return true;
@@ -150,7 +151,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     public boolean isMemberOfForeignKey(FMD fk) {
         // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
-        final Collection<FMD> foreignKeySet = this.table.getMetaData().getForeignKeySet();
+        final Collection<FMD> foreignKeySet = this.tableBuilder.getMetaData().getForeignKeySet();
         for ( FMD fkMetaData : foreignKeySet ) {
             if ( fkMetaData.getEntrySet().contains(this) ) {
                 return true;

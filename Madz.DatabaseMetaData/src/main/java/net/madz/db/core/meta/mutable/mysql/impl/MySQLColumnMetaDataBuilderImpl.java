@@ -24,8 +24,8 @@ public class MySQLColumnMetaDataBuilderImpl
         BaseColumnMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
         implements MySQLColumnMetaDataBuilder {
 
-    public MySQLColumnMetaDataBuilderImpl(DottedPath name) {
-        super(name);
+    public MySQLColumnMetaDataBuilderImpl(MySQLTableMetaDataBuilder tableBuilder, DottedPath columnPath) {
+        super(tableBuilder,columnPath);
     }
 
     @Override
@@ -197,5 +197,10 @@ public class MySQLColumnMetaDataBuilderImpl
         // TODO Auto-generated method stub
         return null;
     }
-    
+
+    @Override
+    public void setPrimaryKey(Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
+        this.primaryKey = entry;
+        this.uniqueIndexList.remove(primaryKey);
+    }
 }
