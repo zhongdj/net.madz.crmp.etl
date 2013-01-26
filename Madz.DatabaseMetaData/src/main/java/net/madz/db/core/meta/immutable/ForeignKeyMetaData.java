@@ -2,8 +2,8 @@ package net.madz.db.core.meta.immutable;
 
 import java.util.List;
 
-import net.madz.db.core.meta.immutable.type.CascadeRule;
-import net.madz.db.core.meta.immutable.type.KeyDeferrability;
+import net.madz.db.core.meta.immutable.types.CascadeRule;
+import net.madz.db.core.meta.immutable.types.KeyDeferrability;
 
 public interface ForeignKeyMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> 
 extends MetaData {

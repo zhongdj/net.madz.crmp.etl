@@ -2,9 +2,9 @@ package net.madz.db.core.meta.immutable;
 
 import java.util.Collection;
 
-import net.madz.db.core.meta.immutable.type.IndexType;
-import net.madz.db.core.meta.immutable.type.KeyType;
-import net.madz.db.core.meta.immutable.type.SortDirection;
+import net.madz.db.core.meta.immutable.types.IndexType;
+import net.madz.db.core.meta.immutable.types.KeyType;
+import net.madz.db.core.meta.immutable.types.SortDirection;
 
 public interface IndexMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> 
 extends MetaData {

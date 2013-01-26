@@ -1,8 +1,6 @@
 package net.madz.db.core;
 
-import static org.junit.Assert.*;
-
-import net.madz.db.core.DbOperatorFactory;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 

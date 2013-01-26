@@ -15,12 +15,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import net.madz.db.metadata.configuration.Database;
-import net.madz.db.metadata.configuration.DatabaseConfig;
-import net.madz.db.metadata.configuration.DatabaseCopiesServer;
-import net.madz.db.metadata.configuration.Sku;
-import net.madz.db.metadata.configuration.SkuConf;
+
 import net.madz.db.utils.LogUtils;
+import net.madz.db.configuration.*;
 
 public class DbConfigurationManagement {
 

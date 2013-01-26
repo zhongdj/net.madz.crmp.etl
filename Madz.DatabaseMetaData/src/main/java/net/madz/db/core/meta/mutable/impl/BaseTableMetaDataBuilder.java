@@ -11,7 +11,7 @@ import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
-import net.madz.db.core.meta.immutable.type.TableType;
+import net.madz.db.core.meta.immutable.types.TableType;
 import net.madz.db.core.meta.mutable.ColumnMetaDataBuilder;
 import net.madz.db.core.meta.mutable.ForeignKeyMetaDataBuilder;
 import net.madz.db.core.meta.mutable.IndexMetaDataBuilder;

@@ -81,7 +81,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<packageName>net.madz.db.metadata.configuration</packageName>
+					<packageName>net.madz.db.configuration</packageName>
 					<schemaDirectory>${project.basedir}/src/main/resources/xsd/</schemaDirectory>
 				</configuration>
 			</plugin>

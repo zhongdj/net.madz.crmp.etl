@@ -13,7 +13,7 @@ import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum;
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLTableTypeEnum;
-import net.madz.db.core.meta.immutable.type.TableType;
+import net.madz.db.core.meta.immutable.types.TableType;
 import net.madz.db.core.meta.mutable.impl.BaseTableMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
