@@ -1,22 +1,16 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
-
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 import scala.collection.immutable.List
 import scala.slick.session.Database
-
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
-
 import net.madz.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl
 import net.madz.db.core.meta.DottedPath
 import net.madz.db.core.meta.immutable.IndexMetaData
-import net.madz.db.core.meta.immutable.`type`.IndexType
-import net.madz.db.core.meta.immutable.`type`.KeyType
-import net.madz.db.core.meta.immutable.`type`.SortDirection
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData
@@ -25,6 +19,9 @@ import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLTableTypeEnum
+import net.madz.db.core.meta.immutable.types.SortDirection
+import net.madz.db.core.meta.immutable.types.IndexType
+import net.madz.db.core.meta.immutable.types.KeyType
 
 class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -218,7 +215,6 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       val column = result.getTable("table_with_single_column_pk").getColumn("single_column_pk")
       Assertions.expectResult(MySQLIndexMethod.btree)(pk getIndexMethod)
       Assertions.expectResult(true)(pk isUnique)
-      Assertions.expectResult(null)(pk getSubPart)
       Assertions.expectResult(0)(pk getCardinality)
       Assertions.expectResult("PRIMARY")(pk getIndexName)
       Assertions.expectResult(IndexType.clustered)(pk getIndexType)
@@ -286,7 +282,6 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(SortDirection.ascending)(pk getSortDirection)
       Assertions.expectResult(true)(pk isUnique)
       Assertions.expectResult(null)(pk isNull)
-      Assertions.expectResult(null)(pk getSubPart)
       Assertions.expectResult(0)(pk getCardinality)
       Assertions.expectResult(IndexType.clustered)(pk getIndexType)
       Assertions.expectResult(KeyType.primaryKey)(pk getKeyType)
@@ -451,7 +446,6 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       val data_columnt_1 = table getColumn "data_column_1"
       
       pk.getIndexMethod()
-      pk.getSubPart()
       pk.isNull()
       pk.containsColumn(pk_column_part_1)
       pk.containsColumn(pk_column_part_1)
