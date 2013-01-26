@@ -118,7 +118,13 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     public Entry<SMD, TMD, CMD, FMD, IMD> getPrimaryKey() {
         return this.primaryKey;
     }
-
+    
+    @Override
+    public void setPrimaryKey(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
+        this.primaryKey = entry;
+        this.uniqueIndexList.remove(primaryKey);
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public boolean isMemberOfPrimaryKey() {
@@ -174,4 +180,19 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     public Collection<Entry<SMD, TMD, CMD, FMD, IMD>> getNonUniqueIndexSet() {
         return this.nonUniqueIndexList;
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public CMDB appendUniqueIndexEntry(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
+        //todo
+        return (CMDB) this;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public CMDB appendNonUniqueIndexEntry(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
+        //todo
+        return (CMDB) this;
+    }
+
 }
