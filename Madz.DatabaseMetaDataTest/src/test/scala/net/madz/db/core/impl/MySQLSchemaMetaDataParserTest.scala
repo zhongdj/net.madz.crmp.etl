@@ -1,13 +1,16 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
-import scala.collection.JavaConversions._
-import scala.collection.JavaConverters._
+
+import scala.collection.JavaConversions.collectionAsScalaIterable
+import scala.collection.JavaConversions.seqAsJavaList
 import scala.collection.immutable.List
 import scala.slick.session.Database
+
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
+
 import net.madz.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl
 import net.madz.db.core.meta.DottedPath
 import net.madz.db.core.meta.immutable.IndexMetaData
@@ -19,9 +22,9 @@ import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLTableTypeEnum
-import net.madz.db.core.meta.immutable.types.SortDirection
 import net.madz.db.core.meta.immutable.types.IndexType
 import net.madz.db.core.meta.immutable.types.KeyType
+import net.madz.db.core.meta.immutable.types.SortDirection
 
 class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -474,7 +477,33 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
     }
 
     it("should parse single column UNIQUE KEY") {
-      pending
+      exec(
+        """
+          USE `madz_database_parser_test`;
+          """ :: """
+          CREATE TABLE `table_with_single_column_unique_key` (
+            `id` INTEGER(32) AUTO_INCREMENT PRIMARY KEY,
+            `email` VARCHAR(64) NOT NULL,
+            `nickname` VARCHAR(80) NULL,
+            `phone` VARCHAR(20) NULL,
+             UNIQUE KEY email_index (email),
+             INDEX nickname_index (`nickname`)
+          ) ENGINE = `InnoDB` DEFAULT CHARACTER SET = 'utf8' DEFAULT COLLATE = 'utf8_bin';
+          """ :: Nil)
+
+      val result = parser parseSchemaMetaData
+      val table = result.getTable("table_with_single_column_unique_key")
+      val pk = table.getColumn("id")
+      val unique_key_column = table.getColumn("email")
+      val non_unique_index_column = table.getColumn("nickname")
+
+      val email_index = table.getIndex("email_index");
+      val nickname_index = table.getIndex("nickname_index");
+      Assertions.expectResult(true)(email_index.isUnique)
+      Assertions.expectResult(false)(nickname_index.isUnique)
+      Assertions.expectResult(true)(email_index.isNull)
+      Assertions.expectResult(false)(nickname_index.isNull)
+
     }
 
     it("should parse composite UNIQUE KEY with multiple columns") {
