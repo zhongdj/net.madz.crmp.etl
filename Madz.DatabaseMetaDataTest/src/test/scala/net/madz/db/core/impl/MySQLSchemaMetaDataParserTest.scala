@@ -18,6 +18,8 @@ import net.madz.db.core.meta.immutable.`type`.IndexType
 import net.madz.db.core.meta.immutable.`type`.KeyType
 import net.madz.db.core.meta.immutable.`type`.SortDirection
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData
+import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData
+import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum
@@ -153,7 +155,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       exec(
         """
            USE `madz_database_parser_test`;
-          """ 
+          """
           :: """
            CREATE TABLE `table_with_default_option` (
              `defaulted_column_name` VARCHAR(32) DEFAULT 'Hello',
@@ -299,8 +301,136 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
 
     }
 
+    it("should parse single column PK with descending sort order") {
+      /*
+       * An index_col_name specification can end with ASC or DESC. 
+       * These keywords are permitted for future extensions for specifying ascending or descending index value storage. 
+       * Currently, they are parsed but ignored; index values are always stored in ascending order.
+       * 
+       * Refer to: http://dev.mysql.com/doc/refman/5.5/en/create-table.html
+       */
+
+      exec(
+        """
+           USE `madz_database_parser_test`;
+          """ :: """
+           CREATE TABLE `table_with_not_supported_descending_order` (
+             `single_column_pk` VARCHAR(32),
+             `common_column` VARCHAR(32),
+              PRIMARY KEY (single_column_pk DESC) 
+           ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
+          """ :: Nil)
+
+      val result = parser parseSchemaMetaData
+      val pk = result.getTable("table_with_not_supported_descending_order") getPrimaryKey
+
+      Assertions.expectResult(SortDirection.ascending)(pk getSortDirection)
+
+    }
+
+    it("should parse index type with BTREE mode") {
+      exec(
+        """
+           USE `madz_database_parser_test`;
+          """ :: """
+           CREATE TABLE `table_with_btree_index` (
+             `single_column_pk` VARCHAR(32),
+             `common_column` VARCHAR(32),
+              PRIMARY KEY USING BTREE (single_column_pk) 
+           ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
+          """ :: Nil)
+
+      val result = parser parseSchemaMetaData
+      val pk = result.getTable("table_with_btree_index") getPrimaryKey
+
+      Assertions.expectResult(MySQLIndexMethod.btree)(pk getIndexMethod)
+    }
+
+    it("should parse index type with HASH mode") {
+      /*
+       * index type is storage engine related, such as following:  
+       * Engine			Permissible Index Types
+       * --------------------------------
+       * MyISAM			BTREE
+       * InnoDB			BTREE
+       * MEMORY/HEAP	HASH, BTREE
+       * NDB			BTREE, HASH 
+       * --------------------------------
+       */
+
+      exec(
+        """
+           USE `madz_database_parser_test`;
+          """ :: """
+           CREATE TABLE `table_with_hash_index` (
+             `single_column_pk` VARCHAR(32),
+             `common_column` VARCHAR(32),
+              PRIMARY KEY (single_column_pk) USING HASH  
+           ) ENGINE=`MEMORY` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
+          """ :: Nil)
+
+      val result = parser parseSchemaMetaData
+      val pk = result.getTable("table_with_hash_index") getPrimaryKey
+
+      Assertions.expectResult(MySQLIndexMethod.hash)(pk getIndexMethod)
+    }
+
+    it("should parse nullable index") {
+
+      exec(
+        """
+           USE `madz_database_parser_test`;
+          """ :: """
+           CREATE TABLE `table_with_nullable_index` (
+             `single_column_pk` VARCHAR(32),
+             `common_column` VARCHAR(32) NULL,
+              PRIMARY KEY (single_column_pk),
+              INDEX common_column_index (common_column)
+           ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_unicode_ci`;
+          """ :: Nil)
+      /*
+	mysql> select * from statistics where table_schema = 'test';
+	+---------------+--------------+---------------------------+------------+--------------+---------------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME                | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME          | SEQ_IN_INDEX | COLUMN_NAME      | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+	+---------------+--------------+---------------------------+------------+--------------+---------------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| def           | test         | table_with_nullable_index |          0 | test         | PRIMARY             |            1 | single_column_pk | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+	| def           | test         | table_with_nullable_index |          1 | test         | common_column_index |            1 | common_column    | A         |           0 |     NULL | NULL   | YES      | BTREE      |         |               |
+	+---------------+--------------+---------------------------+------------+--------------+---------------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	2 rows in set (0.00 sec)
+	*/
+
+      val result = parser parseSchemaMetaData
+      val index = result.getTable("table_with_nullable_index") getIndex ("common_column_index")
+      val nullable_column = result.getTable("table_with_nullable_index").getColumn("common_column")
+      Assertions.expectResult(1)(nullable_column.getNonUniqueIndexSet size)
+      Assertions.expectResult(1)(nullable_column.getUniqueIndexSet size)
+
+      val non_unique_index_entry = collectionAsScalaIterable[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]](nullable_column getNonUniqueIndexSet).toList(0)
+
+      Assertions.expectResult(nullable_column)(non_unique_index_entry getColumn)
+      Assertions.expectResult(index)(non_unique_index_entry getKey)
+      Assertions.expectResult(1)(non_unique_index_entry getPosition)
+      Assertions.expectResult(false)(index isUnique)
+      Assertions.expectResult(true)(index isNull)
+    }
+
     it("should parse composite PK with multiple columns") {
-      pending
+      exec(
+        """
+          USE `madz_database_parser_test`;
+          """ :: """
+          CREATE TABLE `table_with_composite_pk` (
+            `pk_column_part_1` INTEGER(32) NOT NULL,
+            `pk_column_part_2` CHAR(12) NOT NULL,
+            `pk_column_part_3` INTEGER(32) NOT NULL,
+            `data_column_1` VARCHAR(64) NULL,
+            PRIMARY KEY (`pk_column_part_1`,`pk_column_part_2`, `pk_column_part_3`) 
+          )
+          """
+          :: Nil)
+          
+          
+
     }
 
     it("should parse single column UNIQUE KEY") {
