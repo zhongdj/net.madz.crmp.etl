@@ -1,4 +1,4 @@
-package net.madz.db.core.meta.immutable.type;
+package net.madz.db.core.meta.immutable.types;
 
 import java.sql.DatabaseMetaData;
 import java.util.NoSuchElementException;
