@@ -28,10 +28,12 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
 
         private final Integer position;
         private final CMD column;
+        private final Integer subPart;
 
-        public Entry(CMD column, Integer position) {
+        public Entry(CMD column, Integer position, Integer subPart) {
             this.position = position;
             this.column = column;
+            this.subPart = subPart;
         }
 
         @SuppressWarnings("unchecked")
@@ -47,38 +49,47 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
             return this.position;
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            if ( obj instanceof IndexMetaDataImpl.Entry ) {
-                IndexMetaDataImpl.Entry comp = (IndexMetaDataImpl.Entry) this;
-                return this.getKey().equals(comp.getKey()) && this.column.getColumnName().equals(comp.getColumn().getColumnName());
-            }
-            return false;
-        }
 
         @Override
         public int hashCode() {
-            return ( IndexMetaDataImpl.this.hashCode() * 3 ) + column.getColumnName().hashCode();
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + ( ( column == null ) ? 0 : column.hashCode() );
+            result = prime * result + ( ( position == null ) ? 0 : position.hashCode() );
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if ( this == obj ) return true;
+            if ( obj == null ) return false;
+            if ( getClass() != obj.getClass() ) return false;
+            @SuppressWarnings("unchecked")
+            Entry other = (Entry) obj;
+            if ( !getOuterType().equals(other.getOuterType()) ) return false;
+            if ( column == null ) {
+                if ( other.column != null ) return false;
+            } else if ( !column.equals(other.column) ) return false;
+            if ( position == null ) {
+                if ( other.position != null ) return false;
+            } else if ( !position.equals(other.position) ) return false;
+            return true;
         }
 
         @Override
         public String toString() {
             return indexName + "." + position;
         }
-    }
 
-    @Override
-    public boolean equals(Object obj) {
-        if ( obj instanceof IndexMetaDataImpl ) {
-            IndexMetaDataImpl comp = (IndexMetaDataImpl) obj;
-            return this.indexName.equals(comp.indexName);
+        @Override
+        public Integer getSubPart() {
+            return subPart;
         }
-        return false;
-    }
 
-    @Override
-    public int hashCode() {
-        return indexName.hashCode();
+        private IndexMetaDataImpl<SMD, TMD, CMD, FMD, IMD> getOuterType() {
+            return IndexMetaDataImpl.this;
+        }
     }
 
     public IndexMetaDataImpl(IMD metaData) {
@@ -152,4 +163,40 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     public TMD getTable() {
         return this.table;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( ascending == null ) ? 0 : ascending.hashCode() );
+        result = prime * result + ( ( entryList == null ) ? 0 : entryList.hashCode() );
+        result = prime * result + ( ( indexName == null ) ? 0 : indexName.hashCode() );
+        result = prime * result + ( ( indexType == null ) ? 0 : indexType.hashCode() );
+        result = prime * result + ( ( keyType == null ) ? 0 : keyType.hashCode() );
+        result = prime * result + ( ( table == null ) ? 0 : table.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) return true;
+        if ( obj == null ) return false;
+        if ( getClass() != obj.getClass() ) return false;
+        IndexMetaDataImpl other = (IndexMetaDataImpl) obj;
+        if ( ascending != other.ascending ) return false;
+        if ( entryList == null ) {
+            if ( other.entryList != null ) return false;
+        } else if ( !entryList.equals(other.entryList) ) return false;
+        if ( indexName == null ) {
+            if ( other.indexName != null ) return false;
+        } else if ( !indexName.equals(other.indexName) ) return false;
+        if ( indexType != other.indexType ) return false;
+        if ( keyType != other.keyType ) return false;
+        if ( table == null ) {
+            if ( other.table != null ) return false;
+        } else if ( !table.equals(other.table) ) return false;
+        return true;
+    }
+    
+    
 }

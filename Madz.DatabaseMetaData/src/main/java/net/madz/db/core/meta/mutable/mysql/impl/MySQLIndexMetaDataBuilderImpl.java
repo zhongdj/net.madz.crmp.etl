@@ -27,12 +27,6 @@ public class MySQLIndexMetaDataBuilderImpl
         implements MySQLIndexMetaDataBuilder {
 
     @Override
-    public int getSubPart() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
     public boolean isNull() {
         // TODO Auto-generated method stub
         return false;
