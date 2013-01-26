@@ -20,7 +20,17 @@ import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
 
 public class MySQLForeignKeyMetaDataBuilderImpl
 extends BaseForeignKeyMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
-implements MySQLForeignKeyMetaDataBuilder, MySQLForeignKeyMetaData {
+implements MySQLForeignKeyMetaDataBuilder {
+
+    public MySQLForeignKeyMetaDataBuilderImpl(MySQLTableMetaDataBuilder table) {
+        // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public MySQLForeignKeyMetaDataBuilder build(Connection conn) throws SQLException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     @Override
     public String getForeignKeyName() {
@@ -95,11 +105,6 @@ implements MySQLForeignKeyMetaDataBuilder, MySQLForeignKeyMetaData {
         return null;
     }
 
-    @Override
-    public MySQLForeignKeyMetaDataBuilder build(Connection conn) throws SQLException {
-        // TODO Auto-generated method stub
-        return null;
-    }
     
 }
 

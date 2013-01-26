@@ -34,18 +34,35 @@ public class MySQLSchemaMetaDataBuilderImpl
 
     public MySQLSchemaMetaDataBuilder build(Connection conn) throws SQLException {
         System.out.println("Mysql schema builder");
-        Statement stmt = conn.createStatement();
+        // Get MySql information
+        final Statement stmt = conn.createStatement();
         stmt.executeQuery("use information_schema;");
-        ResultSet rs = stmt.executeQuery("select * from SCHEMATA where schema_name = '" + schemaPath.getName() + "'");
-        while ( rs.next() && rs.getRow() == 1 ) {
-            charSet = rs.getString("DEFAULT_CHARACTER_SET_NAME");
-            collation = rs.getString("DEFAULT_COLLATION_NAME");
-        }
-        rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN character_sets ON default_collate_name = table_collation WHERE table_schema = '" + schemaPath.getName() + "'");
-        MetaDataResultSet<MySQLTableDbMetaDataEnum> rsMd = new MetaDataResultSet<MySQLTableDbMetaDataEnum>(rs, MySQLTableDbMetaDataEnum.values());
-        while ( rsMd.next() ) {
-            final MySQLTableMetaDataBuilder table = new MySQLTableMetaDataBuilderImpl(this).build(rsMd,conn);
-            appendTableMetaDataBuilder(table);
+        ResultSet rs = null;
+        try {
+            rs = stmt.executeQuery("select * from SCHEMATA where schema_name = '" + schemaPath.getName() + "'");
+            while ( rs.next() && rs.getRow() == 1 ) {
+                charSet = rs.getString("DEFAULT_CHARACTER_SET_NAME");
+                collation = rs.getString("DEFAULT_COLLATION_NAME");
+            }
+            // Construct Table builders and append
+            rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN character_sets ON default_collate_name = table_collation WHERE schema_name = '"
+                    + schemaPath.getName() + "'");
+            MetaDataResultSet<MySQLTableDbMetaDataEnum> rsMd = new MetaDataResultSet<MySQLTableDbMetaDataEnum>(rs, MySQLTableDbMetaDataEnum.values());
+            while ( rsMd.next() ) {
+                final MySQLTableMetaDataBuilder table = new MySQLTableMetaDataBuilderImpl(this).build(rsMd, conn);
+                appendTableMetaDataBuilder(table);
+            }
+            // Construct foreignKeys
+            for ( MySQLTableMetaDataBuilder table : this.tableBuilderList.values() ) {
+                rs = stmt.executeQuery("SELECT * FROM key_column_usage WHERE table_schema = '" + table.getTablePath().getParent().getName()
+                        + "' AND table_name = '" + table.getTableName() + "';");
+                while ( rs.next() ) {
+                    MySQLForeignKeyMetaDataBuilder fkBuilder = new MySQLForeignKeyMetaDataBuilderImpl(table).build(conn);
+                    table.appendForeignKeyMetaDataBuilder(fkBuilder);
+                }
+            }
+        } finally {
+            rs.close();
         }
         return this;
     }
@@ -64,5 +81,4 @@ public class MySQLSchemaMetaDataBuilderImpl
     public MySQLSchemaMetaData getMetaData() {
         return new MySQLSchemaMetaDataImpl(this);
     }
-
 }

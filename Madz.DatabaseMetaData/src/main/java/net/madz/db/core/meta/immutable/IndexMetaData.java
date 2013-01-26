@@ -43,6 +43,8 @@ extends MetaData {
         /** Index this entry belongs to */
         public IMD getKey();
 
+        public Integer getSubPart ();
+        
         /** Column definition */
         public CMD getColumn();
 

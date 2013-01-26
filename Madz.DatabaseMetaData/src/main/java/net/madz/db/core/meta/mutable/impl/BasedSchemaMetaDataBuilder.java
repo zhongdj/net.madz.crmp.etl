@@ -39,6 +39,10 @@ public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuil
     public DottedPath getSchemaPath() {
         return this.schemaPath;
     }
+    
+    public SMDB build() {
+        return null;
+    }
 
     public Collection<TMD> getTables() {
         final Collection<TMD> result = new LinkedList<TMD>();

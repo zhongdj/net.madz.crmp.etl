@@ -22,7 +22,7 @@ import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
 public class MySQLColumnMetaDataBuilderImpl
         extends
         BaseColumnMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
-        implements MySQLColumnMetaDataBuilder, MySQLColumnMetaData {
+        implements MySQLColumnMetaDataBuilder {
 
     public MySQLColumnMetaDataBuilderImpl(DottedPath name) {
         super(name);

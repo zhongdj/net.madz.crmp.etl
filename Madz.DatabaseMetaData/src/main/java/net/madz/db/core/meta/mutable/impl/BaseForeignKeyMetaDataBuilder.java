@@ -18,68 +18,86 @@ import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
 public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TMDB extends TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, CMDB extends ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, FMDB extends ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IMDB extends IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
         implements ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD> {
 
+    protected List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList;
+    protected CascadeRule updateRule, deleteRule;
+    protected KeyDeferrability deferrability;
+    protected TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD> pkTable, fkTable;
+    protected IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD> pkIndex, fkIndex;
+    protected String foreignKeyName;
+
+    public class Entry implements ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> {
+
+        @Override
+        public CMD getForeignKeyColumn() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public CMD getPrimaryKeyColumn() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public FMD getKey() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+    }
+
     @Override
     public String getForeignKeyName() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.foreignKeyName;
     }
 
     @Override
     public IMD getForeignKeyIndex() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.fkIndex.getMetaData();
     }
 
     @Override
     public TMD getForeignKeyTable() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.fkTable.getMetaData();
     }
 
     @Override
     public IMD getPrimaryKeyIndex() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.pkIndex.getMetaData();
     }
 
     @Override
     public TMD getPrimaryKeyTable() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.pkTable.getMetaData();
     }
 
     @Override
     public CascadeRule getDeleteCascadeRule() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.deleteRule;
     }
 
     @Override
     public CascadeRule getUpdateCascadeRule() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.updateRule;
     }
 
     @Override
     public KeyDeferrability getKeyDeferrability() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.deferrability;
     }
 
     @Override
-    public List<Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
-        // TODO Auto-generated method stub
-        return null;
+    public List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
+        return this.entryList;
     }
 
     @Override
     public Integer size() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.entryList.size();
     }
 
     @Override
-    public void addEntry(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
-        // TODO Auto-generated method stub
+    public void addEntry(ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry) {
+        this.entryList.add(entry);
     }
 }

@@ -24,7 +24,7 @@ import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
 public class MySQLIndexMetaDataBuilderImpl
         extends
         BaseIndexMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
-        implements MySQLIndexMetaDataBuilder, MySQLIndexMetaData {
+        implements MySQLIndexMetaDataBuilder {
 
     @Override
     public int getSubPart() {
