@@ -425,12 +425,46 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
             `pk_column_part_3` INTEGER(32) NOT NULL,
             `data_column_1` VARCHAR(64) NULL,
             PRIMARY KEY (`pk_column_part_1`,`pk_column_part_2`, `pk_column_part_3`) 
-          )
+          ) ENGINE=`InnoDB` DEFAULT CHARACTER SET=`utf8` DEFAULT COLLATE=`utf8_bin`
           """
           :: Nil)
-          
-          
 
+      /*
+		mysql> select * from statistics where table_schema = 'madz_database_parser_test';
+		+---------------+---------------------------+---------------------------+------------+--------------+---------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+		| TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME                | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME    | SEQ_IN_INDEX | COLUMN_NAME      | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+		+---------------+---------------------------+---------------------------+------------+--------------+---------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+		| def           | madz_database_parser_test | table_with_composite_pk   |          0 | test         | PRIMARY       |            1 | pk_column_part_1 | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+		| def           | madz_database_parser_test | table_with_composite_pk   |          0 | test         | PRIMARY       |            2 | pk_column_part_2 | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+		| def           | madz_database_parser_test | table_with_composite_pk   |          0 | test         | PRIMARY       |            3 | pk_column_part_3 | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+		+---------------+---------------------------+---------------------------+------------+--------------+---------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+		6 rows in set (0.00 sec)
+       * 
+       */    
+      val result = parser parseSchemaMetaData
+      
+      val table = result getTable "table_with_composite_pk"
+      val pk: MySQLIndexMetaData = table getPrimaryKey
+      val pk_column_part_1 = table getColumn "pk_column_part_1"
+      val pk_column_part_2 = table getColumn "pk_column_part_2"
+      val pk_column_part_3 = table getColumn "pk_column_part_3"
+      val data_columnt_1 = table getColumn "data_column_1"
+      
+      pk.getIndexMethod()
+      pk.getSubPart()
+      pk.isNull()
+      pk.containsColumn(pk_column_part_1)
+      pk.containsColumn(pk_column_part_1)
+      pk.containsColumn(pk_column_part_1)
+      pk.containsColumn(data_columnt_1)
+      pk.getCardinality()
+      pk.getEntrySet()
+      pk.getIndexName()
+      pk.getKeyType()
+      pk.getPageCount()
+      pk.getSortDirection()
+      pk.getTable()
+      pk.isUnique()
     }
 
     it("should parse single column UNIQUE KEY") {

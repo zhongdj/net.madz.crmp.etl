@@ -4,6 +4,7 @@ import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod;
 
 public interface MySQLIndexMetaData extends
+<<<<<<< HEAD
         IndexMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
 /*
  * < MSMD extends MySQLSchemaMetaData<MSMD, MTMD, MCMD, MFMD, MIMD>, MTMD
@@ -13,6 +14,11 @@ public interface MySQLIndexMetaData extends
  * MySQLIndexMetaData<MSMD, MTMD, MCMD, MFMD, MIMD> > extends
  * IndexMetaData<MSMD,MTMD,MCMD,MFMD,MIMD>
  */{
+=======
+        IndexMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
+
+    int getSubPart();
+>>>>>>> add composite pk test
 
     boolean isNull();
 
