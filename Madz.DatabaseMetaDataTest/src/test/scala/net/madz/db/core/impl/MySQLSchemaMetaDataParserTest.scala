@@ -435,30 +435,42 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
 		+---------------+---------------------------+---------------------------+------------+--------------+---------------+--------------+------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
 		6 rows in set (0.00 sec)
        * 
-       */    
+       */
       val result = parser parseSchemaMetaData
-      
+
       val table = result getTable "table_with_composite_pk"
       val pk: MySQLIndexMetaData = table getPrimaryKey
       val pk_column_part_1 = table getColumn "pk_column_part_1"
       val pk_column_part_2 = table getColumn "pk_column_part_2"
       val pk_column_part_3 = table getColumn "pk_column_part_3"
       val data_columnt_1 = table getColumn "data_column_1"
-      
-      pk.getIndexMethod()
-      pk.isNull()
-      pk.containsColumn(pk_column_part_1)
-      pk.containsColumn(pk_column_part_1)
-      pk.containsColumn(pk_column_part_1)
-      pk.containsColumn(data_columnt_1)
-      pk.getCardinality()
-      pk.getEntrySet()
-      pk.getIndexName()
-      pk.getKeyType()
-      pk.getPageCount()
-      pk.getSortDirection()
-      pk.getTable()
-      pk.isUnique()
+
+      Assertions.expectResult(MySQLIndexMethod.btree)(pk getIndexMethod)
+      //??
+      Assertions.expectResult(false)(pk.isNull)
+      Assertions.expectResult(true)(pk.containsColumn(pk_column_part_1))
+      Assertions.expectResult(true)(pk.containsColumn(pk_column_part_2))
+      Assertions.expectResult(true)(pk.containsColumn(pk_column_part_3))
+      Assertions.expectResult(false)(pk.containsColumn(data_columnt_1))
+      Assertions.expectResult(0)(pk getCardinality)
+      Assertions.expectResult("PRIMARY")(pk.getIndexName())
+      Assertions.expectResult(KeyType.primaryKey)(pk.getKeyType())
+      //pk.getPageCount()
+      Assertions.expectResult(SortDirection.ascending)(pk.getSortDirection)
+      Assertions.expectResult(table)(pk.getTable)
+      Assertions.expectResult(table.getTableName)(pk.getTable.getTableName)
+      Assertions.expectResult(true)(pk.isUnique)
+      val indexEntryList: List[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]] = collectionAsScalaIterable[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]](pk.getEntrySet) toList
+
+      Assertions.expectResult(3)(indexEntryList.length)
+      val column_vs_entry = List(pk_column_part_1, pk_column_part_2, pk_column_part_3) zip indexEntryList
+      column_vs_entry.foreach(pair => {
+        Assertions.expectResult(pair._1)(pair._2 getColumn)
+        Assertions.expectResult(pk)(pair._2 getKey)
+        Assertions.expectResult(null)(pair._2.getSubPart)
+        //Tricky part
+        Assertions.expectResult(pair._1.getOrdinalPosition)(pair._2 getPosition)
+      })
     }
 
     it("should parse single column UNIQUE KEY") {
