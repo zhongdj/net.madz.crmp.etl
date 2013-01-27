@@ -23,7 +23,7 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
         implements DatabaseSchemaUtils {
 
     @Override
-    public boolean databaseExists(String databaseName, boolean isCopy) {
+    public boolean databaseExists(String databaseName, boolean isCopy) throws SQLException {
         Connection conn = null;
         boolean result = false;
         try {
@@ -45,11 +45,14 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
                     return result;
                 } catch (SQLException e) {
                     LogUtils.debug(this.getClass(), e.getMessage());
+                    throw e;
                 } finally {
                     try {
-                        rs.close();
-                    } catch (SQLException e) {
-                        LogUtils.debug(this.getClass(), e.getMessage());
+                        if ( null != rs && !rs.isClosed() ) {
+                            rs.close();
+                        }
+                    } catch (SQLException ignored) {
+                        LogUtils.debug(this.getClass(), ignored.getMessage());
                     }
                 }
             } else {
@@ -62,7 +65,9 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
             return result;
         } finally {
             try {
-                conn.close();
+                if ( null != conn && !conn.isClosed() ) {
+                    conn.close();
+                }
             } catch (final SQLException e) {
                 LogUtils.debug(this.getClass(), e.getMessage());
             }
@@ -106,7 +111,7 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
     }
 
     @Override
-    public boolean dropDatabase(String databaseName) throws JAXBException {
+    public boolean dropDatabase(String databaseName) throws JAXBException, SQLException {
         if ( databaseExists(databaseName, true) ) {
             Connection conn = DbConfigurationManagement.createConnection(databaseName, true);
             Statement stmt;

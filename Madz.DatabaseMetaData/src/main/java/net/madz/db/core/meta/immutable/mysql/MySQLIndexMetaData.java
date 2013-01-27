@@ -9,4 +9,6 @@ public interface MySQLIndexMetaData extends
     boolean isNull();
 
     MySQLIndexMethod getIndexMethod();
+
+    String getIndexComment();
 }

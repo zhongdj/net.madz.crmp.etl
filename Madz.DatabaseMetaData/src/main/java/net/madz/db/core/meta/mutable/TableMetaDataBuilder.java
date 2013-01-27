@@ -1,5 +1,6 @@
 package net.madz.db.core.meta.mutable;
 
+import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
@@ -10,7 +11,8 @@ public interface TableMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, T
         extends
         // TableMetaData<SMDB, TMDB, CMDB, FMDB, IMDB> ,
         MetaDataBuilder<TMD>, SQLBasedMetaDataBuilder<TMDB> {
-    String getTableName();
+    DottedPath getTablePath();
+    SMDB getSchema();
     TMDB appendColumnMetaDataBuilder(CMDB columnMetaData);
     TMDB appendIndexMetaDataBuilder(IMDB indexMetaData);
     TMDB appendForeignKeyMetaDataBuilder(FMDB fkMetaData);

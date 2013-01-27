@@ -2,9 +2,9 @@ package net.madz.db.core.meta.immutable;
 
 import java.util.Collection;
 
-import net.madz.db.core.meta.immutable.types.IndexType;
-import net.madz.db.core.meta.immutable.types.KeyType;
-import net.madz.db.core.meta.immutable.types.SortDirection;
+import net.madz.db.core.meta.immutable.types.IndexTypeEnum;
+import net.madz.db.core.meta.immutable.types.KeyTypeEnum;
+import net.madz.db.core.meta.immutable.types.SortDirectionEnum;
 
 public interface IndexMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> 
 extends MetaData {
@@ -16,13 +16,13 @@ extends MetaData {
     boolean isUnique();
 
     /** KeyType of index */
-    KeyType getKeyType();
+    KeyTypeEnum getKeyType();
 
     /** Type of the index */
-    IndexType getIndexType();
+    IndexTypeEnum getIndexType();
 
     /** Ascending/Descending order */
-    SortDirection getSortDirection();
+    SortDirectionEnum getSortDirection();
 
     /** Index cardinality, if known */
     Integer getCardinality();

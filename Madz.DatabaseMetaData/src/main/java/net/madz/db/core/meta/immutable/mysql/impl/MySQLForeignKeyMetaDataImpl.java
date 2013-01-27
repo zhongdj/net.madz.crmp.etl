@@ -1,7 +1,5 @@
 package net.madz.db.core.meta.immutable.mysql.impl;
 
-import java.sql.SQLException;
-
 import net.madz.db.core.meta.immutable.impl.ForeignKeyMetaDataImpl;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -13,7 +11,7 @@ public final class MySQLForeignKeyMetaDataImpl extends
         ForeignKeyMetaDataImpl<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> implements
         MySQLForeignKeyMetaData {
 
-    public MySQLForeignKeyMetaDataImpl(MySQLForeignKeyMetaData metaData) throws SQLException {
+    public MySQLForeignKeyMetaDataImpl(MySQLForeignKeyMetaData metaData) {
         super(metaData);
     }
 }

@@ -2,6 +2,7 @@ package net.madz.db.core.meta.mutable.impl;
 
 import java.util.List;
 
+import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
@@ -20,35 +21,44 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
 
     protected List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList;
     protected CascadeRule updateRule, deleteRule;
+    // TODO [Tracy] should it be included in jdbc only?
     protected KeyDeferrability deferrability;
-    protected TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD> pkTable, fkTable;
-    protected IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD> pkIndex, fkIndex;
-    protected String foreignKeyName;
+    protected TMDB pkTable, fkTable;
+    protected IMDB pkIndex, fkIndex;
+    protected DottedPath foreignKeyPath;
 
     public class Entry implements ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> {
 
+        private final CMD fkColumn;
+        private final CMD pkColumn;
+        private final FMD key;
+
+        public Entry(CMD fkColumn, CMD pkColumn, FMD key) {
+            super();
+            this.fkColumn = fkColumn;
+            this.pkColumn = pkColumn;
+            this.key = key;
+        }
+
         @Override
         public CMD getForeignKeyColumn() {
-            // TODO Auto-generated method stub
-            return null;
+            return this.fkColumn;
         }
 
         @Override
         public CMD getPrimaryKeyColumn() {
-            // TODO Auto-generated method stub
-            return null;
+            return this.pkColumn;
         }
 
         @Override
         public FMD getKey() {
-            // TODO Auto-generated method stub
-            return null;
+            return this.key;
         }
     }
 
     @Override
     public String getForeignKeyName() {
-        return this.foreignKeyName;
+        return this.foreignKeyPath.getName();
     }
 
     @Override

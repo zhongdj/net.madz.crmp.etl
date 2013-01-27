@@ -1,16 +1,18 @@
 package net.madz.db.core.meta.mutable.mysql.impl;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.sql.Statement;
 
+import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
+import net.madz.db.core.meta.immutable.mysql.impl.MySQLForeignKeyMetaDataImpl;
 import net.madz.db.core.meta.immutable.types.CascadeRule;
-import net.madz.db.core.meta.immutable.types.KeyDeferrability;
 import net.madz.db.core.meta.mutable.impl.BaseForeignKeyMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
@@ -23,19 +25,41 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         BaseForeignKeyMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
         implements MySQLForeignKeyMetaDataBuilder {
 
-    public MySQLForeignKeyMetaDataBuilderImpl(MySQLTableMetaDataBuilder table) {
-        // TODO Auto-generated constructor stub
-    }
-
-    @Override
-    public MySQLForeignKeyMetaData getMetaData() {
-        // TODO Auto-generated method stub
-        return null;
+    public MySQLForeignKeyMetaDataBuilderImpl(MySQLTableMetaDataBuilder table, DottedPath foreignKeyPath) {
+        this.fkTable = table;
+        this.foreignKeyPath = foreignKeyPath;
     }
 
     @Override
     public MySQLForeignKeyMetaDataBuilder build(Connection conn) throws SQLException {
-        // TODO Auto-generated method stub
-        return null;
+        Statement stmt = conn.createStatement();
+        ResultSet rs = null;
+        rs = stmt.executeQuery("SELECT * FROM referential_constraints WHERE constraint_schema='" + this.fkTable.getTablePath().getParent().getName()
+                + "' AND constraint_name='" + this.foreignKeyPath.getName() + "';");
+        while ( rs.next() ) {
+            this.updateRule = CascadeRule.valueOf(rs.getString("update_rule"));
+            this.deleteRule = CascadeRule.valueOf(rs.getString("delete_rule"));
+            // [ToDo] [Tracy] about how to get pkTable
+            // Below code suppose the referenced table is in the same schema,
+            // but actually, the referenced table could be in another schema.
+            this.pkTable = this.fkTable.getSchema().getTableBuilder(rs.getString("referenced_table_name"));
+            this.pkIndex = this.pkTable.getIndexBuilder(rs.getString("unique_constraint_name"));
+            this.fkIndex = this.fkTable.getIndexBuilder(rs.getString("constraint_name"));
+        }
+        rs = stmt.executeQuery("SELECT * FROM key_column_usage WHERE constraint_schema='" + this.fkTable.getSchema().getSchemaPath().getName()
+                + "' AND constraint_name = '" + this.foreignKeyPath.getName() + "';");
+        while ( rs.next() ) {
+            final String columnName = rs.getString("column_name");
+            final String referencedColumnName = rs.getString("referenced_column_name");
+            final MySQLColumnMetaData fkColumn = this.fkTable.getColumn(columnName);
+            final MySQLColumnMetaData pkColumn = this.pkTable.getColumn(referencedColumnName);
+            this.addEntry(new BaseForeignKeyMetaDataBuilder.Entry(fkColumn, pkColumn, this));
+        }
+        return this;
+    }
+
+    @Override
+    public MySQLForeignKeyMetaData getMetaData() {
+        return new MySQLForeignKeyMetaDataImpl(this);
     }
 }

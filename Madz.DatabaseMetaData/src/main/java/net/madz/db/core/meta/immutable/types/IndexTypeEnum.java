@@ -3,13 +3,13 @@ package net.madz.db.core.meta.immutable.types;
 import java.sql.DatabaseMetaData;
 import java.util.NoSuchElementException;
 
-public enum IndexType {
+public enum IndexTypeEnum {
     statistic,
     clustered,
     hashed,
     other;
 
-    public final static IndexType getIndexTypeFromJdbcType(Integer jdbcValue) {
+    public final static IndexTypeEnum getIndexTypeFromJdbcType(Integer jdbcValue) {
         if ( null != jdbcValue ) {
             switch (jdbcValue.intValue()) {
             case DatabaseMetaData.tableIndexStatistic:
@@ -22,6 +22,6 @@ public enum IndexType {
                 return other;
             }
         }
-        throw new NoSuchElementException(IndexType.class.getSimpleName() + "[" + jdbcValue + "]");
+        throw new NoSuchElementException(IndexTypeEnum.class.getSimpleName() + "[" + jdbcValue + "]");
     }
 }

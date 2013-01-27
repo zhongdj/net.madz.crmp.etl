@@ -26,7 +26,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     protected Integer size;
     protected boolean isNullable;
     protected boolean isAutoIncremented;
-    protected Integer radix, charOctetLength;
+    protected Integer radix, characterOctetLength;
     protected String remarks, defaultValue;
     protected IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> primaryKey;
     // TODO [Jan 22, 2013][barry][Done] Can this field be re-assign?
@@ -90,7 +90,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
 
     @Override
     public Integer getCharOctetLength() {
-        return this.charOctetLength;
+        return this.characterOctetLength;
     }
 
     @Override

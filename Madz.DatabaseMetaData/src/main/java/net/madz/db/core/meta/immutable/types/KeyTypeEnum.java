@@ -1,6 +1,6 @@
 package net.madz.db.core.meta.immutable.types;
 
-public enum KeyType {
+public enum KeyTypeEnum {
     primaryKey,
     uniqueKey,
     index, ;

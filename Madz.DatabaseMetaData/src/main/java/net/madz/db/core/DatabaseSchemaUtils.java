@@ -22,8 +22,9 @@ public interface DatabaseSchemaUtils {
      * @param databaseName
      * @param isCopy
      * @return
+     * @throws SQLException 
      */
-    boolean databaseExists(String databaseName, boolean isCopy);
+    boolean databaseExists(String databaseName, boolean isCopy) throws SQLException;
 
     /**
      * This method compares schema of two databases. True will be returned when
@@ -56,6 +57,7 @@ public interface DatabaseSchemaUtils {
      * @param databaseName
      * @return
      * @throws JAXBException
+     * @throws SQLException 
      */
-    boolean dropDatabase(String databaseName) throws JAXBException;
+    boolean dropDatabase(String databaseName) throws JAXBException, SQLException;
 }

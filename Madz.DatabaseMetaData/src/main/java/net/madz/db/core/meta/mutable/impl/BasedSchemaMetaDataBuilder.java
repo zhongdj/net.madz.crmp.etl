@@ -32,7 +32,7 @@ public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuil
 
     @SuppressWarnings("unchecked")
     public SMDB appendTableMetaDataBuilder(TMDB table) {
-        tableBuilderList.put(table.getTableName(), table);
+        tableBuilderList.put(table.getTablePath().getName(), table);
         return (SMDB) this;
     }
 

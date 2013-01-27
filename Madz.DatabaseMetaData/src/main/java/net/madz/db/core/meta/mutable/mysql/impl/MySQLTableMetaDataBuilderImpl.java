@@ -116,4 +116,9 @@ public class MySQLTableMetaDataBuilderImpl
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public MySQLIndexMetaDataBuilder getIndexBuilder(String indexName) {
+        return this.indexMap.get(indexName);
+    }
 }

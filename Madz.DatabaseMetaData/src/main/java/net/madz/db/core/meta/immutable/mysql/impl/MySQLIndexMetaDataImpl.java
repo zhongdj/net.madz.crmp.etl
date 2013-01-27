@@ -30,4 +30,8 @@ public final class MySQLIndexMetaDataImpl extends
     public MySQLIndexMethod getIndexMethod() {
         return this.indexMethod;
     }
+
+    public String getIndexComment() {
+        return null;
+    }
 }

@@ -10,6 +10,8 @@ import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
 public interface MySQLTableMetaDataBuilder
         extends MySQLTableMetaData,
         TableMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
+
+    MySQLIndexMetaDataBuilder getIndexBuilder(String string);
         
         /*
         MySQLTableMetaData<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder>,

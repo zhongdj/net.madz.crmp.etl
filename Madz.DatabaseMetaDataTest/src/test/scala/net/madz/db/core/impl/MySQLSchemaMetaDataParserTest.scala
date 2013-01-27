@@ -22,9 +22,9 @@ import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLTableTypeEnum
-import net.madz.db.core.meta.immutable.types.IndexType
-import net.madz.db.core.meta.immutable.types.KeyType
-import net.madz.db.core.meta.immutable.types.SortDirection
+import net.madz.db.core.meta.immutable.types.IndexTypeEnum
+import net.madz.db.core.meta.immutable.types.KeyTypeEnum
+import net.madz.db.core.meta.immutable.types.SortDirectionEnum
 
 class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -220,10 +220,10 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(true)(pk isUnique)
       Assertions.expectResult(0)(pk getCardinality)
       Assertions.expectResult("PRIMARY")(pk getIndexName)
-      Assertions.expectResult(IndexType.clustered)(pk getIndexType)
-      Assertions.expectResult(KeyType.primaryKey)(pk getKeyType)
+      Assertions.expectResult(IndexTypeEnum.clustered)(pk getIndexType)
+      Assertions.expectResult(KeyTypeEnum.primaryKey)(pk getKeyType)
       Assertions.expectResult(0 /*"unknown"*/ )(pk getPageCount)
-      Assertions.expectResult(SortDirection.ascending)(pk getSortDirection)
+      Assertions.expectResult(SortDirectionEnum.ascending)(pk getSortDirection)
       Assertions.expectResult("table_with_single_column_pk")(pk.getTable getTableName)
       Assertions.expectResult(false)(pk.isNull)
       Assertions.expectResult(true)(pk.containsColumn(column))
@@ -282,12 +282,12 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       val pk = result.getTable("table_with_auto_incremental_index").getPrimaryKey()
       Assertions.expectResult("table_with_auto_incremental_index")(pk.getTable.getTableName)
       Assertions.expectResult("PRIMARY")(pk getIndexName)
-      Assertions.expectResult(SortDirection.ascending)(pk getSortDirection)
+      Assertions.expectResult(SortDirectionEnum.ascending)(pk getSortDirection)
       Assertions.expectResult(true)(pk isUnique)
       Assertions.expectResult(null)(pk isNull)
       Assertions.expectResult(0)(pk getCardinality)
-      Assertions.expectResult(IndexType.clustered)(pk getIndexType)
-      Assertions.expectResult(KeyType.primaryKey)(pk getKeyType)
+      Assertions.expectResult(IndexTypeEnum.clustered)(pk getIndexType)
+      Assertions.expectResult(KeyTypeEnum.primaryKey)(pk getKeyType)
 
       val column = result.getTable("table_with_auto_incremental_index").getColumn("single_column_pk")
       Assertions.expectResult(true)(column isAutoIncremented)
@@ -322,7 +322,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       val result = parser parseSchemaMetaData
       val pk = result.getTable("table_with_not_supported_descending_order") getPrimaryKey
 
-      Assertions.expectResult(SortDirection.ascending)(pk getSortDirection)
+      Assertions.expectResult(SortDirectionEnum.ascending)(pk getSortDirection)
 
     }
 
@@ -457,9 +457,9 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(false)(pk.containsColumn(data_columnt_1))
       Assertions.expectResult(0)(pk getCardinality)
       Assertions.expectResult("PRIMARY")(pk.getIndexName())
-      Assertions.expectResult(KeyType.primaryKey)(pk.getKeyType())
+      Assertions.expectResult(KeyTypeEnum.primaryKey)(pk.getKeyType())
       //pk.getPageCount()
-      Assertions.expectResult(SortDirection.ascending)(pk.getSortDirection)
+      Assertions.expectResult(SortDirectionEnum.ascending)(pk.getSortDirection)
       Assertions.expectResult(table)(pk.getTable)
       Assertions.expectResult(table.getTableName)(pk.getTable.getTableName)
       Assertions.expectResult(true)(pk.isUnique)
@@ -678,6 +678,6 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
     Assertions.expectResult(expect.NUMERIC_SCALE)(actual)
     Assertions.expectResult(expect.CHARACTER_SET_NAME)(actual getCharacterSet)
     Assertions.expectResult(expect.COLLATION_NAME)(actual getCollation)
-    Assertions.expectResult(expect.COLUMN_TYPE)(actual.getColumnType.name.replaceAll("_", " "))
+    Assertions.expectResult(expect.COLUMN_TYPE)(actual.getColumnKey().replaceAll("_", " "))
   }
 }

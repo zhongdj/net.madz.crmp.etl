@@ -23,7 +23,7 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
     protected final IMD pkIndex, fkIndex;
     protected final String fkName;
 
-    public ForeignKeyMetaDataImpl(FMD metaData) throws SQLException {
+    public ForeignKeyMetaDataImpl(FMD metaData) {
         this.entryList = metaData.getEntrySet();
         this.updateRule = metaData.getUpdateCascadeRule();
         this.deleteRule = metaData.getDeleteCascadeRule();

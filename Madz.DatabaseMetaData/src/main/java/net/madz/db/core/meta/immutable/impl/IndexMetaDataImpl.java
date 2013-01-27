@@ -7,22 +7,22 @@ import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
-import net.madz.db.core.meta.immutable.types.IndexType;
-import net.madz.db.core.meta.immutable.types.KeyType;
-import net.madz.db.core.meta.immutable.types.SortDirection;
+import net.madz.db.core.meta.immutable.types.IndexTypeEnum;
+import net.madz.db.core.meta.immutable.types.KeyTypeEnum;
+import net.madz.db.core.meta.immutable.types.SortDirectionEnum;
 
 public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
         implements IndexMetaData<SMD, TMD, CMD, FMD, IMD> {
 
     protected final TMD table;
     protected final String indexName;
-    protected final IndexType indexType;
-    protected final SortDirection ascending;
+    protected final IndexTypeEnum indexType;
+    protected final SortDirectionEnum ascending;
     protected final Integer cardinatlity;
     protected final Integer pages;
     protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList;
     // TODO [Jan 22, 2013][barry][Done] ONLY keyType can be re-assign?
-    protected final KeyType keyType;
+    protected final KeyTypeEnum keyType;
 
     public class Entry implements IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> {
 
@@ -111,17 +111,17 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         return this.keyType.isUnique();
     }
 
-    public KeyType getKeyType() {
+    public KeyTypeEnum getKeyType() {
         return this.keyType;
     }
 
     /** Type of index */
-    public IndexType getIndexType() {
+    public IndexTypeEnum getIndexType() {
         return this.indexType;
     }
 
     /** Ascending/descending order */
-    public SortDirection getSortDirection() {
+    public SortDirectionEnum getSortDirection() {
         return this.ascending;
     }
 

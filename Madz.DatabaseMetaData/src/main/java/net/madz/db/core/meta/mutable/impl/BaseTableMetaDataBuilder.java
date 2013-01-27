@@ -130,4 +130,9 @@ public abstract class BaseTableMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
     public IMD getIndex(String indexName) {
         return this.indexMap.get(indexName).getMetaData();
     }
+
+    @Override
+    public SMDB getSchema() {
+        return this.schema;
+    }
 }
