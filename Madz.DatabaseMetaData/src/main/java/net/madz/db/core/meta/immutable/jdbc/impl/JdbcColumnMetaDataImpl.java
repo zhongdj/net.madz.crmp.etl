@@ -13,4 +13,10 @@ public final class JdbcColumnMetaDataImpl extends
     public JdbcColumnMetaDataImpl(JdbcColumnMetaData metaData) {
         super(metaData);
     }
+
+    @Override
+    public Integer getSqlType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

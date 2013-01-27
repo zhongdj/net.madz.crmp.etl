@@ -16,9 +16,6 @@ public interface ColumnMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
 
     String getColumnName();
 
-    /** Sql Type from java.sql.Types */
-    Integer getSqlType();
-
     /**
      * Data source dependent type name, for a UDT the type name is fully
      * qualified

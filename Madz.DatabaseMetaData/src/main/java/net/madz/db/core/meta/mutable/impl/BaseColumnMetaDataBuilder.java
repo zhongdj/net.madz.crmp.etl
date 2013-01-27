@@ -22,7 +22,6 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
 
     protected DottedPath columnPath;
     protected TMDB tableBuilder;
-    protected Integer sqlType;
     protected String sqlTypeName;
     protected Integer size;
     protected boolean isNullable;
@@ -57,11 +56,6 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     @Override
     public String getColumnName() {
         return this.columnPath.getName();
-    }
-
-    @Override
-    public Integer getSqlType() {
-        return this.sqlType;
     }
 
     @Override

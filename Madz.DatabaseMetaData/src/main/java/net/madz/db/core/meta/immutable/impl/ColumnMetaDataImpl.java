@@ -15,7 +15,6 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
 
     protected final DottedPath name;
     protected final TMD table;
-    protected final Integer sqlType;
     protected final String typeName;
     protected final Integer size;
     protected final boolean isNullable;
@@ -30,7 +29,6 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
     public ColumnMetaDataImpl(CMD metaData) {
         this.name = metaData.getColumnPath();
         this.table = metaData.getTableMetaData();
-        this.sqlType = metaData.getSqlType();
         this.typeName = metaData.getSqlTypeName();
         this.size = metaData.getSize();
         this.radix = metaData.getRadix();
@@ -58,11 +56,6 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
     @Override
     public String getColumnName() {
         return this.name.getName();
-    }
-
-    @Override
-    public Integer getSqlType() {
-        return this.sqlType;
     }
 
     @Override
