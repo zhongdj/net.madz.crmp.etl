@@ -27,16 +27,14 @@ public final class MySQLColumnMetaDataBuilderImpl
         implements MySQLColumnMetaDataBuilder {
 
     private String characterSet;
-    private String collation;
     // private MySQLDataTypeEnum
     private String columnType;
     private long characterMaximumLength;
-    private int numericPrecision;
-    private int numericScale;
+    private Integer numericPrecision;
+    private Integer numericScale;
     private String collationName;
     private String columnKey;
     private String extra;
-    private String columnComment;
 
     public MySQLColumnMetaDataBuilderImpl(MySQLTableMetaDataBuilder tableBuilder, DottedPath columnPath) {
         super(tableBuilder, columnPath);
@@ -64,7 +62,7 @@ public final class MySQLColumnMetaDataBuilderImpl
                 this.columnType = rs.getString("column_type");
                 this.columnKey = rs.getString("column_key");
                 this.extra = rs.getString("extra");
-                this.columnComment = rs.getString("column_comment");
+                this.remarks = rs.getString("column_comment");
             }
         } finally {
             ResourceManagementUtils.closeResultSet(rs);
@@ -78,11 +76,6 @@ public final class MySQLColumnMetaDataBuilderImpl
     }
 
     @Override
-    public String getCollation() {
-        return collation;
-    }
-
-    @Override
     public String getColumnType() {
         return columnType;
     }
@@ -93,12 +86,12 @@ public final class MySQLColumnMetaDataBuilderImpl
     }
 
     @Override
-    public int getNumericPrecision() {
+    public Integer getNumericPrecision() {
         return numericPrecision;
     }
 
     @Override
-    public int getNumericScale() {
+    public Integer getNumericScale() {
         return numericScale;
     }
 
@@ -115,11 +108,6 @@ public final class MySQLColumnMetaDataBuilderImpl
     @Override
     public String getExtra() {
         return extra;
-    }
-
-    @Override
-    public String getColumnComment() {
-        return columnComment;
     }
 
     @Override

@@ -63,7 +63,7 @@ public class MySQLTableMetaDataBuilderImpl
             // Parse Columns
             final List<String> colNames = new LinkedList<String>();
             try {
-                rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + schemaName + "' AND table_name='" + getTableName() + "';");
+                rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + schemaName + "' AND table_name='" + getTableName() + "' ORDER BY ordinal_position ASC;");
                 while ( rs.next() ) {
                     colNames.add(rs.getString("column_name"));
                 }

@@ -16,11 +16,7 @@ public interface MySQLColumnMetaData extends
 
     String getCharacterSet();
 
-    String getCollation();
-
     String getColumnType();
-
-    String getColumnComment();
 
     String getExtra();
 
@@ -28,9 +24,9 @@ public interface MySQLColumnMetaData extends
 
     String getCollationName();
 
-    int getNumericScale();
+    Integer getNumericScale();
 
-    int getNumericPrecision();
+    Integer getNumericPrecision();
 
     long getCharacterMaximumLength();
 

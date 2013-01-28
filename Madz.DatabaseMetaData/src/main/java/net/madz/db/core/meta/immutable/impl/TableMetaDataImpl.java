@@ -26,8 +26,8 @@ public class TableMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     protected final TableType type;
     protected final String remarks;
     protected final String idCol, idGeneration;
-    protected final Map<String, CMD> columnMap;
-    protected final List<CMD> orderedColumns;
+    protected final Map<String, CMD> columnMap = new TreeMap<String, CMD>(String.CASE_INSENSITIVE_ORDER);
+    protected final List<CMD> orderedColumns = new LinkedList<CMD>();
     protected final Map<String, IMD> indexMap;
     protected final List<FMD> fkList = new LinkedList<FMD>();
     protected IMD primaryKey;
@@ -38,12 +38,11 @@ public class TableMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         this.remarks = tableMetaData.getRemarks();
         this.idCol = tableMetaData.getIdCol();
         this.idGeneration = tableMetaData.getIdGeneration();
-        final TreeMap<String, CMD> columnMap = new TreeMap<String, CMD>(String.CASE_INSENSITIVE_ORDER);
         for ( CMD column : columnMetaDatas ) {
-            columnMap.put(column.getColumnName(), column);
+            this.columnMap.put(column.getColumnName(), column);
         }
-        this.columnMap = Collections.unmodifiableMap(columnMap);
-        this.orderedColumns = columnMetaDatas;
+        Collections.sort(columnMetaDatas, ColumnMetaData.ORDINAL_COMPARATOR);
+        this.orderedColumns.addAll(columnMetaDatas);
         final TreeMap<String, IMD> indexMap = new TreeMap<String, IMD>();
         for ( IMD index : indexMetaDatas ) {
             indexMap.put(index.getIndexName(), index);

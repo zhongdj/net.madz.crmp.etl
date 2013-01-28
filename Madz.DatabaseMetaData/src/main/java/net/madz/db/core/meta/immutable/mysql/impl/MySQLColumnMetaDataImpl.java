@@ -12,20 +12,17 @@ public final class MySQLColumnMetaDataImpl extends
         MySQLColumnMetaData {
 
     private String characterSet;
-    private String collation;
     private String columnType;
     private long characterMaximumLength;
-    private int numericPrecision;
-    private int numericScale;
+    private Integer numericPrecision;
+    private Integer numericScale;
     private String collationName;
     private String columnKey;
     private String extra;
-    private String columnComment;
 
     public MySQLColumnMetaDataImpl(MySQLColumnMetaData metaData) {
         super(metaData);
         this.characterSet = metaData.getCharacterSet();
-        this.collation = metaData.getCollation();
         this.columnType = metaData.getColumnType();
         this.characterMaximumLength = metaData.getCharacterMaximumLength();
         this.numericPrecision = metaData.getNumericPrecision();
@@ -33,7 +30,6 @@ public final class MySQLColumnMetaDataImpl extends
         this.collationName = metaData.getCollationName();
         this.columnKey = metaData.getColumnKey();
         this.extra = metaData.getExtra();
-        this.columnComment = metaData.getColumnComment();
     }
 
     @Override
@@ -42,18 +38,8 @@ public final class MySQLColumnMetaDataImpl extends
     }
 
     @Override
-    public String getCollation() {
-        return collation;
-    }
-
-    @Override
     public String getColumnType() {
         return columnType;
-    }
-
-    @Override
-    public String getColumnComment() {
-        return this.columnComment;
     }
 
     @Override
@@ -72,12 +58,12 @@ public final class MySQLColumnMetaDataImpl extends
     }
 
     @Override
-    public int getNumericScale() {
+    public Integer getNumericScale() {
         return this.numericScale;
     }
 
     @Override
-    public int getNumericPrecision() {
+    public Integer getNumericPrecision() {
         return this.numericPrecision;
     }
 
