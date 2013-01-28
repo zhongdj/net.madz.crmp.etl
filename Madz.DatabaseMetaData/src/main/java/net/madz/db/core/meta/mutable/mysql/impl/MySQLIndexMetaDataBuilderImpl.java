@@ -41,6 +41,7 @@ public class MySQLIndexMetaDataBuilderImpl
         // TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | NON_UNIQUE | INDEX_SCHEMA
         // | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME | COLLATION | CARDINALITY |
         // SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+        stmt.executeQuery("use information_schema;");
         ResultSet rs = stmt.executeQuery("SELECT * FROM statistics WHERE table_schema='" + this.indexPath.getParent().getParent().getName()
                 + "' AND table_name='" + this.indexPath.getParent().getName() + "';");
         int count = 0;

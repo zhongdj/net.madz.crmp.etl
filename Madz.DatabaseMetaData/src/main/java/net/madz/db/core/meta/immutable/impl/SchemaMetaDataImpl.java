@@ -23,6 +23,7 @@ public class SchemaMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
         this.name = metaData.getSchemaPath();
         this.orderedTables.addAll(metaData.getTables());
         for ( TMD t : metaData.getTables() ) {
+            if (null == t) throw new IllegalStateException("XXXXXXXXXXX");
             tablesMap.put(t.getTableName(), t);
         }
     }

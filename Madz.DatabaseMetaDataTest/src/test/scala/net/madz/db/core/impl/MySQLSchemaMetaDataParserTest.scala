@@ -1,16 +1,13 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
-
 import scala.collection.JavaConversions.collectionAsScalaIterable
 import scala.collection.JavaConversions.seqAsJavaList
 import scala.collection.immutable.List
 import scala.slick.session.Database
-
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
-
 import net.madz.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl
 import net.madz.db.core.meta.DottedPath
 import net.madz.db.core.meta.immutable.IndexMetaData
@@ -25,6 +22,7 @@ import net.madz.db.core.meta.immutable.mysql.enums.MySQLTableTypeEnum
 import net.madz.db.core.meta.immutable.types.IndexTypeEnum
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum
 import net.madz.db.core.meta.immutable.types.SortDirectionEnum
+import net.madz.db.core.meta.immutable.types.TableType
 
 class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -94,7 +92,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(MySQLEngineEnum.InnoDB)(table.getEngine)
       Assertions.expectResult("utf8" toLowerCase)(table getCharacterSet)
       Assertions.expectResult("utf8_unicode_ci" toLowerCase)(table getCollation)
-      Assertions.expectResult(MySQLTableTypeEnum.base_table)(table getType)
+      Assertions.expectResult(TableType.table)(table getType)
     }
 
   }

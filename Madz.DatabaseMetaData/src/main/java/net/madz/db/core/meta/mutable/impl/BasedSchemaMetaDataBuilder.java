@@ -23,8 +23,8 @@ public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuil
 
     // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable fields
     protected final DottedPath schemaPath;
-    protected final Map<String, TMDB> tableBuilderList = new TreeMap<String, TMDB>(String.CASE_INSENSITIVE_ORDER);
-
+    protected final Map<String, TMDB> tableBuilderMap = new TreeMap<String, TMDB>(String.CASE_INSENSITIVE_ORDER);
+    private final Collection<TMDB> tableList = new LinkedList<TMDB>();
     public BasedSchemaMetaDataBuilder(final DottedPath schemaPath) throws SQLException {
         super();
         this.schemaPath = schemaPath;
@@ -32,7 +32,8 @@ public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuil
 
     @SuppressWarnings("unchecked")
     public SMDB appendTableMetaDataBuilder(TMDB table) {
-        tableBuilderList.put(table.getTablePath().getName(), table);
+        tableList.add(table);
+        tableBuilderMap.put(table.getTablePath().getName(), table);
         return (SMDB) this;
     }
 
@@ -40,19 +41,11 @@ public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuil
         return this.schemaPath;
     }
     
-    public SMDB build() {
-        return null;
-    }
-
     public Collection<TMD> getTables() {
-        final Collection<TMD> result = new LinkedList<TMD>();
-        for ( TMDB tableBuilder : this.tableBuilderList.values() ) {
-            result.add(tableBuilder.getMetaData());
-        }
-        return result;
+        return (Collection<TMD>) tableList;
     }
 
     public TMD getTable(String name) {
-        return this.tableBuilderList.get(name).getMetaData();
+        return this.tableBuilderMap.get(name).getMetaData();
     }
 }

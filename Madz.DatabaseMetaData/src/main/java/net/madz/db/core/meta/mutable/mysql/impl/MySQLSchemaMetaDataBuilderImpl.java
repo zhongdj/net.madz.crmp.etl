@@ -22,6 +22,7 @@ import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
+import net.madz.db.utils.ResourceManagementUtils;
 
 public class MySQLSchemaMetaDataBuilderImpl
         extends
@@ -48,39 +49,55 @@ public class MySQLSchemaMetaDataBuilderImpl
                 charSet = rs.getString("default_character_set_name");
                 collation = rs.getString("default_collation_name");
             }
+        } finally {
+            ResourceManagementUtils.closeResultSet(rs);
+        }
+        final List<String> tableNames = new LinkedList<String>();
+        try {
             // Construct Table builders and append
             rs = stmt.executeQuery("SELECT * FROM tables WHERE table_schema = '" + schemaPath.getName() + "'");
-            final List<String> tableNames = new LinkedList<String>();
             while ( rs.next() ) {
                 tableNames.add(rs.getString("table_name"));
             }
-            for ( String name : tableNames ) {
-                final MySQLTableMetaDataBuilder table = new MySQLTableMetaDataBuilderImpl(this, name).build(conn);
-                tableBuilders.put(name, table);
-                appendTableMetaDataBuilder(table);
-            }
-            // Construct foreignKeys
-            final Map<String, LinkedList<String>> fkNames = new HashMap<String, LinkedList<String>>();
-            for ( String name : tableNames ) {
-                final LinkedList<String> fks = new LinkedList<String>();
+        } finally {
+            ResourceManagementUtils.closeResultSet(rs);
+        }
+        // For empty database
+        if ( 0 >= tableNames.size() ) {
+            return this;
+        }
+        for ( String name : tableNames ) {
+            final MySQLTableMetaDataBuilder table = new MySQLTableMetaDataBuilderImpl(this, name).build(conn);
+            tableBuilders.put(name, table);
+            appendTableMetaDataBuilder(table);
+        }
+        // Construct foreignKeys
+        final Map<String, LinkedList<String>> fkNames = new HashMap<String, LinkedList<String>>();
+        for ( String name : tableNames ) {
+            final LinkedList<String> fks = new LinkedList<String>();
+            try {
                 rs = stmt.executeQuery("SELECT * FROM referential_constraints WHERE constraint_schema = '" + this.schemaPath.getName() + "' AND table_name = '"
                         + name + "';");
                 while ( rs.next() ) {
                     fks.add(rs.getString("constraint_name"));
                 }
-                fkNames.put(name, fks);
+            } finally {
+                ResourceManagementUtils.closeResultSet(rs);
             }
-            for ( String tableName : fkNames.keySet() ) {
-                final LinkedList<String> fks = fkNames.get(tableName);
-                for ( String name : fks ) {
-                    final MySQLTableMetaDataBuilder tableBuilder = tableBuilders.get(tableName);
-                    final MySQLForeignKeyMetaDataBuilder fkBuilder = new MySQLForeignKeyMetaDataBuilderImpl(tableBuilder, this.schemaPath.append(tableName)
-                            .append(name)).build(conn);
-                    tableBuilder.appendForeignKeyMetaDataBuilder(fkBuilder);
-                }
+            fkNames.put(name, fks);
+        }
+        // For database with no foreign keys
+        if ( 0 >= fkNames.size() ) {
+            return this;
+        }
+        for ( String tableName : fkNames.keySet() ) {
+            final LinkedList<String> fks = fkNames.get(tableName);
+            for ( String name : fks ) {
+                final MySQLTableMetaDataBuilder tableBuilder = tableBuilders.get(tableName);
+                final MySQLForeignKeyMetaDataBuilder fkBuilder = new MySQLForeignKeyMetaDataBuilderImpl(tableBuilder, this.schemaPath.append(tableName).append(
+                        name)).build(conn);
+                tableBuilder.appendForeignKeyMetaDataBuilder(fkBuilder);
             }
-        } finally {
-            rs.close();
         }
         return this;
     }
@@ -102,6 +119,6 @@ public class MySQLSchemaMetaDataBuilderImpl
 
     @Override
     public MySQLTableMetaDataBuilder getTableBuilder(String tableName) {
-        return this.tableBuilderList.get(tableName);
+        return this.tableBuilderMap.get(tableName);
     }
 }

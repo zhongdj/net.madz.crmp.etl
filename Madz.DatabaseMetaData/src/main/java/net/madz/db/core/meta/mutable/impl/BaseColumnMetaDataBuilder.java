@@ -38,7 +38,6 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     // protected final TMDB jdbcTableMetaDataBuilder;
     // protected final MetaDataResultSet<ColumnDbMetaDataEnum> colRs;
     public BaseColumnMetaDataBuilder(TMDB tableBuilder, DottedPath name) {
-        super();
         this.tableBuilder = tableBuilder;
         this.columnPath = name;
     }

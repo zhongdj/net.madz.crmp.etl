@@ -19,6 +19,7 @@ import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
+import net.madz.db.utils.ResourceManagementUtils;
 
 public final class MySQLColumnMetaDataBuilderImpl
         extends
@@ -44,23 +45,29 @@ public final class MySQLColumnMetaDataBuilderImpl
     @Override
     public MySQLColumnMetaDataBuilder build(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + this.tableBuilder.getTablePath().getParent().getName()
-                + "' AND table_name='" + this.tableBuilder.getTableName() + "' AND column_name='" + this.columnPath.getName() + "';");
-        while ( rs.next() && rs.getRow() == 1 ) {
-            this.ordinalPosition = rs.getShort("ordinal_position");
-            this.defaultValue = rs.getString("column_default");
-            this.isNullable = rs.getBoolean("is_nullable");
-            this.sqlTypeName = MySQLDataTypeEnum.valueOf(rs.getString("data_type")).name();
-            this.characterMaximumLength = rs.getInt("character_maximum_length");
-            this.characterOctetLength = rs.getInt("character_octet_length");
-            this.numericPrecision = rs.getInt("numeric_precision");
-            this.numericScale = rs.getInt("numeric_scale");
-            this.characterSet = rs.getString("character_set_name");
-            this.collationName = rs.getString("collation_name");
-            this.columnType = rs.getString("column_type");
-            this.columnKey = rs.getString("column_key");
-            this.extra = rs.getString("extra");
-            this.columnComment = rs.getString("column_comment");
+        ResultSet rs = null;
+        stmt.executeQuery("use information_schema;");
+        try {
+            rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + this.tableBuilder.getTablePath().getParent().getName() + "' AND table_name='"
+                    + this.tableBuilder.getTableName() + "' AND column_name='" + this.columnPath.getName() + "';");
+            while ( rs.next() && rs.getRow() == 1 ) {
+                this.ordinalPosition = rs.getShort("ordinal_position");
+                this.defaultValue = rs.getString("column_default");
+                this.isNullable = rs.getBoolean("is_nullable");
+                this.sqlTypeName = MySQLDataTypeEnum.valueOf(rs.getString("data_type").toUpperCase()).name();
+                this.characterMaximumLength = rs.getInt("character_maximum_length");
+                this.characterOctetLength = rs.getInt("character_octet_length");
+                this.numericPrecision = rs.getInt("numeric_precision");
+                this.numericScale = rs.getInt("numeric_scale");
+                this.characterSet = rs.getString("character_set_name");
+                this.collationName = rs.getString("collation_name");
+                this.columnType = rs.getString("column_type");
+                this.columnKey = rs.getString("column_key");
+                this.extra = rs.getString("extra");
+                this.columnComment = rs.getString("column_comment");
+            }
+        } finally {
+            ResourceManagementUtils.closeResultSet(rs);
         }
         return this;
     }

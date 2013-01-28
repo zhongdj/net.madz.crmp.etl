@@ -1,6 +1,7 @@
 package net.madz.db.core.meta.mutable.impl;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,24 +24,27 @@ public abstract class BaseTableMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
 
     protected final SMDB schema;
     // protected MetaDataResultSet<TableDbMetaDataEnum> rs;
-    protected DottedPath tablePath; // catalog.schema.name
+    private final String tableName;
+    protected final DottedPath tablePath; // catalog.schema.name
     protected TableType type;
     protected String remarks;
     protected String idCol, idGeneration;
-    protected Map<String, CMDB> columnMap;
-    protected List<CMDB> orderedColumns;
-    protected Map<String, IMDB> indexMap;
+    protected final Map<String, CMDB> columnMap = new HashMap<String, CMDB>();
+    protected final List<CMDB> orderedColumns = new LinkedList<CMDB>();
+    protected final Map<String, IMDB> indexMap = new HashMap<String, IMDB>();
     protected List<FMDB> fkList = new LinkedList<FMDB>();
     protected IMD primaryKey;
 
-    public BaseTableMetaDataBuilder(SMDB schema) {
-        super();
+    public BaseTableMetaDataBuilder(SMDB schema, String tableName) {
         this.schema = schema;
+        this.tableName = tableName;
+        this.tablePath = schema.getMetaData().getSchemaPath().append(tableName);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public TMDB appendColumnMetaDataBuilder(CMDB column) {
+        this.orderedColumns.add(column);
         this.columnMap.put(column.getColumnName(), column);
         return (TMDB) this;
     }
@@ -66,7 +70,7 @@ public abstract class BaseTableMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
 
     @Override
     public String getTableName() {
-        return this.tablePath.getName();
+        return this.tableName;
     }
 
     @Override
