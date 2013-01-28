@@ -507,11 +507,80 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
     }
 
     it("should parse composite UNIQUE KEY with multiple columns") {
-      pending
+      exec("""
+          USE `madz_database_parser_test`;
+          """ :: """
+          CREATE TABLE `table_with_composite_unique_key` (
+            `id` INTEGER(32) AUTO_INCREMENT PRIMARY KEY,
+            `unique_key_part_1` INTEGER(32) NOT NULL,
+            `unique_key_part_2` VARCHAR(32) NOT NULL,
+            UNIQUE KEY `composite_unique_key` (`unique_key_part_1`, `unique_key_part_2`)
+          ) ENGINE = `InnoDB` DEFAULT CHARACTER SET = 'utf8' DEFAULT COLLATE='utf8_bin'; 
+          """ :: Nil)
+
+      /*
+mysql> select * from statistics where table_name = 'table_with_composite_unique_key';
++---------------+--------------+---------------------------------+------------+--------------+----------------------+--------------+-------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME                      | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME           | SEQ_IN_INDEX | COLUMN_NAME       | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
++---------------+--------------+---------------------------------+------------+--------------+----------------------+--------------+-------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| def           | test         | table_with_composite_unique_key |          0 | test         | PRIMARY              |            1 | id                | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | test         | table_with_composite_unique_key |          0 | test         | composite_unique_key |            1 | unique_key_part_1 | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | test         | table_with_composite_unique_key |          0 | test         | composite_unique_key |            2 | unique_key_part_2 | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
++---------------+--------------+---------------------------------+------------+--------------+----------------------+--------------+-------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+3 rows in set (0.00 sec)
+ */
+
+      val schema = parser parseSchemaMetaData
+      val table = schema.getTable("table_with_composite_unique_key")
+      val composite_unique_key = table.getIndex("composite_unique_key");
+      Assertions.expectResult(true)(composite_unique_key isUnique)
+      val entries = composite_unique_key.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())
+      Assertions.expectResult(table.getColumn("unique_key_part_1"))(entries(0).getColumn())
+      Assertions.expectResult(table.getColumn("unique_key_part_2"))(entries(1).getColumn())
+      Assertions.expectResult(composite_unique_key)(entries(0).getKey)
+      Assertions.expectResult(composite_unique_key)(entries(1).getKey)
+      Assertions.expectResult(1)(entries(0).getPosition())
+      Assertions.expectResult(2)(entries(1).getPosition())
+      Assertions.expectResult(null)(entries(0).getSubPart)
+      Assertions.expectResult(null)(entries(1).getSubPart)
     }
 
     it("should parse non-PK auto-incremental column") {
-      pending
+      exec("""
+          USE `madz_database_parser_test`;
+          """ :: """
+          CREATE TABLE `table_with_increment_non_primary_key` (
+            `id` INTEGER(32) AUTO_INCREMENT,
+            `name` VARCHAR(32),
+            KEY `non_pk_incremental_key` (`id`)
+          ) ENGINE = `InnoDB` DEFAULT CHARACTER SET = 'utf8' DEFAULT COLLATE='utf8_bin'; 
+          """ :: Nil)
+      /*
+mysql> select * from statistics where table_name='table_with_increment_non_primary_key';
++---------------+--------------+--------------------------------------+------------+--------------+------------------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME                           | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME             | SEQ_IN_INDEX | COLUMN_NAME | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
++---------------+--------------+--------------------------------------+------------+--------------+------------------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| def           | test         | table_with_increment_non_primary_key |          1 | test         | non_pk_incremental_key |            1 | id          | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
++---------------+--------------+--------------------------------------+------------+--------------+------------------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+1 row in set (0.00 sec)
+
+mysql> select * from columns where table_name='table_with_increment_non_primary_key';
++---------------+--------------+--------------------------------------+-------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+----------------+---------------------------------+----------------+
+| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME                           | COLUMN_NAME | ORDINAL_POSITION | COLUMN_DEFAULT | IS_NULLABLE | DATA_TYPE | CHARACTER_MAXIMUM_LENGTH | CHARACTER_OCTET_LENGTH | NUMERIC_PRECISION | NUMERIC_SCALE | CHARACTER_SET_NAME | COLLATION_NAME | COLUMN_TYPE | COLUMN_KEY | EXTRA          | PRIVILEGES                      | COLUMN_COMMENT |
++---------------+--------------+--------------------------------------+-------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+----------------+---------------------------------+----------------+
+| def           | test         | table_with_increment_non_primary_key | id          |                1 | NULL           | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     | MUL        | auto_increment | select,insert,update,references |                |
+| def           | test         | table_with_increment_non_primary_key | name        |                2 | NULL           | YES         | varchar   |                       32 |                     96 |              NULL |          NULL | utf8               | utf8_bin       | varchar(32) |            |                | select,insert,update,references |                |
++---------------+--------------+--------------------------------------+-------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+----------------+---------------------------------+----------------+
+2 rows in set (0.00 sec)
+           */
+      val schema = parser parseSchemaMetaData
+      val table = schema.getTable("table_with_increment_non_primary_key")
+      val composite_unique_key = table.getIndex("non_pk_incremental_key")
+      val column = table.getColumn("id")
+      //suppose msyql defect
+      Assertions.expectResult(false)(composite_unique_key isUnique)
+      Assertions.expectResult(null)(table.getPrimaryKey)
+      Assertions.expectResult(true)(column.isAutoIncremented())
     }
 
     it("should parse single column index") {
@@ -523,7 +592,69 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
     }
 
     it("should parse single column FOREIGN KEY") {
-      pending
+      exec(
+        """
+          USE `madz_database_parser_test`;
+          """ :: """
+          CREATE TABLE `table_1` (
+            `pk_column` INTEGER(32) AUTO_INCREMENT PRIMARY KEY,
+            `secondary_key_column` VARCHAR(60) UNIQUE KEY
+          ) ENGINE = `InnoDB` DEFAULT CHARACTER SET = 'utf8' DEFAULT COLLATE='utf8_bin';
+          """ :: """
+          CREATE TABLE `table_2` (
+            `id` INTEGER(32) AUTO_INCREMENT PRIMARY KEY,
+            `fk_column_1` INTEGER(32),
+            `fk_column_2` VARCHAR(60),
+            CONSTRAINT `FK_table_2_fk_column_1` FOREIGN KEY (`fk_column_1`) REFERENCES `table_1` (`pk_column`),
+        	CONSTRAINT `FK_table_2_fk_column_2` FOREIGN KEY (`fk_column_2`) REFERENCES `table_1` (`secondary_key_column`)
+          ) ENGINE = `InnoDB` DEFAULT CHARACTER SET = 'utf8' DEFAULT COLLATE='utf8_bin';
+          """ :: Nil)
+      /*
+mysql> select * from statistics where table_name= 'table_1' or table_name='table_2';
++---------------+--------------+------------+------------+--------------+------------------------+--------------+----------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME             | SEQ_IN_INDEX | COLUMN_NAME          | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
++---------------+--------------+------------+------------+--------------+------------------------+--------------+----------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| def           | test         | table_1    |          0 | test         | PRIMARY                |            1 | pk_column            | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | test         | table_1    |          0 | test         | secondary_key_column   |            1 | secondary_key_column | A         |           0 |     NULL | NULL   | YES      | BTREE      |         |               |
+| def           | test         | table_2    |          0 | test         | PRIMARY                |            1 | id                   | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | test         | table_2    |          1 | test         | FK_table_2_fk_column_1 |            1 | fk_column_1          | A         |           0 |     NULL | NULL   | YES      | BTREE      |         |               |
+| def           | test         | table_2    |          1 | test         | FK_table_2_fk_column_2 |            1 | fk_column_2          | A         |           0 |     NULL | NULL   | YES      | BTREE      |         |               |
++---------------+--------------+------------+------------+--------------+------------------------+--------------+----------------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+5 rows in set (0.20 sec)
+
+mysql> select * from columns where table_name= 'table_1' or table_name='table_2';
++---------------+--------------+------------+----------------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+----------------+---------------------------------+----------------+
+| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | COLUMN_NAME          | ORDINAL_POSITION | COLUMN_DEFAULT | IS_NULLABLE | DATA_TYPE | CHARACTER_MAXIMUM_LENGTH | CHARACTER_OCTET_LENGTH | NUMERIC_PRECISION | NUMERIC_SCALE | CHARACTER_SET_NAME | COLLATION_NAME | COLUMN_TYPE | COLUMN_KEY | EXTRA          | PRIVILEGES                      | COLUMN_COMMENT |
++---------------+--------------+------------+----------------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+----------------+---------------------------------+----------------+
+| def           | test         | table_1    | pk_column            |                1 | NULL           | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     | PRI        | auto_increment | select,insert,update,references |                |
+| def           | test         | table_1    | secondary_key_column |                2 | NULL           | YES         | varchar   |                       60 |                    180 |              NULL |          NULL | utf8               | utf8_bin       | varchar(60) | UNI        |                | select,insert,update,references |                |
+| def           | test         | table_2    | id                   |                1 | NULL           | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     | PRI        | auto_increment | select,insert,update,references |                |
+| def           | test         | table_2    | fk_column_1          |                2 | NULL           | YES         | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     | MUL        |                | select,insert,update,references |                |
+| def           | test         | table_2    | fk_column_2          |                3 | NULL           | YES         | varchar   |                       60 |                    180 |              NULL |          NULL | utf8               | utf8_bin       | varchar(60) | MUL        |                | select,insert,update,references |                |
++---------------+--------------+------------+----------------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+----------------+---------------------------------+----------------+
+5 rows in set (0.00 sec)
+* 
+mysql> select * from REFERENTIAL_CONSTRAINTS where constraint_schema='test';
++--------------------+-------------------+------------------------+---------------------------+--------------------------+------------------------+--------------+-------------+-------------+------------+-----------------------+
+| CONSTRAINT_CATALOG | CONSTRAINT_SCHEMA | CONSTRAINT_NAME        | UNIQUE_CONSTRAINT_CATALOG | UNIQUE_CONSTRAINT_SCHEMA | UNIQUE_CONSTRAINT_NAME | MATCH_OPTION | UPDATE_RULE | DELETE_RULE | TABLE_NAME | REFERENCED_TABLE_NAME |
++--------------------+-------------------+------------------------+---------------------------+--------------------------+------------------------+--------------+-------------+-------------+------------+-----------------------+
+| def                | test              | FK_table_2_fk_column_1 | def                       | test                     | PRIMARY                | NONE         | RESTRICT    | RESTRICT    | table_2    | table_1               |
+| def                | test              | FK_table_2_fk_column_2 | def                       | test                     | secondary_key_column   | NONE         | RESTRICT    | RESTRICT    | table_2    | table_1               |
++--------------------+-------------------+------------------------+---------------------------+--------------------------+------------------------+--------------+-------------+-------------+------------+-----------------------+
+2 rows in set (0.00 sec)
+
+mysql> select * from key_column_usage where constraint_schema='test' and (table_name='table_1' or table_name='table_2');
++--------------------+-------------------+------------------------+---------------+--------------+------------+----------------------+------------------+-------------------------------+-------------------------+-----------------------+------------------------+
+| CONSTRAINT_CATALOG | CONSTRAINT_SCHEMA | CONSTRAINT_NAME        | TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | COLUMN_NAME          | ORDINAL_POSITION | POSITION_IN_UNIQUE_CONSTRAINT | REFERENCED_TABLE_SCHEMA | REFERENCED_TABLE_NAME | REFERENCED_COLUMN_NAME |
++--------------------+-------------------+------------------------+---------------+--------------+------------+----------------------+------------------+-------------------------------+-------------------------+-----------------------+------------------------+
+| def                | test              | PRIMARY                | def           | test         | table_1    | pk_column            |                1 |                          NULL | NULL                    | NULL                  | NULL                   |
+| def                | test              | secondary_key_column   | def           | test         | table_1    | secondary_key_column |                1 |                          NULL | NULL                    | NULL                  | NULL                   |
+| def                | test              | PRIMARY                | def           | test         | table_2    | id                   |                1 |                          NULL | NULL                    | NULL                  | NULL                   |
+| def                | test              | FK_table_2_fk_column_1 | def           | test         | table_2    | fk_column_1          |                1 |                             1 | test                    | table_1               | pk_column              |
+| def                | test              | FK_table_2_fk_column_2 | def           | test         | table_2    | fk_column_2          |                1 |                             1 | test                    | table_1               | secondary_key_column   |
++--------------------+-------------------+------------------------+---------------+--------------+------------+----------------------+------------------+-------------------------------+-------------------------+-----------------------+------------------------+
+5 rows in set (0.01 sec)
+*/
     }
 
     it("should parse multiple columns FOREIGN KEY with correct order") {
