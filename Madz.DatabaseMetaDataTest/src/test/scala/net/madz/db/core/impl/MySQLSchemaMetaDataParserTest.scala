@@ -18,11 +18,11 @@ import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod
-import net.madz.db.core.meta.immutable.mysql.enums.MySQLTableTypeEnum
 import net.madz.db.core.meta.immutable.types.IndexTypeEnum
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum
 import net.madz.db.core.meta.immutable.types.SortDirectionEnum
 import net.madz.db.core.meta.immutable.types.TableType
+import net.madz.db.core.meta.immutable.ForeignKeyMetaData
 
 class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -581,14 +581,6 @@ mysql> select * from columns where table_name='table_with_increment_non_primary_
       Assertions.expectResult(true)(column.isAutoIncremented())
     }
 
-    it("should parse single column index") {
-      pending
-    }
-
-    it("should parse multiple column index with correct order") {
-      pending
-    }
-
     it("should parse single column FOREIGN KEY") {
       exec(
         """
@@ -653,11 +645,257 @@ mysql> select * from key_column_usage where constraint_schema='test' and (table_
 +--------------------+-------------------+------------------------+---------------+--------------+------------+----------------------+------------------+-------------------------------+-------------------------+-----------------------+------------------------+
 5 rows in set (0.01 sec)
 */
+      val schema = parser parseSchemaMetaData
+
+      val table_1 = schema getTable "table_1"
+      val table_2 = schema getTable "table_2"
+      val fk_1 = table_2.getForeignKeySet().toArray(Array[ForeignKeyMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
+      val fk_2 = table_2.getForeignKeySet().toArray(Array[ForeignKeyMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
+      val fk_index_1 = table_2 getIndex "FK_table_2_fk_column_1"
+      val fk_index_2 = table_2 getIndex "FK_table_2_fk_column_2"
+      val fk_column_1 = table_2 getColumn "fk_column_1"
+      val fk_column_2 = table_2 getColumn "fk_column_2"
+
+      Assertions.expectResult(null)(fk_index_1.getIndexComment)
+      Assertions.expectResult(MySQLIndexMethod.btree)(fk_index_1.getIndexMethod)
+      Assertions.expectResult(true)(fk_index_1.isNull)
+      Assertions.expectResult(true)(fk_index_1.containsColumn(fk_column_1))
+      Assertions.expectResult(false)(fk_index_1.containsColumn(fk_column_2))
+      Assertions.expectResult(false)(fk_index_1.containsColumn(table_2 getColumn "id"))
+      Assertions.expectResult(0)(fk_index_1.getCardinality)
+      Assertions.expectResult("FK_table_2_fk_column_1")(fk_index_1.getIndexName)
+      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_1.getIndexType)
+      Assertions.expectResult(KeyTypeEnum.index)(fk_index_1.getKeyType)
+      Assertions.expectResult(null)(fk_index_1.getPageCount)
+      Assertions.expectResult(SortDirectionEnum.ascending)(fk_index_1.getSortDirection)
+      Assertions.expectResult(table_2)(fk_index_1.getTable)
+      Assertions.expectResult(false)(fk_index_1.isUnique)
+
+      Assertions.expectResult(null)(fk_index_2.getIndexComment)
+      Assertions.expectResult(MySQLIndexMethod.btree)(fk_index_2.getIndexMethod)
+      Assertions.expectResult(true)(fk_index_2.isNull)
+      Assertions.expectResult(false)(fk_index_2.containsColumn(fk_column_1))
+      Assertions.expectResult(true)(fk_index_2.containsColumn(fk_column_2))
+      Assertions.expectResult(false)(fk_index_2.containsColumn(table_2 getColumn "id"))
+      Assertions.expectResult(0)(fk_index_2.getCardinality)
+      Assertions.expectResult("FK_table_2_fk_column_2")(fk_index_2.getIndexName)
+      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_2.getIndexType)
+      Assertions.expectResult(KeyTypeEnum.index)(fk_index_2.getKeyType)
+      Assertions.expectResult(null)(fk_index_2.getPageCount)
+      Assertions.expectResult(SortDirectionEnum.ascending)(fk_index_2.getSortDirection)
+      Assertions.expectResult(table_2)(fk_index_2.getTable)
+      Assertions.expectResult(false)(fk_index_2.isUnique)
     }
 
     it("should parse multiple columns FOREIGN KEY with correct order") {
-      pending
+      exec(
+        """
+          USE `madz_database_parser_test`;
+          """ :: """
+          CREATE TABLE `t1` (
+          `key_column_1` INTEGER(32) NOT NULL,
+          `key_column_2` INTEGER(32) NOT NULL,
+          `data` VARCHAR(80),
+          PRIMARY KEY (`key_column_1`, `key_column_2`)
+          ) ENGINE = `InnoDB` ;
+          """ :: """ 
+          CREATE TABLE `t2` (
+          `id` INTEGER(32) NOT NULL,
+          `fk_column_1` INTEGER(32) NOT NULL,
+          `fk_column_2` INTEGER(32) NOT NULL,
+          PRIMARY KEY (`id`),
+          CONSTRAINT `FK_t1_composite_column_1_column_2` FOREIGN KEY (`fk_column_1`,`fk_column_2`) REFERENCES `t1` (`key_column_1`,`key_column_2`)
+          ) ENGINE = `InnoDB`;
+          """ :: Nil)
+      /*
+mysql> use information_schema;
+Database changed
+mysql> select * from statistics where table_name= 't1' or table_name='t2';
++---------------+---------------------------+------------+------------+---------------------------+-----------------------------------+--------------+--------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME | NON_UNIQUE | INDEX_SCHEMA              | INDEX_NAME                        | SEQ_IN_INDEX | COLUMN_NAME  | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
++---------------+---------------------------+------------+------------+---------------------------+-----------------------------------+--------------+--------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| def           | crmp                      | t2         |          0 | crmp                      | PRIMARY                           |            1 | a            | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | crmp                      | t2         |          0 | crmp                      | PRIMARY                           |            2 | b            | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | madz_database_parser_test | t1         |          0 | madz_database_parser_test | PRIMARY                           |            1 | key_column_1 | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | madz_database_parser_test | t1         |          0 | madz_database_parser_test | PRIMARY                           |            2 | key_column_2 | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | madz_database_parser_test | t2         |          0 | madz_database_parser_test | PRIMARY                           |            1 | id           | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | madz_database_parser_test | t2         |          1 | madz_database_parser_test | FK_t1_composite_column_1_column_2 |            1 | fk_column_1  | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | madz_database_parser_test | t2         |          1 | madz_database_parser_test | FK_t1_composite_column_1_column_2 |            2 | fk_column_2  | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
++---------------+---------------------------+------------+------------+---------------------------+-----------------------------------+--------------+--------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+7 rows in set (0.20 sec)
+
+mysql> select * from columns where table_name= 't1' or table_name='t2';
++---------------+---------------------------+------------+--------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+-------+---------------------------------+----------------+
+| TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME | COLUMN_NAME  | ORDINAL_POSITION | COLUMN_DEFAULT | IS_NULLABLE | DATA_TYPE | CHARACTER_MAXIMUM_LENGTH | CHARACTER_OCTET_LENGTH | NUMERIC_PRECISION | NUMERIC_SCALE | CHARACTER_SET_NAME | COLLATION_NAME | COLUMN_TYPE | COLUMN_KEY | EXTRA | PRIVILEGES                      | COLUMN_COMMENT |
++---------------+---------------------------+------------+--------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+-------+---------------------------------+----------------+
+| def           | crmp                      | t2         | a            |                1 | 0              | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(11)     | PRI        |       | select,insert,update,references |                |
+| def           | crmp                      | t2         | b            |                2 | 0              | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(11)     | PRI        |       | select,insert,update,references |                |
+| def           | crmp                      | t2         | c            |                3 | NULL           | YES         | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(11)     |            |       | select,insert,update,references |                |
+| def           | madz_database_parser_test | t1         | key_column_1 |                1 | NULL           | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     | PRI        |       | select,insert,update,references |                |
+| def           | madz_database_parser_test | t1         | key_column_2 |                2 | NULL           | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     | PRI        |       | select,insert,update,references |                |
+| def           | madz_database_parser_test | t1         | data         |                3 | NULL           | YES         | varchar   |                       80 |                    160 |              NULL |          NULL | gbk                | gbk_chinese_ci | varchar(80) |            |       | select,insert,update,references |                |
+| def           | madz_database_parser_test | t2         | id           |                1 | NULL           | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     | PRI        |       | select,insert,update,references |                |
+| def           | madz_database_parser_test | t2         | fk_column_1  |                2 | NULL           | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     | MUL        |       | select,insert,update,references |                |
+| def           | madz_database_parser_test | t2         | fk_column_2  |                3 | NULL           | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     |            |       | select,insert,update,references |                |
++---------------+---------------------------+------------+--------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+-------+---------------------------------+----------------+
+9 rows in set (0.01 sec)
+
+mysql> select * from REFERENTIAL_CONSTRAINTS where constraint_schema='madz_database_parser_test';
++--------------------+---------------------------+-----------------------------------+---------------------------+---------------------------+------------------------+--------------+-------------+-------------+------------+-----------------------+
+| CONSTRAINT_CATALOG | CONSTRAINT_SCHEMA         | CONSTRAINT_NAME                   | UNIQUE_CONSTRAINT_CATALOG | UNIQUE_CONSTRAINT_SCHEMA  | UNIQUE_CONSTRAINT_NAME | MATCH_OPTION | UPDATE_RULE | DELETE_RULE | TABLE_NAME | REFERENCED_TABLE_NAME |
++--------------------+---------------------------+-----------------------------------+---------------------------+---------------------------+------------------------+--------------+-------------+-------------+------------+-----------------------+
+| def                | madz_database_parser_test | FK_t1_composite_column_1_column_2 | def                       | madz_database_parser_test | PRIMARY                | NONE         | RESTRICT    | RESTRICT    | t2         | t1                    |
++--------------------+---------------------------+-----------------------------------+---------------------------+---------------------------+------------------------+--------------+-------------+-------------+------------+-----------------------+
+1 row in set (0.00 sec)
+
+mysql> select * from key_column_usage where constraint_schema='madz_database_parser_test' and (table_name='t1' or table_name='t2');
++--------------------+---------------------------+-----------------------------------+---------------+---------------------------+------------+--------------+------------------+-------------------------------+---------------------------+-----------------------+------------------------+
+| CONSTRAINT_CATALOG | CONSTRAINT_SCHEMA         | CONSTRAINT_NAME                   | TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME | COLUMN_NAME  | ORDINAL_POSITION | POSITION_IN_UNIQUE_CONSTRAINT | REFERENCED_TABLE_SCHEMA   | REFERENCED_TABLE_NAME | REFERENCED_COLUMN_NAME |
++--------------------+---------------------------+-----------------------------------+---------------+---------------------------+------------+--------------+------------------+-------------------------------+---------------------------+-----------------------+------------------------+
+| def                | madz_database_parser_test | PRIMARY                           | def           | madz_database_parser_test | t1         | key_column_1 |                1 |                          NULL | NULL                      | NULL                  | NULL                   |
+| def                | madz_database_parser_test | PRIMARY                           | def           | madz_database_parser_test | t1         | key_column_2 |                2 |                          NULL | NULL                      | NULL                  | NULL                   |
+| def                | madz_database_parser_test | PRIMARY                           | def           | madz_database_parser_test | t2         | id           |                1 |                          NULL | NULL                      | NULL                  | NULL                   |
+| def                | madz_database_parser_test | FK_t1_composite_column_1_column_2 | def           | madz_database_parser_test | t2         | fk_column_1  |                1 |                             1 | madz_database_parser_test | t1                    | key_column_1           |
+| def                | madz_database_parser_test | FK_t1_composite_column_1_column_2 | def           | madz_database_parser_test | t2         | fk_column_2  |                2 |                             2 | madz_database_parser_test | t1                    | key_column_2           |
++--------------------+---------------------------+-----------------------------------+---------------+---------------------------+------------+--------------+------------------+-------------------------------+---------------------------+-----------------------+------------------------+
+5 rows in set (0.00 sec)
+         */
+      val schema = parser parseSchemaMetaData
+      val table_1 = schema getTable "t1"
+      val table_2 = schema getTable "t2"
+      val fk_index = table_2.getIndex("FK_t1_composite_column_1_column_2")
+      val fkEntry_1 = table_2.getForeignKeySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
+      val fkEntry_2 = table_2.getForeignKeySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
+      val fk_column_1 = table_2.getColumn("fk_column_1")
+      val fk_column_2 = table_2.getColumn("fk_column_2")
+      Assertions.expectResult(fk_column_1)(fkEntry_1 getColumn)
+      Assertions.expectResult(fk_column_2)(fkEntry_2 getColumn)
+      Assertions.expectResult(1)(fkEntry_1 getPosition)
+      Assertions.expectResult(2)(fkEntry_2 getPosition)
+      Assertions.expectResult(fk_index)(fkEntry_1.getKey)
+      Assertions.expectResult(fk_index)(fkEntry_2.getKey)
+      Assertions.expectResult(null)(fkEntry_1 getSubPart)
+      Assertions.expectResult(null)(fkEntry_2.getSubPart)
+
+      Assertions.expectResult(null)(fk_index.getIndexComment)
+      Assertions.expectResult(MySQLIndexMethod.btree)(fk_index.getIndexMethod)
+      Assertions.expectResult(null)(fk_index.isNull)
+      Assertions.expectResult(true)(fk_index.containsColumn(fk_column_1))
+      Assertions.expectResult(true)(fk_index.containsColumn(fk_column_2))
+      Assertions.expectResult(false)(fk_index.containsColumn(table_2 getColumn "id"))
+      Assertions.expectResult(null)(fk_index.getCardinality)
+      Assertions.expectResult("FK_t1_composite_column_1_column_2")(fk_index.getIndexName)
+      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index.getIndexType)
+      Assertions.expectResult(KeyTypeEnum.index)(fk_index.getKeyType)
+      Assertions.expectResult(null)(fk_index.getPageCount)
+      Assertions.expectResult(SortDirectionEnum.ascending)(fk_index.getSortDirection)
+      Assertions.expectResult(table_2)(fk_index.getTable)
+      Assertions.expectResult(false)(fk_index.isUnique)
     }
+
+    it("should parse single column index") {
+      exec(
+        """
+          USE `madz_database_parser_test`;
+          """ :: """
+          CREATE TABLE `t1` (
+          `id` INTEGER(32) AUTO_INCREMENT PRIMARY KEY,
+          `index_column` INTEGER(32) NOT NULL,
+          `data` VARCHAR(80),
+          INDEX `single_column_index` (`index_column`)
+          ) ENGINE = `InnoDB` ;
+          """ :: Nil)
+
+      val schema = parser parseSchemaMetaData
+      val t1 = schema getTable "t1"
+      val index_column = t1 getColumn "index_column"
+      val index = t1 getIndex "single_column_index"
+      val index_entry = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
+      Assertions.expectResult(index)(index_entry getKey)
+      Assertions.expectResult(index_column)(index_entry getColumn)
+      Assertions.expectResult(1)(index_entry getPosition)
+      Assertions.expectResult(null)(index_entry getSubPart)
+      Assertions.expectResult(null)(index.getIndexComment)
+      Assertions.expectResult(MySQLIndexMethod.btree)(index.getIndexMethod)
+      Assertions.expectResult(null)(index.isNull)
+      Assertions.expectResult(true)(index.containsColumn(index_column))
+      Assertions.expectResult(false)(index.containsColumn(t1 getColumn "data"))
+      Assertions.expectResult(null)(index.getCardinality)
+      Assertions.expectResult("single_column_index")(index.getIndexName)
+      Assertions.expectResult(IndexTypeEnum.statistic)(index.getIndexType)
+      Assertions.expectResult(KeyTypeEnum.index)(index.getKeyType)
+      Assertions.expectResult(null)(index.getPageCount)
+      Assertions.expectResult(SortDirectionEnum.ascending)(index.getSortDirection)
+      Assertions.expectResult(t1)(index.getTable)
+      Assertions.expectResult(false)(index.isUnique)
+    }
+
+    it("should parse multiple column index with correct order") {
+      exec(
+        """
+          USE `madz_database_parser_test`;
+          """ :: """
+          CREATE TABLE `table_composite_index_test` (
+          `id` INTEGER(32) AUTO_INCREMENT PRIMARY KEY,
+          `index_column_1` INTEGER(32) NOT NULL,
+          `index_column_2` INTEGER(32) NOT NULL,
+          `data` VARCHAR(80),
+          INDEX `composite_column_index` (`index_column_1`, `index_column_2`)
+          ) ENGINE = `InnoDB` ;
+          """ :: Nil)
+      /*
+mysql> select * from statistics where table_name= 'table_composite_index_test';
++---------------+---------------------------+----------------------------+------------+---------------------------+------------------------+--------------+----------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME                 | NON_UNIQUE | INDEX_SCHEMA              | INDEX_NAME             | SEQ_IN_INDEX | COLUMN_NAME    | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
++---------------+---------------------------+----------------------------+------------+---------------------------+------------------------+--------------+----------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+| def           | madz_database_parser_test | table_composite_index_test |          0 | madz_database_parser_test | PRIMARY                |            1 | id             | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | madz_database_parser_test | table_composite_index_test |          1 | madz_database_parser_test | composite_column_index |            1 | index_column_1 | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
+| def           | madz_database_parser_test | table_composite_index_test |          1 | madz_database_parser_test | composite_column_index |            2 | index_column_2 | A         |           0 |     NULL | NULL   |          | BTREE      |         |               |
++---------------+---------------------------+----------------------------+------------+---------------------------+------------------------+--------------+----------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+3 rows in set (0.01 sec)
+
+mysql> select * from columns where table_name= 'table_composite_index_test';
++---------------+---------------------------+----------------------------+----------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+----------------+---------------------------------+----------------+
+| TABLE_CATALOG | TABLE_SCHEMA              | TABLE_NAME                 | COLUMN_NAME    | ORDINAL_POSITION | COLUMN_DEFAULT | IS_NULLABLE | DATA_TYPE | CHARACTER_MAXIMUM_LENGTH | CHARACTER_OCTET_LENGTH | NUMERIC_PRECISION | NUMERIC_SCALE | CHARACTER_SET_NAME | COLLATION_NAME | COLUMN_TYPE | COLUMN_KEY | EXTRA          | PRIVILEGES                      | COLUMN_COMMENT |
++---------------+---------------------------+----------------------------+----------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+----------------+---------------------------------+----------------+
+| def           | madz_database_parser_test | table_composite_index_test | id             |                1 | NULL           | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     | PRI        | auto_increment | select,insert,update,references |                |
+| def           | madz_database_parser_test | table_composite_index_test | index_column_1 |                2 | NULL           | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     | MUL        |                | select,insert,update,references |                |
+| def           | madz_database_parser_test | table_composite_index_test | index_column_2 |                3 | NULL           | NO          | int       |                     NULL |                   NULL |                10 |             0 | NULL               | NULL           | int(32)     |            |                | select,insert,update,references |                |
+| def           | madz_database_parser_test | table_composite_index_test | data           |                4 | NULL           | YES         | varchar   |                       80 |                    160 |              NULL |          NULL | gbk                | gbk_chinese_ci | varchar(80) |            |                | select,insert,update,references |                |
++---------------+---------------------------+----------------------------+----------------+------------------+----------------+-------------+-----------+--------------------------+------------------------+-------------------+---------------+--------------------+----------------+-------------+------------+----------------+---------------------------------+----------------+
+4 rows in set (0.13 sec)
+ */
+      val schema = parser parseSchemaMetaData
+      val t1 = schema getTable "table_composite_index_test"
+      val index_column_1 = t1 getColumn "index_column_1"
+      val index_column_2 = t1 getColumn "index_column_2"
+      val index = t1 getIndex "composite_column_index"
+      val index_entry_1 = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
+      val index_entry_2 = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(2)
+      Assertions.expectResult(index)(index_entry_1 getKey)
+      Assertions.expectResult(index)(index_entry_2 getKey)
+      Assertions.expectResult(index_column_1)(index_entry_1 getColumn)
+      Assertions.expectResult(index_column_2)(index_entry_2 getColumn)
+      Assertions.expectResult(1)(index_entry_1 getPosition)
+      Assertions.expectResult(2)(index_entry_2 getPosition)
+      Assertions.expectResult(null)(index_entry_1 getSubPart)
+      Assertions.expectResult(null)(index_entry_2 getSubPart)
+      Assertions.expectResult(null)(index.getIndexComment)
+      Assertions.expectResult(MySQLIndexMethod.btree)(index.getIndexMethod)
+      Assertions.expectResult(null)(index.isNull)
+      Assertions.expectResult(true)(index.containsColumn(index_column_1))
+      Assertions.expectResult(true)(index.containsColumn(index_column_2))
+      Assertions.expectResult(false)(index.containsColumn(t1 getColumn "data"))
+      Assertions.expectResult(null)(index.getCardinality)
+      Assertions.expectResult("composite_column_index")(index.getIndexName)
+      Assertions.expectResult(IndexTypeEnum.statistic)(index.getIndexType)
+      Assertions.expectResult(KeyTypeEnum.index)(index.getKeyType)
+      Assertions.expectResult(null)(index.getPageCount)
+      Assertions.expectResult(SortDirectionEnum.ascending)(index.getSortDirection)
+      Assertions.expectResult(t1)(index.getTable)
+      Assertions.expectResult(false)(index.isUnique)
+    }
+
   }
   val database_name = "madz_database_parser_test"
   val drop_database_query = "DROP DATABASE IF EXISTS " + database_name + ";"
