@@ -1,5 +1,7 @@
 package net.madz.db.core.meta.immutable.mysql.impl;
 
+import java.util.List;
+
 import net.madz.db.core.meta.immutable.impl.SchemaMetaDataImpl;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -15,8 +17,8 @@ public final class MySQLSchemaMetaDataImpl extends
     private final String charSet;
     private final String collation;
 
-    public MySQLSchemaMetaDataImpl(MySQLSchemaMetaData metaData) {
-        super(metaData);
+    public MySQLSchemaMetaDataImpl(MySQLSchemaMetaData metaData,List<MySQLTableMetaData> tables) {
+        super(metaData,tables);
         this.charSet = metaData.getCharSet();
         this.collation = metaData.getCollation();
     }

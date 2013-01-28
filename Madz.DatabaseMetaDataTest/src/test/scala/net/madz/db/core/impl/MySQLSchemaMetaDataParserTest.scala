@@ -108,7 +108,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
           :: create_table_with_all_data_types_DDL_5
           :: Nil)
 
-      val result = parser parseSchemaMetaData
+      val result = parser.parseSchemaMetaData();
 
       val table1 = result.getTable("table_with_all_data_types_p1")
       val table2 = result.getTable("table_with_all_data_types_p2")

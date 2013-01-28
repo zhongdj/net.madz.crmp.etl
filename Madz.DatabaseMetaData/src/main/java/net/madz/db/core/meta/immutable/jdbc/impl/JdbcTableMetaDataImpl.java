@@ -11,6 +11,6 @@ public final class JdbcTableMetaDataImpl extends
         TableMetaDataImpl<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> implements JdbcTableMetaData {
 
     public JdbcTableMetaDataImpl(JdbcTableMetaData tableMetaData) {
-        super(tableMetaData);
+        super(tableMetaData, null, null, null);
     }
 }

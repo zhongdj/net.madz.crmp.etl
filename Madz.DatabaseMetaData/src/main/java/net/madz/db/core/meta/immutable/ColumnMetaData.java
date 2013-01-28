@@ -34,7 +34,7 @@ public interface ColumnMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
 
     String getDefaultValue();
 
-    Integer getCharOctetLength();
+    Long getCharOctetLength();
 
     /** Position of this column in physical table layout (first column=1, ...) */
     Short getOrdinalPosition();

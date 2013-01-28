@@ -1,5 +1,8 @@
 package net.madz.db.core.meta.immutable.mysql.impl;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import net.madz.db.core.meta.immutable.impl.TableMetaDataImpl;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -16,8 +19,8 @@ public final class MySQLTableMetaDataImpl extends
     private final String characterSet;
     private final String collation;
 
-    public MySQLTableMetaDataImpl(MySQLTableMetaData metaData) {
-        super(metaData);
+    public MySQLTableMetaDataImpl(MySQLTableMetaData metaData, LinkedList<MySQLColumnMetaData> columnMetaDatas, LinkedList<MySQLIndexMetaData> indexMetaDatas, List<MySQLForeignKeyMetaData> fkMetaDatas) {
+        super(metaData,columnMetaDatas,indexMetaDatas,fkMetaDatas);
         this.engine = metaData.getEngine();
         this.characterSet = metaData.getCharacterSet();
         this.collation = metaData.getCollation();

@@ -14,12 +14,14 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
         implements ColumnMetaData<SMD, TMD, CMD, FMD, IMD> {
 
     protected final DottedPath name;
-    protected final TMD table;
+    // For table: Initiated in subclass
+    protected TMD table;
     protected final String typeName;
     protected final Integer size;
     protected final boolean isNullable;
     protected final boolean isAutoIncremented;
-    protected final Integer radix, charOctetLength;
+    protected final Integer radix;
+    protected final long charOctetLength;
     protected final String remarks, defaultValue;
     protected final IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> primaryKey;
     protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> uniqueIndexList;
@@ -28,7 +30,6 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
 
     public ColumnMetaDataImpl(CMD metaData) {
         this.name = metaData.getColumnPath();
-        this.table = metaData.getTableMetaData();
         this.typeName = metaData.getSqlTypeName();
         this.size = metaData.getSize();
         this.radix = metaData.getRadix();
@@ -147,7 +148,7 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
     }
 
     @Override
-    public Integer getCharOctetLength() {
+    public Long getCharOctetLength() {
         return this.charOctetLength;
     }
 

@@ -11,6 +11,6 @@ public final class JdbcSchemaMetaDataImpl extends
         SchemaMetaDataImpl<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> implements JdbcSchemaMetaData {
 
     public JdbcSchemaMetaDataImpl(JdbcSchemaMetaData metaData) {
-        super(metaData);
+        super(metaData, null);
     }
 }

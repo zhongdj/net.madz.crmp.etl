@@ -46,8 +46,8 @@ public class MySQLTableMetaDataBuilderImpl
             final String schemaName = super.schema.getSchemaPath().getName();
             stmt.executeQuery("use information_schema;");
             try {
-                rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN collations ON  table_collation = collation_name WHERE table_schema = '"
-                        + schemaName + "' AND table_name='" + getTableName() + "';");
+                rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN collations ON  table_collation = collation_name WHERE table_schema = '" + schemaName
+                        + "' AND table_name='" + getTableName() + "';");
                 while ( rs.next() ) {
                     this.remarks = rs.getString(MySQLTableDbMetaDataEnum.TABLE_COMMENT.name());
                     this.type = TableType.convertTableType(MySQLTableTypeEnum.getType(rs.getString(MySQLTableDbMetaDataEnum.TABLE_TYPE.name())));
@@ -123,7 +123,22 @@ public class MySQLTableMetaDataBuilderImpl
 
     @Override
     public MySQLTableMetaData getMetaData() {
-        return new MySQLTableMetaDataImpl(this);
+        // Get column metadata
+        final LinkedList<MySQLColumnMetaData> columnMetaDatas = new LinkedList<MySQLColumnMetaData>();
+        for ( MySQLColumnMetaDataBuilder cb : this.columnMap.values() ) {
+            columnMetaDatas.add(cb.getMetaData());
+        }
+        final LinkedList<MySQLIndexMetaData> indexMetaDatas = new LinkedList<MySQLIndexMetaData>();
+        // Get index metaData
+        for ( MySQLIndexMetaDataBuilder indexBuilder : this.indexMap.values() ) {
+            indexMetaDatas.add(indexBuilder.getMetaData());
+        }
+        // Get fk metaData
+        final List<MySQLForeignKeyMetaData> fkMetaDatas = new LinkedList<MySQLForeignKeyMetaData>();
+        for ( MySQLForeignKeyMetaDataBuilder fkBuilder : this.fkList ) {
+            fkMetaDatas.add(fkBuilder.getMetaData());
+        }
+        return new MySQLTableMetaDataImpl(this,columnMetaDatas,indexMetaDatas,fkMetaDatas);
     }
 
     @Override

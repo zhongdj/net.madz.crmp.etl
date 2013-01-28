@@ -13,6 +13,10 @@ import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
+import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
+import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
+import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.types.TableType;
 
 public class TableMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
@@ -28,25 +32,26 @@ public class TableMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     protected final List<FMD> fkList = new LinkedList<FMD>();
     protected IMD primaryKey;
 
-    public TableMetaDataImpl(final TMD tableMetaData) {
+    public TableMetaDataImpl(final TMD tableMetaData, LinkedList<CMD> columnMetaDatas, LinkedList<IMD> indexMetaDatas, List<FMD> fkMetaDatas) {
         this.name = tableMetaData.getTablePath();
         this.type = tableMetaData.getType();
         this.remarks = tableMetaData.getRemarks();
         this.idCol = tableMetaData.getIdCol();
         this.idGeneration = tableMetaData.getIdGeneration();
-        TreeMap<String, CMD> columnMap = new TreeMap<String, CMD>(String.CASE_INSENSITIVE_ORDER);
-        for ( CMD column : tableMetaData.getColumns() ) {
+        final TreeMap<String, CMD> columnMap = new TreeMap<String, CMD>(String.CASE_INSENSITIVE_ORDER);
+        for ( CMD column : columnMetaDatas ) {
             columnMap.put(column.getColumnName(), column);
         }
         this.columnMap = Collections.unmodifiableMap(columnMap);
-        this.orderedColumns = tableMetaData.getColumns();
-        Collection<IMD> indexSet = tableMetaData.getIndexSet();
-        TreeMap<String, IMD> indexMap = new TreeMap<String, IMD>();
-        for ( IMD index : indexSet ) {
+        this.orderedColumns = columnMetaDatas;
+        final TreeMap<String, IMD> indexMap = new TreeMap<String, IMD>();
+        for ( IMD index : indexMetaDatas ) {
             indexMap.put(index.getIndexName(), index);
         }
+        for ( FMD fk : fkMetaDatas ) {
+            this.fkList.add(fk);
+        }
         this.indexMap = Collections.unmodifiableMap(indexMap);
-        // this.fkList = tableBuilder.getFkList();
         this.primaryKey = tableMetaData.getPrimaryKey();
     }
 

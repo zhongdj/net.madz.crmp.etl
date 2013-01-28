@@ -114,7 +114,17 @@ public class MySQLSchemaMetaDataBuilderImpl
 
     @Override
     public MySQLSchemaMetaData getMetaData() {
-        return new MySQLSchemaMetaDataImpl(this);
+        LinkedList<MySQLTableMetaData> tables = new LinkedList<MySQLTableMetaData>();
+        for ( MySQLTableMetaDataBuilder table : this.tableBuilderMap.values() ) {
+            tables.add(table.getMetaData());
+        }
+        for ( MySQLTableMetaData table : tables ) {
+            List<MySQLColumnMetaData> columns = table.getColumns();
+            for ( MySQLColumnMetaData colMetaData : columns ) {
+                colMetaData.setTable(table);
+            }
+        }
+        return new MySQLSchemaMetaDataImpl(this, tables);
     }
 
     @Override

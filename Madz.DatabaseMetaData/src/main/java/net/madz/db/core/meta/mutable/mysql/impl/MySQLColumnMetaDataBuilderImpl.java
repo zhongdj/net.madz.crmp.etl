@@ -30,7 +30,7 @@ public final class MySQLColumnMetaDataBuilderImpl
     private String collation;
     // private MySQLDataTypeEnum
     private String columnType;
-    private int characterMaximumLength;
+    private long characterMaximumLength;
     private int numericPrecision;
     private int numericScale;
     private String collationName;
@@ -55,8 +55,8 @@ public final class MySQLColumnMetaDataBuilderImpl
                 this.defaultValue = rs.getString("column_default");
                 this.isNullable = rs.getBoolean("is_nullable");
                 this.sqlTypeName = MySQLDataTypeEnum.valueOf(rs.getString("data_type").toUpperCase()).name();
-                this.characterMaximumLength = rs.getInt("character_maximum_length");
-                this.characterOctetLength = rs.getInt("character_octet_length");
+                this.characterMaximumLength = rs.getLong("character_maximum_length");
+                this.characterOctetLength = rs.getLong("character_octet_length");
                 this.numericPrecision = rs.getInt("numeric_precision");
                 this.numericScale = rs.getInt("numeric_scale");
                 this.characterSet = rs.getString("character_set_name");
@@ -88,7 +88,7 @@ public final class MySQLColumnMetaDataBuilderImpl
     }
 
     @Override
-    public int getCharacterMaximumLength() {
+    public long getCharacterMaximumLength() {
         return characterMaximumLength;
     }
 
@@ -125,5 +125,10 @@ public final class MySQLColumnMetaDataBuilderImpl
     @Override
     public MySQLColumnMetaData getMetaData() {
         return new MySQLColumnMetaDataImpl(this);
+    }
+
+    @Override
+    public void setTable(MySQLTableMetaData table) {
+        //Ignored
     }
 }

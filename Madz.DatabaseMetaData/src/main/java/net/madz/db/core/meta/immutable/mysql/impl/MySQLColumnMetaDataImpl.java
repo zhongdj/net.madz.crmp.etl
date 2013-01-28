@@ -14,7 +14,7 @@ public final class MySQLColumnMetaDataImpl extends
     private String characterSet;
     private String collation;
     private String columnType;
-    private int characterMaximumLength;
+    private long characterMaximumLength;
     private int numericPrecision;
     private int numericScale;
     private String collationName;
@@ -82,7 +82,13 @@ public final class MySQLColumnMetaDataImpl extends
     }
 
     @Override
-    public int getCharacterMaximumLength() {
+    public long getCharacterMaximumLength() {
         return this.characterMaximumLength;
+    }
+
+    @Override
+    public void setTable(MySQLTableMetaData table) {
+        this.table = table;
+        
     }
 }
