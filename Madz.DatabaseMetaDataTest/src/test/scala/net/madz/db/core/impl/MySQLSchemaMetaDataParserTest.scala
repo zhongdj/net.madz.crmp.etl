@@ -399,7 +399,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       val index = result.getTable("table_with_nullable_index") getIndex ("common_column_index")
       val nullable_column = result.getTable("table_with_nullable_index").getColumn("common_column")
       Assertions.expectResult(1)(nullable_column.getNonUniqueIndexSet size)
-      Assertions.expectResult(1)(nullable_column.getUniqueIndexSet size)
+      Assertions.expectResult(0)(nullable_column.getUniqueIndexSet size)
 
       val non_unique_index_entry = collectionAsScalaIterable[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]](nullable_column getNonUniqueIndexSet).toList(0)
 
@@ -468,7 +468,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       column_vs_entry.foreach(pair => {
         Assertions.expectResult(pair._1)(pair._2 getColumn)
         Assertions.expectResult(pk)(pair._2 getKey)
-        Assertions.expectResult(null)(pair._2.getSubPart)
+        Assertions.expectResult(0/*when subPart is null, result set returns 0.*/)(pair._2.getSubPart)
         //Tricky part
         Assertions.expectResult(pair._1.getOrdinalPosition)(pair._2 getPosition)
       })
@@ -499,8 +499,8 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       val nickname_index = table.getIndex("nickname_index");
       Assertions.expectResult(true)(email_index.isUnique)
       Assertions.expectResult(false)(nickname_index.isUnique)
-      Assertions.expectResult(true)(email_index.isNull)
-      Assertions.expectResult(false)(nickname_index.isNull)
+      Assertions.expectResult(false)(email_index.isNull)
+      Assertions.expectResult(true)(nickname_index.isNull)
 
     }
 
@@ -539,8 +539,8 @@ mysql> select * from statistics where table_name = 'table_with_composite_unique_
       Assertions.expectResult(composite_unique_key)(entries(1).getKey)
       Assertions.expectResult(1)(entries(0).getPosition())
       Assertions.expectResult(2)(entries(1).getPosition())
-      Assertions.expectResult(null)(entries(0).getSubPart)
-      Assertions.expectResult(null)(entries(1).getSubPart)
+      Assertions.expectResult(0/*when subPart is null, ResultSet returns 0*/)(entries(0).getSubPart)
+      Assertions.expectResult(0/*when subPart is null, ResultSet returns 0*/)(entries(1).getSubPart)
     }
 
     it("should parse non-PK auto-incremental column") {
