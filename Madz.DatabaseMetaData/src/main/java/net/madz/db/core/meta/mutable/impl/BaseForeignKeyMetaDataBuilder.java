@@ -34,13 +34,14 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
         private final CMD fkColumn;
         private final CMD pkColumn;
         private final FMD key;
-        private Short seq;
+        private final Short seq;
 
         public Entry(CMD fkColumn, CMD pkColumn, FMD key, Short seq) {
             super();
             this.fkColumn = fkColumn;
             this.pkColumn = pkColumn;
             this.key = key;
+            this.seq = seq;
         }
 
         @Override

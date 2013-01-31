@@ -1,15 +1,19 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
+
 import scala.collection.JavaConversions.collectionAsScalaIterable
 import scala.collection.JavaConversions.seqAsJavaList
 import scala.collection.immutable.List
 import scala.slick.session.Database
+
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
+
 import net.madz.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl
 import net.madz.db.core.meta.DottedPath
+import net.madz.db.core.meta.immutable.ForeignKeyMetaData
 import net.madz.db.core.meta.immutable.IndexMetaData
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData
@@ -22,7 +26,6 @@ import net.madz.db.core.meta.immutable.types.IndexTypeEnum
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum
 import net.madz.db.core.meta.immutable.types.SortDirectionEnum
 import net.madz.db.core.meta.immutable.types.TableType
-import net.madz.db.core.meta.immutable.ForeignKeyMetaData
 
 class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -214,13 +217,13 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       val result = parser parseSchemaMetaData
       val pk = result.getTable("table_with_single_column_pk").getPrimaryKey()
       val column = result.getTable("table_with_single_column_pk").getColumn("single_column_pk")
-      Assertions.expectResult(MySQLIndexMethod.btree)(pk getIndexMethod())
+      Assertions.expectResult(MySQLIndexMethod.btree)(pk getIndexMethod ())
       Assertions.expectResult(true)(pk isUnique)
       Assertions.expectResult(0)(pk getCardinality)
       Assertions.expectResult("PRIMARY")(pk getIndexName)
-//      Assertions.expectResult(IndexTypeEnum.clustered)(pk getIndexType)
+      //      Assertions.expectResult(IndexTypeEnum.clustered)(pk getIndexType)
       Assertions.expectResult(KeyTypeEnum.primaryKey)(pk getKeyType)
-//      Assertions.expectResult(0 /*"unknown"*/ )(pk getPageCount)
+      //      Assertions.expectResult(0 /*"unknown"*/ )(pk getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(pk getSortDirection)
       Assertions.expectResult("table_with_single_column_pk")(pk.getTable getTableName)
       Assertions.expectResult(false)(pk.isNull)
@@ -284,7 +287,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(true)(pk isUnique)
       Assertions.expectResult(false)(pk isNull)
       Assertions.expectResult(0)(pk getCardinality)
-//      Assertions.expectResult(IndexTypeEnum.clustered)(pk getIndexType)
+      //      Assertions.expectResult(IndexTypeEnum.clustered)(pk getIndexType)
       Assertions.expectResult(KeyTypeEnum.primaryKey)(pk getKeyType)
 
       val column = result.getTable("table_with_auto_incremental_index").getColumn("single_column_pk")
@@ -468,7 +471,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       column_vs_entry.foreach(pair => {
         Assertions.expectResult(pair._1)(pair._2 getColumn)
         Assertions.expectResult(pk)(pair._2 getKey)
-        Assertions.expectResult(0/*when subPart is null, result set returns 0.*/)(pair._2.getSubPart)
+        Assertions.expectResult(0 /*when subPart is null, result set returns 0.*/ )(pair._2.getSubPart)
         //Tricky part
         Assertions.expectResult(pair._1.getOrdinalPosition)(pair._2 getPosition)
       })
@@ -539,8 +542,8 @@ mysql> select * from statistics where table_name = 'table_with_composite_unique_
       Assertions.expectResult(composite_unique_key)(entries(1).getKey)
       Assertions.expectResult(1)(entries(0).getPosition())
       Assertions.expectResult(2)(entries(1).getPosition())
-      Assertions.expectResult(0/*when subPart is null, ResultSet returns 0*/)(entries(0).getSubPart)
-      Assertions.expectResult(0/*when subPart is null, ResultSet returns 0*/)(entries(1).getSubPart)
+      Assertions.expectResult(0 /*when subPart is null, ResultSet returns 0*/ )(entries(0).getSubPart)
+      Assertions.expectResult(0 /*when subPart is null, ResultSet returns 0*/ )(entries(1).getSubPart)
     }
 
     it("should parse non-PK auto-incremental column") {
@@ -656,7 +659,7 @@ mysql> select * from key_column_usage where constraint_schema='test' and (table_
       val fk_column_1 = table_2 getColumn "fk_column_1"
       val fk_column_2 = table_2 getColumn "fk_column_2"
 
-      Assertions.expectResult(""/*For string, If it is null, result set returns "".*/)(fk_index_1.getIndexComment)
+      Assertions.expectResult("" /*For string, If it is null, result set returns "".*/ )(fk_index_1.getIndexComment)
       Assertions.expectResult(MySQLIndexMethod.btree)(fk_index_1.getIndexMethod)
       Assertions.expectResult(true)(fk_index_1.isNull)
       Assertions.expectResult(true)(fk_index_1.containsColumn(fk_column_1))
@@ -664,7 +667,7 @@ mysql> select * from key_column_usage where constraint_schema='test' and (table_
       Assertions.expectResult(false)(fk_index_1.containsColumn(table_2 getColumn "id"))
       Assertions.expectResult(0)(fk_index_1.getCardinality)
       Assertions.expectResult("FK_table_2_fk_column_1")(fk_index_1.getIndexName)
-//      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_1.getIndexType)
+      //      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_1.getIndexType)
       Assertions.expectResult(KeyTypeEnum.index)(fk_index_1.getKeyType)
       Assertions.expectResult(null)(fk_index_1.getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(fk_index_1.getSortDirection)
@@ -679,7 +682,7 @@ mysql> select * from key_column_usage where constraint_schema='test' and (table_
       Assertions.expectResult(false)(fk_index_2.containsColumn(table_2 getColumn "id"))
       Assertions.expectResult(0)(fk_index_2.getCardinality)
       Assertions.expectResult("FK_table_2_fk_column_2")(fk_index_2.getIndexName)
-//      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_2.getIndexType)
+      //      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_2.getIndexType)
       Assertions.expectResult(KeyTypeEnum.index)(fk_index_2.getKeyType)
       Assertions.expectResult(null)(fk_index_2.getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(fk_index_2.getSortDirection)
@@ -764,28 +767,27 @@ mysql> select * from key_column_usage where constraint_schema='madz_database_par
       val table_1 = schema getTable "t1"
       val table_2 = schema getTable "t2"
       val fk_index = table_2.getIndex("FK_t1_composite_column_1_column_2")
-      val fkEntry_1 = table_2.getForeignKeySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
-      val fkEntry_2 = table_2.getForeignKeySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
+      val fk = table_2.getForeignKeySet().iterator().next();
+      val fkEntry_1 = fk.getEntrySet().toArray(Array[ForeignKeyMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
+      val fkEntry_2 = fk.getEntrySet().toArray(Array[ForeignKeyMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
       val fk_column_1 = table_2.getColumn("fk_column_1")
       val fk_column_2 = table_2.getColumn("fk_column_2")
-      Assertions.expectResult(fk_column_1)(fkEntry_1 getColumn)
-      Assertions.expectResult(fk_column_2)(fkEntry_2 getColumn)
-      Assertions.expectResult(1)(fkEntry_1 getPosition)
-      Assertions.expectResult(2)(fkEntry_2 getPosition)
-      Assertions.expectResult(fk_index)(fkEntry_1.getKey)
-      Assertions.expectResult(fk_index)(fkEntry_2.getKey)
-      Assertions.expectResult(null)(fkEntry_1 getSubPart)
-      Assertions.expectResult(null)(fkEntry_2.getSubPart)
+      Assertions.expectResult(fk_column_1)(fkEntry_1 getForeignKeyColumn ())
+      Assertions.expectResult(fk_column_2)(fkEntry_2 getForeignKeyColumn)
+      Assertions.expectResult(1)(fkEntry_1 getSeq)
+      Assertions.expectResult(2)(fkEntry_2 getSeq)
+      Assertions.expectResult(fk_index)(fkEntry_1.getKey.getForeignKeyIndex())
+      Assertions.expectResult(fk_index)(fkEntry_2.getKey.getForeignKeyIndex())
 
-      Assertions.expectResult(null)(fk_index.getIndexComment)
+      Assertions.expectResult("")(fk_index.getIndexComment)
       Assertions.expectResult(MySQLIndexMethod.btree)(fk_index.getIndexMethod)
-      Assertions.expectResult(null)(fk_index.isNull)
+      Assertions.expectResult(false)(fk_index.isNull)
       Assertions.expectResult(true)(fk_index.containsColumn(fk_column_1))
       Assertions.expectResult(true)(fk_index.containsColumn(fk_column_2))
       Assertions.expectResult(false)(fk_index.containsColumn(table_2 getColumn "id"))
-      Assertions.expectResult(null)(fk_index.getCardinality)
+      Assertions.expectResult(0)(fk_index.getCardinality)
       Assertions.expectResult("FK_t1_composite_column_1_column_2")(fk_index.getIndexName)
-      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index.getIndexType)
+      //      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index.getIndexType)
       Assertions.expectResult(KeyTypeEnum.index)(fk_index.getKeyType)
       Assertions.expectResult(null)(fk_index.getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(fk_index.getSortDirection)
@@ -810,19 +812,19 @@ mysql> select * from key_column_usage where constraint_schema='madz_database_par
       val t1 = schema getTable "t1"
       val index_column = t1 getColumn "index_column"
       val index = t1 getIndex "single_column_index"
-      val index_entry = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
+      val index_entry = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
       Assertions.expectResult(index)(index_entry getKey)
       Assertions.expectResult(index_column)(index_entry getColumn)
       Assertions.expectResult(1)(index_entry getPosition)
-      Assertions.expectResult(null)(index_entry getSubPart)
-      Assertions.expectResult(null)(index.getIndexComment)
+      Assertions.expectResult(0)(index_entry getSubPart)
+      Assertions.expectResult("")(index.getIndexComment)
       Assertions.expectResult(MySQLIndexMethod.btree)(index.getIndexMethod)
-      Assertions.expectResult(null)(index.isNull)
+      Assertions.expectResult(false)(index.isNull)
       Assertions.expectResult(true)(index.containsColumn(index_column))
       Assertions.expectResult(false)(index.containsColumn(t1 getColumn "data"))
-      Assertions.expectResult(null)(index.getCardinality)
+      Assertions.expectResult(0)(index.getCardinality)
       Assertions.expectResult("single_column_index")(index.getIndexName)
-      Assertions.expectResult(IndexTypeEnum.statistic)(index.getIndexType)
+//      Assertions.expectResult(IndexTypeEnum.statistic)(index.getIndexType)
       Assertions.expectResult(KeyTypeEnum.index)(index.getKeyType)
       Assertions.expectResult(null)(index.getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(index.getSortDirection)
@@ -870,25 +872,25 @@ mysql> select * from columns where table_name= 'table_composite_index_test';
       val index_column_1 = t1 getColumn "index_column_1"
       val index_column_2 = t1 getColumn "index_column_2"
       val index = t1 getIndex "composite_column_index"
-      val index_entry_1 = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
-      val index_entry_2 = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(2)
+      val index_entry_1 = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
+      val index_entry_2 = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
       Assertions.expectResult(index)(index_entry_1 getKey)
       Assertions.expectResult(index)(index_entry_2 getKey)
       Assertions.expectResult(index_column_1)(index_entry_1 getColumn)
       Assertions.expectResult(index_column_2)(index_entry_2 getColumn)
       Assertions.expectResult(1)(index_entry_1 getPosition)
       Assertions.expectResult(2)(index_entry_2 getPosition)
-      Assertions.expectResult(null)(index_entry_1 getSubPart)
-      Assertions.expectResult(null)(index_entry_2 getSubPart)
-      Assertions.expectResult(null)(index.getIndexComment)
+      Assertions.expectResult(0)(index_entry_1 getSubPart)
+      Assertions.expectResult(0)(index_entry_2 getSubPart)
+      Assertions.expectResult("")(index.getIndexComment)
       Assertions.expectResult(MySQLIndexMethod.btree)(index.getIndexMethod)
-      Assertions.expectResult(null)(index.isNull)
+      Assertions.expectResult(false)(index.isNull)
       Assertions.expectResult(true)(index.containsColumn(index_column_1))
       Assertions.expectResult(true)(index.containsColumn(index_column_2))
       Assertions.expectResult(false)(index.containsColumn(t1 getColumn "data"))
-      Assertions.expectResult(null)(index.getCardinality)
+      Assertions.expectResult(0)(index.getCardinality)
       Assertions.expectResult("composite_column_index")(index.getIndexName)
-      Assertions.expectResult(IndexTypeEnum.statistic)(index.getIndexType)
+//      Assertions.expectResult(IndexTypeEnum.statistic)(index.getIndexType)
       Assertions.expectResult(KeyTypeEnum.index)(index.getKeyType)
       Assertions.expectResult(null)(index.getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(index.getSortDirection)
@@ -973,7 +975,7 @@ mysql> select * from columns where table_name= 'table_composite_index_test';
     val NUMERIC_SCALE: Integer, val CHARACTER_SET_NAME: String, val COLLATION_NAME: String,
     val COLUMN_TYPE: String)
 
-    val columns_in_table1 =
+  val columns_in_table1 =
     ColumnMetaData("table_with_all_data_types_p1", "BIT_COLUMN", 1, null, true, "bit", 0, 1, 0, null, null, "bit(1)") ::
       ColumnMetaData("table_with_all_data_types_p1", "BIT_PLUS_COLUMN", 2, null, true, "bit", 0, 2, 0, null, null, "bit(2)") ::
       ColumnMetaData("table_with_all_data_types_p1", "TINYINT_COLUMN", 3, null, true, "tinyint", 0, 3, 0, null, null, "tinyint(1)") ::
@@ -1040,11 +1042,11 @@ mysql> select * from columns where table_name= 'table_composite_index_test';
     Assertions.expectResult(expect.COLUMN_DEFAULT)(actual getDefaultValue)
     Assertions.expectResult(expect.IS_NULLABLE)(actual isNullable)
     Assertions.expectResult(expect.DATA_TYPE.toUpperCase())(actual getSqlTypeName)
-    Assertions.expectResult(expect.CHARACTER_MAXIMUM_LENGTH)(actual getCharacterMaximumLength())
+    Assertions.expectResult(expect.CHARACTER_MAXIMUM_LENGTH)(actual getCharacterMaximumLength ())
     Assertions.expectResult(expect.NUMERIC_PRECISION)(actual getNumericPrecision ())
     Assertions.expectResult(expect.NUMERIC_SCALE)(actual getNumericScale ())
-    Assertions.expectResult(expect.CHARACTER_SET_NAME)(actual getCharacterSet())
-    Assertions.expectResult(expect.COLLATION_NAME)(actual getCollationName())
-    Assertions.expectResult(expect.COLUMN_TYPE)(actual getColumnType())
+    Assertions.expectResult(expect.CHARACTER_SET_NAME)(actual getCharacterSet ())
+    Assertions.expectResult(expect.COLLATION_NAME)(actual getCollationName ())
+    Assertions.expectResult(expect.COLUMN_TYPE)(actual getColumnType ())
   }
 }
