@@ -12,6 +12,10 @@ public interface MySQLTableMetaDataBuilder
         TableMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
 
     MySQLIndexMetaDataBuilder getIndexBuilder(String string);
+
+    MySQLTableMetaData createMetaData(MySQLSchemaMetaData parent);
+
+    MySQLColumnMetaDataBuilder getColumnBuilder(String columnName);
         
         /*
         MySQLTableMetaData<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder>,

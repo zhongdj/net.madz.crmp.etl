@@ -19,12 +19,14 @@ import net.madz.db.core.meta.mutable.SchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
 
 public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TMDB extends TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, CMDB extends ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, FMDB extends ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IMDB extends IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
-        implements SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SchemaMetaData<SMD, TMD, CMD, FMD, IMD> {
+        extends BaseMetaDataBuilder<SMD> implements SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>,
+        SchemaMetaData<SMD, TMD, CMD, FMD, IMD> {
 
     // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable fields
     protected final DottedPath schemaPath;
     protected final Map<String, TMDB> tableBuilderMap = new TreeMap<String, TMDB>(String.CASE_INSENSITIVE_ORDER);
-    private final Collection<TMDB> tableList = new LinkedList<TMDB>();
+    protected final Collection<TMDB> tableList = new LinkedList<TMDB>();
+
     public BasedSchemaMetaDataBuilder(final DottedPath schemaPath) throws SQLException {
         super();
         this.schemaPath = schemaPath;
@@ -40,9 +42,13 @@ public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuil
     public DottedPath getSchemaPath() {
         return this.schemaPath;
     }
-    
+
     public Collection<TMD> getTables() {
-        return (Collection<TMD>) tableList;
+        final Collection<TMD> result = new LinkedList<TMD>();
+        for ( final TMDB tableBuilder : tableList ) {
+            result.add(tableBuilder.getMetaData());
+        }
+        return result;
     }
 
     public TMD getTable(String name) {

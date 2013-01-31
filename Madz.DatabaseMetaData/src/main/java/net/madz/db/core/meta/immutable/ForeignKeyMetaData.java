@@ -66,5 +66,7 @@ extends MetaData {
         CMD getPrimaryKeyColumn();
 
         FMD getKey();
+        
+        Short getSeq();
     }
 }

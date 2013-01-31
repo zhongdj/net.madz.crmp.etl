@@ -17,7 +17,8 @@ import net.madz.db.core.meta.mutable.SchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
 
 public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TMDB extends TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, CMDB extends ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, FMDB extends ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IMDB extends IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
-        implements ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD> {
+        extends BaseMetaDataBuilder<FMD> implements ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>,
+        ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD> {
 
     protected List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList;
     protected CascadeRule updateRule, deleteRule;
@@ -32,8 +33,9 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
         private final CMD fkColumn;
         private final CMD pkColumn;
         private final FMD key;
+        private Short seq;
 
-        public Entry(CMD fkColumn, CMD pkColumn, FMD key) {
+        public Entry(CMD fkColumn, CMD pkColumn, FMD key, Short seq) {
             super();
             this.fkColumn = fkColumn;
             this.pkColumn = pkColumn;
@@ -54,6 +56,12 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
         public FMD getKey() {
             return this.key;
         }
+
+        
+        public Short getSeq() {
+            return seq;
+        }
+        
     }
 
     @Override

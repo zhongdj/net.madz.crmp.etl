@@ -14,11 +14,13 @@ public final class MySQLIndexMetaDataImpl extends
 
     private final boolean isNull;
     private final MySQLIndexMethod indexMethod;
+    private final String indexComment;
 
-    public MySQLIndexMetaDataImpl(MySQLIndexMetaData metaData) {
-        super(metaData);
+    public MySQLIndexMetaDataImpl(MySQLTableMetaData parent, MySQLIndexMetaData metaData) {
+        super(parent, metaData);
         this.isNull = metaData.isNull();
         this.indexMethod = metaData.getIndexMethod();
+        this.indexComment = metaData.getIndexComment();
     }
 
     @Override
@@ -31,7 +33,8 @@ public final class MySQLIndexMetaDataImpl extends
         return this.indexMethod;
     }
 
+    @Override
     public String getIndexComment() {
-        return null;
+        return this.indexComment;
     }
 }

@@ -2,6 +2,8 @@ package net.madz.db.core.meta.immutable.impl;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
@@ -9,6 +11,7 @@ import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
+import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 
 public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
         implements ColumnMetaData<SMD, TMD, CMD, FMD, IMD> {
@@ -23,12 +26,14 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
     protected final Integer radix;
     protected final long charOctetLength;
     protected final String remarks, defaultValue;
-    protected final IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> primaryKey;
-    protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> uniqueIndexList;
-    protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> nonUniqueIndexList;
+    protected IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> primaryKey;
+    protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> uniqueIndexList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
+    protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> nonUniqueIndexList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();;
     protected final Short ordinalPosition;
+    protected final List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> fkList = new LinkedList<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
 
-    public ColumnMetaDataImpl(CMD metaData) {
+    public ColumnMetaDataImpl(TMD parent, CMD metaData) {
+        this.table = parent;
         this.name = metaData.getColumnPath();
         this.typeName = metaData.getSqlTypeName();
         this.size = metaData.getSize();
@@ -39,9 +44,12 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
         this.ordinalPosition = metaData.getOrdinalPosition();
         this.isNullable = metaData.isNullable();
         this.isAutoIncremented = metaData.isAutoIncremented();
-        this.primaryKey = metaData.getPrimaryKey();
-        this.uniqueIndexList = Collections.unmodifiableCollection(metaData.getUniqueIndexSet());
-        this.nonUniqueIndexList = Collections.unmodifiableCollection(metaData.getNonUniqueIndexSet());
+    }
+
+    void setTable(TMD table) {
+        if ( this.table != null ) this.table.getColumns().remove(this);
+        this.table = table;
+        if ( this.table != null ) this.table.getColumns().add((CMD) this);
     }
 
     @Override
@@ -77,23 +85,13 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
     @SuppressWarnings("unchecked")
     @Override
     public boolean isMemberOfPrimaryKey() {
-        IMD primaryKey = this.table.getPrimaryKey();
-        if ( primaryKey.containsColumn((CMD) this) ) {
-            return true;
-        }
-        return false;
+        return null != this.primaryKey;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean isMemberOfIndex() {
-        Collection<IMD> indexSet = this.table.getIndexSet();
-        for ( IMD index : indexSet ) {
-            if ( index.containsColumn((CMD) this) ) {
-                return true;
-            }
-        }
-        return false;
+        return isMemberOfPrimaryKey() || isMemberOfUniqueIndex() || this.nonUniqueIndexList.size() > 0;
     }
 
     @Override
@@ -114,7 +112,7 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
 
     @Override
     public boolean isMemberOfUniqueIndex() {
-        return this.uniqueIndexList.contains(this);
+        return ( this.uniqueIndexList.size() > 0 );
     }
 
     @Override

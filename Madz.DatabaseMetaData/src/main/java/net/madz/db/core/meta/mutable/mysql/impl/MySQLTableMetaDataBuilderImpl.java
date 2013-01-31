@@ -16,7 +16,9 @@ import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum;
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLTableTypeEnum;
+import net.madz.db.core.meta.immutable.mysql.impl.MySQLColumnMetaDataImpl;
 import net.madz.db.core.meta.immutable.mysql.impl.MySQLTableMetaDataImpl;
+import net.madz.db.core.meta.immutable.types.KeyTypeEnum;
 import net.madz.db.core.meta.immutable.types.TableType;
 import net.madz.db.core.meta.mutable.impl.BaseTableMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
@@ -24,6 +26,7 @@ import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
+import net.madz.db.utils.LogUtils;
 import net.madz.db.utils.ResourceManagementUtils;
 
 public class MySQLTableMetaDataBuilderImpl
@@ -63,7 +66,8 @@ public class MySQLTableMetaDataBuilderImpl
             // Parse Columns
             final List<String> colNames = new LinkedList<String>();
             try {
-                rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + schemaName + "' AND table_name='" + getTableName() + "' ORDER BY ordinal_position ASC;");
+                rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + schemaName + "' AND table_name='" + getTableName()
+                        + "' ORDER BY ordinal_position ASC;");
                 while ( rs.next() ) {
                     colNames.add(rs.getString("column_name"));
                 }
@@ -91,6 +95,8 @@ public class MySQLTableMetaDataBuilderImpl
             // Parse Primary Key
             MySQLIndexMetaDataBuilder pk = this.indexMap.get("PRIMARY");
             if ( null != pk ) {
+                pk.setKeyType(KeyTypeEnum.primaryKey);
+                this.primaryKey = pk;
                 Collection<Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = pk
                         .getEntrySet();
                 for ( Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
@@ -98,10 +104,10 @@ public class MySQLTableMetaDataBuilderImpl
                     columnBuilder.setPrimaryKey(entry);
                 }
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception ignored) {
+            LogUtils.debug(ignored.getClass(), ignored.getMessage());
         } finally {
-            rs.close();
+            ResourceManagementUtils.closeResultSet(rs);
         }
         return this;
     }
@@ -121,28 +127,73 @@ public class MySQLTableMetaDataBuilderImpl
         return this.collation;
     }
 
-    @Override
-    public MySQLTableMetaData getMetaData() {
-        // Get column metadata
-        final LinkedList<MySQLColumnMetaData> columnMetaDatas = new LinkedList<MySQLColumnMetaData>();
-        for ( MySQLColumnMetaDataBuilder cb : this.columnMap.values() ) {
-            columnMetaDatas.add(cb.getMetaData());
+    public MySQLTableMetaData createMetaData(MySQLSchemaMetaData parent) {
+        MySQLTableMetaDataImpl result = new MySQLTableMetaDataImpl(parent, this);
+        final LinkedList<MySQLColumnMetaDataImpl> columns = new LinkedList<MySQLColumnMetaDataImpl>();
+        for ( MySQLColumnMetaDataBuilder columnBuilder : this.columnMap.values() ) {
+            columns.add((MySQLColumnMetaDataImpl) columnBuilder.createMetaData(result));
         }
-        final LinkedList<MySQLIndexMetaData> indexMetaDatas = new LinkedList<MySQLIndexMetaData>();
-        // Get index metaData
+        result.addAllColumns(columns);
+        final List<MySQLIndexMetaData> indexes = new LinkedList<MySQLIndexMetaData>();
         for ( MySQLIndexMetaDataBuilder indexBuilder : this.indexMap.values() ) {
-            indexMetaDatas.add(indexBuilder.getMetaData());
+            final MySQLIndexMetaData indexMetaData = indexBuilder.createMetaData(result);
+            indexes.add(indexMetaData);
+            final boolean isPrimary = indexMetaData.getIndexName().equalsIgnoreCase("primary");
+            if ( isPrimary ) {
+                result.setPrimaryKey(indexMetaData);
+            }
+            final boolean isUnique = indexMetaData.isUnique();
+            Collection<Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = indexMetaData
+                    .getEntrySet();
+            for ( Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
+                final String columnName = entry.getColumn().getColumnName();
+                for ( MySQLColumnMetaDataImpl column : columns ) {
+                    if ( columnName.equalsIgnoreCase(column.getColumnName()) ) {
+                        if ( isUnique ) {
+                            column.addUniqueIndexEntry(entry);
+                        } else {
+                            column.addNonUniqueIndexEntry(entry);
+                        }
+                        if (isPrimary) {
+                            column.setPrimaryKey(entry);
+                        }
+                    }
+                }
+            }
         }
-        // Get fk metaData
-        final List<MySQLForeignKeyMetaData> fkMetaDatas = new LinkedList<MySQLForeignKeyMetaData>();
+        result.addAllIndexes(indexes);
+        final List<MySQLForeignKeyMetaData> fks = new LinkedList<MySQLForeignKeyMetaData>();
         for ( MySQLForeignKeyMetaDataBuilder fkBuilder : this.fkList ) {
-            fkMetaDatas.add(fkBuilder.getMetaData());
+            fks.add(fkBuilder.createMetaData(result));
         }
-        return new MySQLTableMetaDataImpl(this,columnMetaDatas,indexMetaDatas,fkMetaDatas);
+        result.addAllFks(fks);
+        constructedMetaData = result;
+        return constructedMetaData;
     }
 
     @Override
     public MySQLIndexMetaDataBuilder getIndexBuilder(String indexName) {
         return this.indexMap.get(indexName);
+    }
+
+    @Override
+    public MySQLSchemaMetaData getParent() {
+        return this.schema;
+    }
+
+    @Override
+    public MySQLTableMetaData getMetaData() {
+        return this.constructedMetaData;
+    }
+
+    @Override
+    protected MySQLTableMetaData createMetaData() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public MySQLColumnMetaDataBuilder getColumnBuilder(String columnName) {
+        return this.columnMap.get(columnName);
     }
 }

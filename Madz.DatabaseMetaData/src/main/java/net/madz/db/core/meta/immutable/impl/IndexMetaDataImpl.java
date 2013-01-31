@@ -1,12 +1,14 @@
 package net.madz.db.core.meta.immutable.impl;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
+import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.types.IndexTypeEnum;
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum;
 import net.madz.db.core.meta.immutable.types.SortDirectionEnum;
@@ -20,7 +22,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     protected final SortDirectionEnum ascending;
     protected final Integer cardinatlity;
     protected final Integer pages;
-    protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList;
+    protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
     // TODO [Jan 22, 2013][barry][Done] ONLY keyType can be re-assign?
     protected final KeyTypeEnum keyType;
 
@@ -48,7 +50,6 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         public Integer getPosition() {
             return this.position;
         }
-
 
         @Override
         public int hashCode() {
@@ -92,15 +93,20 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         }
     }
 
-    public IndexMetaDataImpl(IMD metaData) {
-        this.table = metaData.getTable();
-        this.entryList = metaData.getEntrySet();
+    public IndexMetaDataImpl(TMD parent, IMD metaData) {
+        this.table = parent;
         this.indexName = metaData.getIndexName();
         this.indexType = metaData.getIndexType();
         this.cardinatlity = metaData.getCardinality();
         this.pages = metaData.getPageCount();
         this.ascending = metaData.getSortDirection();
         this.keyType = metaData.getKeyType();
+        for (IMD.Entry entry: metaData.getEntrySet()) {
+            CMD column = parent.getColumn(entry.getColumn().getColumnName());
+            Integer position = entry.getPosition();
+            Integer subPart = entry.getSubPart();
+            this.entryList.add(new Entry(column, position, subPart));
+        }
     }
 
     public String getIndexName() {
@@ -197,6 +203,4 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         } else if ( !table.equals(other.table) ) return false;
         return true;
     }
-    
-    
 }

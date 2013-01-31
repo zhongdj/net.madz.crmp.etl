@@ -11,4 +11,6 @@ public interface MySQLColumnMetaDataBuilder
         extends
         MySQLColumnMetaData,
         ColumnMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
+
+    MySQLColumnMetaData createMetaData(MySQLTableMetaData parent);
 }

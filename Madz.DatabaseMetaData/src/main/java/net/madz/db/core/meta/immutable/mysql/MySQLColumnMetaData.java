@@ -29,6 +29,4 @@ public interface MySQLColumnMetaData extends
     Integer getNumericPrecision();
 
     long getCharacterMaximumLength();
-
-    void setTable(MySQLTableMetaData table);
 }

@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import net.madz.db.core.meta.DottedPath;
+import net.madz.db.core.meta.immutable.ForeignKeyMetaData.Entry;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -62,7 +63,11 @@ public final class MySQLColumnMetaDataBuilderImpl
                 this.columnType = rs.getString("column_type");
                 this.columnKey = rs.getString("column_key");
                 this.extra = rs.getString("extra");
+                if (this.extra.equalsIgnoreCase("auto_increment")) {
+                    this.isAutoIncremented = true;
+                }
                 this.remarks = rs.getString("column_comment");
+                
             }
         } finally {
             ResourceManagementUtils.closeResultSet(rs);
@@ -111,12 +116,20 @@ public final class MySQLColumnMetaDataBuilderImpl
     }
 
     @Override
-    public MySQLColumnMetaData getMetaData() {
-        return new MySQLColumnMetaDataImpl(this);
+    protected MySQLColumnMetaData createMetaData() {
+        return constructedMetaData;
     }
 
     @Override
-    public void setTable(MySQLTableMetaData table) {
-        //Ignored
+    public MySQLColumnMetaDataImpl createMetaData(MySQLTableMetaData parent) {
+        this.constructedMetaData = new MySQLColumnMetaDataImpl(parent, this);
+        return (MySQLColumnMetaDataImpl) this.constructedMetaData;
+    }
+
+    @Override
+    public MySQLForeignKeyMetaDataBuilder appendForeignKeyEntry(
+            Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
+        this.fkList.add(entry);
+        return (MySQLForeignKeyMetaDataBuilder) this.fkList;
     }
 }

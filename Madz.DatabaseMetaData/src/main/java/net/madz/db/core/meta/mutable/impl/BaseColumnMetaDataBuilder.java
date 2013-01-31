@@ -18,7 +18,8 @@ import net.madz.db.core.meta.mutable.SchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
 
 public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TMDB extends TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, CMDB extends ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, FMDB extends ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IMDB extends IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
-        implements ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, ColumnMetaData<SMD, TMD, CMD, FMD, IMD> {
+        extends BaseMetaDataBuilder<CMD> implements ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>,
+        ColumnMetaData<SMD, TMD, CMD, FMD, IMD> {
 
     protected DottedPath columnPath;
     protected TMDB tableBuilder;
@@ -112,39 +113,23 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     public Entry<SMD, TMD, CMD, FMD, IMD> getPrimaryKey() {
         return this.primaryKey;
     }
-    
+
     @Override
     public void setPrimaryKey(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
         this.primaryKey = entry;
         this.uniqueIndexList.remove(primaryKey);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public boolean isMemberOfPrimaryKey() {
-        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
-        // variables
-        final IMD primaryKey = this.tableBuilder.getMetaData().getPrimaryKey();
-        // TODO [Jan 22, 2013][barry] Is there any constraint that every table
-        // has a primaryKey?
-        if ( primaryKey.containsColumn((CMD) this) ) {
-            return true;
-        }
-        return false;
+        return null != this.primaryKey;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean isMemberOfIndex() {
-        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
-        // variables
-        final Collection<IMD> indexSet = this.tableBuilder.getMetaData().getIndexSet();
-        for ( IMD index : indexSet ) {
-            if ( index.containsColumn((CMD) this) ) {
-                return true;
-            }
-        }
-        return false;
+        return isMemberOfPrimaryKey() || isMemberOfUniqueIndex() || this.nonUniqueIndexList.size() > 0;
     }
 
     @Override
@@ -167,26 +152,26 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
 
     @Override
     public boolean isMemberOfUniqueIndex() {
-        return this.uniqueIndexList.contains(this);
+        return null != this.uniqueIndexList;
     }
 
     @Override
     public Collection<Entry<SMD, TMD, CMD, FMD, IMD>> getNonUniqueIndexSet() {
         return this.nonUniqueIndexList;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public CMDB appendUniqueIndexEntry(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
-        //todo
-        return (CMDB) this;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public CMDB appendNonUniqueIndexEntry(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
-        //todo
+        // todo
+        this.uniqueIndexList.add(entry);
         return (CMDB) this;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public CMDB appendNonUniqueIndexEntry(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
+        this.nonUniqueIndexList.add(entry);
+        return (CMDB) this;
+    }
 }

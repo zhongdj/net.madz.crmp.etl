@@ -17,8 +17,8 @@ public final class MySQLSchemaMetaDataImpl extends
     private final String charSet;
     private final String collation;
 
-    public MySQLSchemaMetaDataImpl(MySQLSchemaMetaData metaData,List<MySQLTableMetaData> tables) {
-        super(metaData,tables);
+    public MySQLSchemaMetaDataImpl(MySQLSchemaMetaData metaData) {
+        super(metaData);
         this.charSet = metaData.getCharSet();
         this.collation = metaData.getCollation();
     }
@@ -33,4 +33,10 @@ public final class MySQLSchemaMetaDataImpl extends
         return collation;
     }
 
+    public void addAllTables(List<MySQLTableMetaData> tables) {
+        for ( MySQLTableMetaData table : tables ) {
+            this.orderedTables.add(table);
+            this.tablesMap.put(table.getTableName(), table);
+        }
+    }
 }

@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import net.madz.db.core.meta.DottedPath;
+import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -21,6 +22,7 @@ import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
+import net.madz.db.utils.ResourceManagementUtils;
 
 public class MySQLIndexMetaDataBuilderImpl
         extends
@@ -42,29 +44,40 @@ public class MySQLIndexMetaDataBuilderImpl
         // | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME | COLLATION | CARDINALITY |
         // SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
         stmt.executeQuery("use information_schema;");
-        ResultSet rs = stmt.executeQuery("SELECT * FROM statistics WHERE table_schema='" + this.indexPath.getParent().getParent().getName()
-                + "' AND table_name='" + this.indexPath.getParent().getName() + "';");
-        int count = 0;
-        while ( rs.next() ) {
-            if ( count == 0 ) {
-                this.isUnique = !rs.getBoolean("non_unique");
-                if ( this.isUnique )
-                    this.keyType = KeyTypeEnum.uniqueKey;
-                else
-                    this.keyType = KeyTypeEnum.index;
-                // TODO index type??? moved to jdbc level
-                this.sortDirection = SortDirectionEnum.getSortDirection(rs.getString("collation"));
-                this.cardinatlity = rs.getInt("cardinality");
-                // TODO pages ?? moved to jdbc level
-                this.isNull = rs.getBoolean("nullable");
-                this.indexMethod = MySQLIndexMethod.getIndexMethod(rs.getString("index_type"));
-                this.indexComment = rs.getString("INDEX_COMMENT");
+        ResultSet rs = null;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM statistics WHERE table_schema='" + this.indexPath.getParent().getParent().getName() + "' AND table_name='"
+                    + this.indexPath.getParent().getName() + "' AND index_name='" + this.indexPath.getName() + "';");
+            int count = 0;
+            while ( rs.next() ) {
+                if ( count == 0 ) {
+                    this.isUnique = !rs.getBoolean("non_unique");
+                    if ( this.isUnique )
+                        this.keyType = KeyTypeEnum.uniqueKey;
+                    else
+                        this.keyType = KeyTypeEnum.index;
+                    // TODO index type??? moved to jdbc level
+                    this.sortDirection = SortDirectionEnum.getSortDirection(rs.getString("collation"));
+                    this.cardinatlity = rs.getInt("cardinality");
+                    // TODO pages ?? moved to jdbc level
+                    this.isNull = rs.getBoolean("nullable");
+                    this.indexMethod = MySQLIndexMethod.getIndexMethod(rs.getString("index_type"));
+                    this.indexComment = rs.getString("INDEX_COMMENT");
+                }
+                count++;
+                short subPart = rs.getShort("sub_part");
+                short position = rs.getShort("seq_in_index");
+                MySQLColumnMetaDataBuilder column = this.table.getColumnBuilder(rs.getString("column_name"));
+                BaseIndexMetaDataBuilder.Entry entry = new BaseIndexMetaDataBuilder.Entry(this, subPart, column, position);
+                if (this.isUnique) {
+                    column.appendUniqueIndexEntry(entry);
+                } else {
+                    column.appendNonUniqueIndexEntry(entry);
+                }
+                this.addEntry(entry);
             }
-            count++;
-            short subPart = rs.getShort("sub_part");
-            short position = rs.getShort("seq_in_index");
-            MySQLColumnMetaData column = this.table.getColumn(rs.getString("column_name"));
-            this.addEntry(new BaseIndexMetaDataBuilder.Entry(this, subPart, column, position));
+        } finally {
+            ResourceManagementUtils.closeResultSet(rs);
         }
         // TODO is packed, nullable belonged to entry
         // What is the difference of comment and index_comment?
@@ -82,12 +95,23 @@ public class MySQLIndexMetaDataBuilderImpl
     }
 
     @Override
-    public MySQLIndexMetaData getMetaData() {
-        return new MySQLIndexMetaDataImpl(this);
+    protected MySQLIndexMetaData createMetaData() {
+        return constructedMetaData;
     }
 
     @Override
     public String getIndexComment() {
         return indexComment;
+    }
+
+    @Override
+    public MySQLIndexMetaData createMetaData(MySQLTableMetaData parent) {
+        this.constructedMetaData = new MySQLIndexMetaDataImpl(parent, this);
+        return this.constructedMetaData;
+    }
+
+    @Override
+    public void setKeyType(KeyTypeEnum keyType) {
+        this.keyType = keyType;
     }
 }

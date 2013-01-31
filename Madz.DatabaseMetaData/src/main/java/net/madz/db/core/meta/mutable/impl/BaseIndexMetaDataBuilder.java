@@ -1,6 +1,7 @@
 package net.madz.db.core.meta.mutable.impl;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.core.meta.DottedPath;
@@ -19,7 +20,8 @@ import net.madz.db.core.meta.mutable.SchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
 
 public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TMDB extends TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, CMDB extends ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, FMDB extends ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IMDB extends IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
-        implements IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IndexMetaData<SMD, TMD, CMD, FMD, IMD> {
+        extends BaseMetaDataBuilder<IMD> implements IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>,
+        IndexMetaData<SMD, TMD, CMD, FMD, IMD> {
 
     protected final TMDB table;
     protected DottedPath indexPath;
@@ -29,7 +31,7 @@ public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
     protected SortDirectionEnum sortDirection;
     protected Integer cardinatlity;
     protected Integer pages;
-    protected List<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList;
+    protected List<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();;
 
     public BaseIndexMetaDataBuilder(TMDB table, DottedPath indexPath) {
         super();

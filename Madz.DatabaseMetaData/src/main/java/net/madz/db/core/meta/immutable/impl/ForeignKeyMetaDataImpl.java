@@ -10,6 +10,7 @@ import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
 import net.madz.db.core.meta.immutable.impl.enums.ImportKeyDbMetaDataEnum;
+import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.types.CascadeRule;
 import net.madz.db.core.meta.immutable.types.KeyDeferrability;
 
@@ -19,20 +20,28 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
     protected final List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList;
     protected final CascadeRule updateRule, deleteRule;
     protected final KeyDeferrability deferrability;
-    protected final TMD pkTable, fkTable;
-    protected final IMD pkIndex, fkIndex;
+    protected TMD pkTable;
+    protected final TMD fkTable;
+    protected IMD pkIndex, fkIndex;
     protected final String fkName;
 
-    public ForeignKeyMetaDataImpl(FMD metaData) {
-        this.entryList = metaData.getEntrySet();
+    public ForeignKeyMetaDataImpl(TMD parent, FMD metaData) {
         this.updateRule = metaData.getUpdateCascadeRule();
         this.deleteRule = metaData.getDeleteCascadeRule();
         this.deferrability = metaData.getKeyDeferrability();
-        this.fkTable = metaData.getForeignKeyTable();
-        this.pkTable = metaData.getPrimaryKeyTable();
+        this.fkTable = parent.getParent().getTable(metaData.getForeignKeyTable().getTableName());
+        this.pkTable = parent.getParent().getTable(metaData.getPrimaryKeyTable().getTableName());
         this.fkName = metaData.getForeignKeyName();
-        this.fkIndex = metaData.getForeignKeyIndex();
-        this.pkIndex = metaData.getPrimaryKeyIndex();
+        this.fkIndex = this.fkTable.getIndex(metaData.getForeignKeyIndex().getIndexName());
+        this.pkIndex = this.pkTable.getIndex(metaData.getForeignKeyIndex().getIndexName());
+        List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entrySet = metaData.getEntrySet();
+        for (ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry : entrySet) {
+            CMD fkColumn = this.fkTable.getColumn(entry.getForeignKeyColumn().getColumnName());
+            CMD pkColumn = this.pkTable.getColumn(entry.getPrimaryKeyColumn().getColumnName());
+            
+//            new ForeignKeyMetaDataImpl.Entry(this, fkColumn, pkColumn, );
+        }
+        this.entryList = metaData.getEntrySet();
     }
 
     @Override
@@ -105,13 +114,13 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
 
         private CMD fkColumn, pkColumn;
         private FMD key;
-        private int seq;
+        private Short seq;
 
-        public Entry(FMD fkMetaData, CMD fkColumn, CMD pkColumn, short keySeq) {
+        public Entry(FMD fkMetaData, CMD fkColumn, CMD pkColumn, Short seq) {
             this.fkColumn = fkColumn;
             this.pkColumn = pkColumn;
             this.key = fkMetaData;
-            this.seq = keySeq;
+            this.seq = seq;
         }
 
         @Override
@@ -127,6 +136,11 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         @Override
         public FMD getKey() {
             return key;
+        }
+
+        @Override
+        public Short getSeq() {
+            return seq;
         }
     }
 }

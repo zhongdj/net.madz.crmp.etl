@@ -20,7 +20,8 @@ import net.madz.db.core.meta.mutable.SchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
 
 public abstract class BaseTableMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TMDB extends TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, CMDB extends ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, FMDB extends ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, IMDB extends IndexMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
-        implements TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>, TableMetaData<SMD, TMD, CMD, FMD, IMD> {
+        extends BaseMetaDataBuilder<TMD> implements TableMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>,
+        TableMetaData<SMD, TMD, CMD, FMD, IMD> {
 
     protected final SMDB schema;
     // protected MetaDataResultSet<TableDbMetaDataEnum> rs;
@@ -33,12 +34,12 @@ public abstract class BaseTableMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
     protected final List<CMDB> orderedColumns = new LinkedList<CMDB>();
     protected final Map<String, IMDB> indexMap = new HashMap<String, IMDB>();
     protected List<FMDB> fkList = new LinkedList<FMDB>();
-    protected IMD primaryKey;
+    protected IMDB primaryKey;
 
     public BaseTableMetaDataBuilder(SMDB schema, String tableName) {
         this.schema = schema;
         this.tableName = tableName;
-        this.tablePath = schema.getMetaData().getSchemaPath().append(tableName);
+        this.tablePath = schema.getSchemaPath().append(tableName);
     }
 
     @SuppressWarnings("unchecked")
@@ -95,7 +96,7 @@ public abstract class BaseTableMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
 
     @Override
     public IMD getPrimaryKey() {
-        return this.primaryKey;
+        return this.primaryKey.getMetaData();
     }
 
     @Override

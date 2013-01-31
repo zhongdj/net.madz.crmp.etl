@@ -19,8 +19,8 @@ public final class MySQLTableMetaDataImpl extends
     private final String characterSet;
     private final String collation;
 
-    public MySQLTableMetaDataImpl(MySQLTableMetaData metaData, LinkedList<MySQLColumnMetaData> columnMetaDatas, LinkedList<MySQLIndexMetaData> indexMetaDatas, List<MySQLForeignKeyMetaData> fkMetaDatas) {
-        super(metaData,columnMetaDatas,indexMetaDatas,fkMetaDatas);
+    public MySQLTableMetaDataImpl(MySQLSchemaMetaData parent, MySQLTableMetaData metaData) {
+        super(parent, metaData);
         this.engine = metaData.getEngine();
         this.characterSet = metaData.getCharacterSet();
         this.collation = metaData.getCollation();
@@ -39,5 +39,28 @@ public final class MySQLTableMetaDataImpl extends
     @Override
     public String getCollation() {
         return this.collation;
+    }
+
+    public void addAllColumns(LinkedList<MySQLColumnMetaDataImpl> columns) {
+        for ( MySQLColumnMetaDataImpl column : columns ) {
+            this.orderedColumns.add(column);
+            this.columnMap.put(column.getColumnName(), column);
+        }
+    }
+
+    public void addAllIndexes(List<MySQLIndexMetaData> indexes) {
+        for ( MySQLIndexMetaData index : indexes ) {
+            this.indexMap.put(index.getIndexName(), index);
+        }
+    }
+
+    public void addAllFks(List<MySQLForeignKeyMetaData> fks) {
+        for ( MySQLForeignKeyMetaData fk : fks ) {
+            this.fkList.add(fk);
+        }
+    }
+
+    public void setPrimaryKey(MySQLIndexMetaData pk) {
+        this.primaryKey = pk;
     }
 }

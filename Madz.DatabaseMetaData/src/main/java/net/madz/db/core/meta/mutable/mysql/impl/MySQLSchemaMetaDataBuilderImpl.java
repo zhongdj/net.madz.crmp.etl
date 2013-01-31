@@ -4,18 +4,22 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import net.madz.db.core.meta.DottedPath;
+import net.madz.db.core.meta.immutable.MetaData;
+import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.impl.MySQLSchemaMetaDataImpl;
+import net.madz.db.core.meta.immutable.mysql.impl.MySQLTableMetaDataImpl;
 import net.madz.db.core.meta.mutable.impl.BasedSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
@@ -42,7 +46,6 @@ public class MySQLSchemaMetaDataBuilderImpl
         final Statement stmt = conn.createStatement();
         stmt.executeQuery("USE information_schema;");
         ResultSet rs = null;
-        final Map<String, MySQLTableMetaDataBuilder> tableBuilders = new HashMap<String, MySQLTableMetaDataBuilder>();
         try {
             rs = stmt.executeQuery("SELECT * FROM schemata WHERE schema_name = '" + schemaPath.getName() + "'");
             while ( rs.next() && rs.getRow() == 1 ) {
@@ -66,6 +69,7 @@ public class MySQLSchemaMetaDataBuilderImpl
         if ( 0 >= tableNames.size() ) {
             return this;
         }
+        final Map<String, MySQLTableMetaDataBuilder> tableBuilders = new HashMap<String, MySQLTableMetaDataBuilder>();
         for ( String name : tableNames ) {
             final MySQLTableMetaDataBuilder table = new MySQLTableMetaDataBuilderImpl(this, name).build(conn);
             tableBuilders.put(name, table);
@@ -113,22 +117,29 @@ public class MySQLSchemaMetaDataBuilderImpl
     }
 
     @Override
-    public MySQLSchemaMetaData getMetaData() {
-        LinkedList<MySQLTableMetaData> tables = new LinkedList<MySQLTableMetaData>();
-        for ( MySQLTableMetaDataBuilder table : this.tableBuilderMap.values() ) {
-            tables.add(table.getMetaData());
+    protected MySQLSchemaMetaData createMetaData() {
+        MySQLSchemaMetaDataImpl result = new MySQLSchemaMetaDataImpl(this);
+        this.constructedMetaData = result;
+        if (0 >= this.tableList.size()) {
+            return this.constructedMetaData;
         }
-        for ( MySQLTableMetaData table : tables ) {
-            List<MySQLColumnMetaData> columns = table.getColumns();
-            for ( MySQLColumnMetaData colMetaData : columns ) {
-                colMetaData.setTable(table);
-            }
+        final List<MySQLTableMetaData> tables = new LinkedList<MySQLTableMetaData>();
+        
+        for ( MySQLTableMetaDataBuilder tableBuilder : this.tableList ) {
+            tables.add(tableBuilder.createMetaData(result));
         }
-        return new MySQLSchemaMetaDataImpl(this, tables);
+        // Bind relations
+        result.addAllTables(tables);
+        return constructedMetaData;
     }
 
     @Override
     public MySQLTableMetaDataBuilder getTableBuilder(String tableName) {
         return this.tableBuilderMap.get(tableName);
+    }
+
+    @Override
+    public MySQLSchemaMetaData getMetaData() {
+        return this.createMetaData();
     }
 }

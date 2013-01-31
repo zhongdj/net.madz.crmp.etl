@@ -1,5 +1,7 @@
 package net.madz.db.core.meta.immutable.mysql.impl;
 
+import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.IndexMetaData.Entry;
 import net.madz.db.core.meta.immutable.impl.ColumnMetaDataImpl;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -20,8 +22,8 @@ public final class MySQLColumnMetaDataImpl extends
     private String columnKey;
     private String extra;
 
-    public MySQLColumnMetaDataImpl(MySQLColumnMetaData metaData) {
-        super(metaData);
+    public MySQLColumnMetaDataImpl(MySQLTableMetaData parent, MySQLColumnMetaData metaData) {
+        super(parent, metaData);
         this.characterSet = metaData.getCharacterSet();
         this.columnType = metaData.getColumnType();
         this.characterMaximumLength = metaData.getCharacterMaximumLength();
@@ -72,9 +74,19 @@ public final class MySQLColumnMetaDataImpl extends
         return this.characterMaximumLength;
     }
 
-    @Override
-    public void setTable(MySQLTableMetaData table) {
-        this.table = table;
-        
+    public void addForeignKey(ForeignKeyMetaData.Entry entry) {
+        this.fkList.add(entry);
+    }
+
+    public void addUniqueIndexEntry(Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
+        this.uniqueIndexList.add(entry);
+    }
+
+    public void addNonUniqueIndexEntry(Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
+        this.nonUniqueIndexList.add(entry);
+    }
+
+    public void setPrimaryKey(Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
+        this.primaryKey = entry;
     }
 }
