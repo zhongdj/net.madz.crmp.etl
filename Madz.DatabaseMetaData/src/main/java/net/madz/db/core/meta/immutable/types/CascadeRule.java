@@ -16,22 +16,22 @@ public enum CascadeRule {
      * aka noAction: Do not allow delete of primary key if it has been imported
      * / do not allow update of primary key if it has been imported
      */
-    restrict,
+    RESTRICT,
     /**
      * delete rows that import a deleted key / change imported key to agree with
      * primary key update
      */
-    cascade,
+    CASCADE,
     /**
      * change imported key to NULL if its primary key has been deleted, change
      * imported key to NULL if its primary key has been updated
      */
-    setNull,
+    SETNULL,
     /**
      * change imported key to default if its primary key has been deleted,
      * change imported key to default if its primary key has been deleted
      */
-    setDefault, ;
+    SETDEFAULT, ;
 
     /**
      * Convert the DatabaseMetaData JDBC value to a CascadeRule
@@ -46,15 +46,22 @@ public enum CascadeRule {
             switch (jdbcValue) {
             case DatabaseMetaData.importedKeyNoAction:
             case DatabaseMetaData.importedKeyRestrict:
-                return restrict;
+                return RESTRICT;
             case DatabaseMetaData.importedKeyCascade:
-                return cascade;
+                return CASCADE;
             case DatabaseMetaData.importedKeySetDefault:
-                return setDefault;
+                return SETDEFAULT;
             case DatabaseMetaData.importedKeySetNull:
-                return setNull;
+                return SETNULL;
             }
         }
         throw new NoSuchElementException(CascadeRule.class.getSimpleName() + "[" + jdbcValue + "]");
+    }
+
+    public static CascadeRule getRule(String rule) {
+        if ( null == rule ) {
+            return RESTRICT;
+        }
+        return valueOf(rule.toUpperCase());
     }
 }

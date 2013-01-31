@@ -63,11 +63,10 @@ public final class MySQLColumnMetaDataBuilderImpl
                 this.columnType = rs.getString("column_type");
                 this.columnKey = rs.getString("column_key");
                 this.extra = rs.getString("extra");
-                if (this.extra.equalsIgnoreCase("auto_increment")) {
+                if ( this.extra.equalsIgnoreCase("auto_increment") ) {
                     this.isAutoIncremented = true;
                 }
                 this.remarks = rs.getString("column_comment");
-                
             }
         } finally {
             ResourceManagementUtils.closeResultSet(rs);
@@ -127,9 +126,9 @@ public final class MySQLColumnMetaDataBuilderImpl
     }
 
     @Override
-    public MySQLForeignKeyMetaDataBuilder appendForeignKeyEntry(
+    public MySQLColumnMetaDataBuilder appendForeignKeyEntry(
             Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
         this.fkList.add(entry);
-        return (MySQLForeignKeyMetaDataBuilder) this.fkList;
+        return this;
     }
 }

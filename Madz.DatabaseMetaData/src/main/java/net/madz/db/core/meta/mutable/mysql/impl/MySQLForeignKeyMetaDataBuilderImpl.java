@@ -39,8 +39,8 @@ public class MySQLForeignKeyMetaDataBuilderImpl
             rs = stmt.executeQuery("SELECT * FROM referential_constraints WHERE constraint_schema='" + this.fkTable.getTablePath().getParent().getName()
                     + "' AND constraint_name='" + this.foreignKeyPath.getName() + "';");
             while ( rs.next() ) {
-                this.updateRule = CascadeRule.valueOf(rs.getString("update_rule"));
-                this.deleteRule = CascadeRule.valueOf(rs.getString("delete_rule"));
+                this.updateRule = CascadeRule.getRule(rs.getString("update_rule"));
+                this.deleteRule = CascadeRule.getRule(rs.getString("delete_rule"));
                 // [ToDo] [Tracy] about how to get pkTable
                 // Below code suppose the referenced table is in the same
                 // schema,
@@ -62,7 +62,7 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                 final MySQLColumnMetaData fkColumn = this.fkTable.getColumn(columnName);
                 final MySQLColumnMetaData pkColumn = this.pkTable.getColumn(referencedColumnName);
                 short seq = rs.getShort("ordinal_position");
-                BaseForeignKeyMetaDataBuilder.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(pkColumn, pkColumn, this,seq);
+                BaseForeignKeyMetaDataBuilder.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(pkColumn, pkColumn, this, seq);
                 this.fkTable.getColumnBuilder(columnName).appendForeignKeyEntry(entry);
                 this.addEntry(entry);
             }

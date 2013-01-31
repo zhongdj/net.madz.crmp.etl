@@ -19,5 +19,5 @@ public interface ColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, 
 
     CMDB appendUniqueIndexEntry(IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
     
-    FMDB appendForeignKeyEntry(ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
+    CMDB appendForeignKeyEntry(ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
 }

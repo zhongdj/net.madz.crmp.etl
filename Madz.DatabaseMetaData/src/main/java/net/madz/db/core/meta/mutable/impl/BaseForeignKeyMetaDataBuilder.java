@@ -1,5 +1,6 @@
 package net.madz.db.core.meta.mutable.impl;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.core.meta.DottedPath;
@@ -20,7 +21,7 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
         extends BaseMetaDataBuilder<FMD> implements ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>,
         ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD> {
 
-    protected List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList;
+    protected List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
     protected CascadeRule updateRule, deleteRule;
     // TODO [Tracy] should it be included in jdbc only?
     protected KeyDeferrability deferrability;
