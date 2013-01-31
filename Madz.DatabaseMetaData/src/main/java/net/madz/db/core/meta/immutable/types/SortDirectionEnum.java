@@ -6,6 +6,9 @@ public enum SortDirectionEnum {
     unknown;
 
     public static SortDirectionEnum getSortDirection(String direction) {
+        if ( null == direction ) {
+            return SortDirectionEnum.unknown;
+        }
         if ( direction.equalsIgnoreCase("A") ) {
             return SortDirectionEnum.ascending;
         } else if ( direction.equalsIgnoreCase("D") ) {
