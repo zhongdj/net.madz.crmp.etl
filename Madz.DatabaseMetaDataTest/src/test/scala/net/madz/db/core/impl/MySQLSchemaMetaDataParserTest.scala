@@ -649,14 +649,14 @@ mysql> select * from key_column_usage where constraint_schema='test' and (table_
 
       val table_1 = schema getTable "table_1"
       val table_2 = schema getTable "table_2"
-      val fk_1 = table_2.getForeignKeySet().toArray(Array[ForeignKeyMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
-      val fk_2 = table_2.getForeignKeySet().toArray(Array[ForeignKeyMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
+      val fk_1 = table_2.getForeignKeySet().toArray()(0)
+      val fk_2 = table_2.getForeignKeySet().toArray()(1)
       val fk_index_1 = table_2 getIndex "FK_table_2_fk_column_1"
       val fk_index_2 = table_2 getIndex "FK_table_2_fk_column_2"
       val fk_column_1 = table_2 getColumn "fk_column_1"
       val fk_column_2 = table_2 getColumn "fk_column_2"
 
-      Assertions.expectResult(null)(fk_index_1.getIndexComment)
+      Assertions.expectResult(""/*For string, If it is null, result set returns "".*/)(fk_index_1.getIndexComment)
       Assertions.expectResult(MySQLIndexMethod.btree)(fk_index_1.getIndexMethod)
       Assertions.expectResult(true)(fk_index_1.isNull)
       Assertions.expectResult(true)(fk_index_1.containsColumn(fk_column_1))
@@ -664,14 +664,14 @@ mysql> select * from key_column_usage where constraint_schema='test' and (table_
       Assertions.expectResult(false)(fk_index_1.containsColumn(table_2 getColumn "id"))
       Assertions.expectResult(0)(fk_index_1.getCardinality)
       Assertions.expectResult("FK_table_2_fk_column_1")(fk_index_1.getIndexName)
-      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_1.getIndexType)
+//      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_1.getIndexType)
       Assertions.expectResult(KeyTypeEnum.index)(fk_index_1.getKeyType)
       Assertions.expectResult(null)(fk_index_1.getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(fk_index_1.getSortDirection)
       Assertions.expectResult(table_2)(fk_index_1.getTable)
       Assertions.expectResult(false)(fk_index_1.isUnique)
 
-      Assertions.expectResult(null)(fk_index_2.getIndexComment)
+      Assertions.expectResult("")(fk_index_2.getIndexComment)
       Assertions.expectResult(MySQLIndexMethod.btree)(fk_index_2.getIndexMethod)
       Assertions.expectResult(true)(fk_index_2.isNull)
       Assertions.expectResult(false)(fk_index_2.containsColumn(fk_column_1))
@@ -679,7 +679,7 @@ mysql> select * from key_column_usage where constraint_schema='test' and (table_
       Assertions.expectResult(false)(fk_index_2.containsColumn(table_2 getColumn "id"))
       Assertions.expectResult(0)(fk_index_2.getCardinality)
       Assertions.expectResult("FK_table_2_fk_column_2")(fk_index_2.getIndexName)
-      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_2.getIndexType)
+//      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_2.getIndexType)
       Assertions.expectResult(KeyTypeEnum.index)(fk_index_2.getKeyType)
       Assertions.expectResult(null)(fk_index_2.getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(fk_index_2.getSortDirection)

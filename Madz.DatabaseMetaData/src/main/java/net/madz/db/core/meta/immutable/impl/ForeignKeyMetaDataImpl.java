@@ -1,6 +1,7 @@
 package net.madz.db.core.meta.immutable.impl;
 
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.core.meta.DottedPath;
@@ -17,7 +18,7 @@ import net.madz.db.core.meta.immutable.types.KeyDeferrability;
 public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
         implements ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD> {
 
-    protected final List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList;
+    protected final List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
     protected final CascadeRule updateRule, deleteRule;
     protected final KeyDeferrability deferrability;
     protected TMD pkTable;
@@ -35,13 +36,15 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         this.fkIndex = this.fkTable.getIndex(metaData.getForeignKeyIndex().getIndexName());
         this.pkIndex = this.pkTable.getIndex(metaData.getForeignKeyIndex().getIndexName());
         List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entrySet = metaData.getEntrySet();
-        for (ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry : entrySet) {
-            CMD fkColumn = this.fkTable.getColumn(entry.getForeignKeyColumn().getColumnName());
-            CMD pkColumn = this.pkTable.getColumn(entry.getPrimaryKeyColumn().getColumnName());
-            
-//            new ForeignKeyMetaDataImpl.Entry(this, fkColumn, pkColumn, );
+        for ( ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry : entrySet ) {
+            final String fkColName = entry.getForeignKeyColumn().getColumnName();
+            final String pkColName = entry.getPrimaryKeyColumn().getColumnName();
+            Short seq = entry.getSeq();
+            CMD fkColumn = this.fkTable.getColumn(fkColName);
+            CMD pkColumn = this.pkTable.getColumn(pkColName);
+            Entry item = new ForeignKeyMetaDataImpl.Entry(this, fkColumn, pkColumn, seq);
+            this.entryList.add(item);
         }
-        this.entryList = metaData.getEntrySet();
     }
 
     @Override

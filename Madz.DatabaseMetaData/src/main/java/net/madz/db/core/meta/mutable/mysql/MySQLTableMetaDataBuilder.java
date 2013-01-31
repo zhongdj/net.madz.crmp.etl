@@ -1,5 +1,7 @@
 package net.madz.db.core.meta.mutable.mysql;
 
+import java.util.Collection;
+
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -16,6 +18,8 @@ public interface MySQLTableMetaDataBuilder
     MySQLTableMetaData createMetaData(MySQLSchemaMetaData parent);
 
     MySQLColumnMetaDataBuilder getColumnBuilder(String columnName);
+
+    Collection<MySQLForeignKeyMetaDataBuilder> getForeignKeyBuilderSet();
         
         /*
         MySQLTableMetaData<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder>,

@@ -59,10 +59,10 @@ public class MySQLForeignKeyMetaDataBuilderImpl
             while ( rs.next() ) {
                 final String columnName = rs.getString("column_name");
                 final String referencedColumnName = rs.getString("referenced_column_name");
-                final MySQLColumnMetaData fkColumn = this.fkTable.getColumn(columnName);
-                final MySQLColumnMetaData pkColumn = this.pkTable.getColumn(referencedColumnName);
-                short seq = rs.getShort("ordinal_position");
-                BaseForeignKeyMetaDataBuilder.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(pkColumn, pkColumn, this, seq);
+                final MySQLColumnMetaData fkColumn = this.fkTable.getColumnBuilder(columnName);
+                final MySQLColumnMetaData pkColumn = this.pkTable.getColumnBuilder(referencedColumnName);
+                final Short seq = rs.getShort("ordinal_position");
+                final BaseForeignKeyMetaDataBuilder.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(fkColumn, pkColumn, this, seq);
                 this.fkTable.getColumnBuilder(columnName).appendForeignKeyEntry(entry);
                 this.addEntry(entry);
             }

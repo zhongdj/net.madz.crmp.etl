@@ -162,11 +162,7 @@ public class MySQLTableMetaDataBuilderImpl
             }
         }
         result.addAllIndexes(indexes);
-        final List<MySQLForeignKeyMetaData> fks = new LinkedList<MySQLForeignKeyMetaData>();
-        for ( MySQLForeignKeyMetaDataBuilder fkBuilder : this.fkList ) {
-            fks.add(fkBuilder.createMetaData(result));
-        }
-        result.addAllFks(fks);
+        
         constructedMetaData = result;
         return constructedMetaData;
     }
@@ -195,5 +191,10 @@ public class MySQLTableMetaDataBuilderImpl
     @Override
     public MySQLColumnMetaDataBuilder getColumnBuilder(String columnName) {
         return this.columnMap.get(columnName);
+    }
+
+    @Override
+    public Collection<MySQLForeignKeyMetaDataBuilder> getForeignKeyBuilderSet() {
+        return this.fkList;
     }
 }

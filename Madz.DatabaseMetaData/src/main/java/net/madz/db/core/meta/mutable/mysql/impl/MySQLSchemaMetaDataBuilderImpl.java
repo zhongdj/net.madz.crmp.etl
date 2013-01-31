@@ -120,16 +120,25 @@ public class MySQLSchemaMetaDataBuilderImpl
     protected MySQLSchemaMetaData createMetaData() {
         MySQLSchemaMetaDataImpl result = new MySQLSchemaMetaDataImpl(this);
         this.constructedMetaData = result;
-        if (0 >= this.tableList.size()) {
+        if ( 0 >= this.tableList.size() ) {
             return this.constructedMetaData;
         }
         final List<MySQLTableMetaData> tables = new LinkedList<MySQLTableMetaData>();
-        
         for ( MySQLTableMetaDataBuilder tableBuilder : this.tableList ) {
             tables.add(tableBuilder.createMetaData(result));
         }
         // Bind relations
         result.addAllTables(tables);
+
+        for ( MySQLTableMetaDataBuilder tableBuilder : this.tableList ) {
+            final List<MySQLForeignKeyMetaData> fks = new LinkedList<MySQLForeignKeyMetaData>();
+            final Collection<MySQLForeignKeyMetaDataBuilder> foreignKeyBuilderSet = tableBuilder.getForeignKeyBuilderSet();
+            final MySQLTableMetaDataImpl table = (MySQLTableMetaDataImpl) result.getTable(tableBuilder.getTableName());
+            for ( MySQLForeignKeyMetaDataBuilder fkBuilder : foreignKeyBuilderSet ) {
+                fks.add(fkBuilder.createMetaData(table));
+            }
+            table.addAllFks(fks);
+        }
         return constructedMetaData;
     }
 
