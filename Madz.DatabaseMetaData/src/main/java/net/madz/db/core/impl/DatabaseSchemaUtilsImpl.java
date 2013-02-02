@@ -90,6 +90,12 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
 
     @Override
     public String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException, SQLException, JAXBException {
+        if ( null == sourceDatabaseName || 0 >= sourceDatabaseName.length() ) {
+            throw new IllegalArgumentException(MessageConsts.DATABASE_NAME_SHOULD_NOT_BE_NULL);
+        }
+        if ( null == targetDatabaseName || 0 >= targetDatabaseName.length() ) {
+            targetDatabaseName = sourceDatabaseName + "_copy";
+        }
         if ( !databaseExists(sourceDatabaseName, false) ) {
             // TODO [Jan 22, 2013][barry][Done] Should the text error message
             // distributed everywhere?

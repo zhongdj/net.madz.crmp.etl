@@ -49,7 +49,7 @@ public final class MySQLColumnMetaDataBuilderImpl
         try {
             rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + this.tableBuilder.getTablePath().getParent().getName() + "' AND table_name='"
                     + this.tableBuilder.getTableName() + "' AND column_name='" + this.columnPath.getName() + "';");
-            while ( rs.next() && rs.getRow() == 1 ) {
+            while ( rs.next() ) {
                 this.ordinalPosition = rs.getShort("ordinal_position");
                 this.defaultValue = rs.getString("column_default");
                 this.isNullable = rs.getBoolean("is_nullable");

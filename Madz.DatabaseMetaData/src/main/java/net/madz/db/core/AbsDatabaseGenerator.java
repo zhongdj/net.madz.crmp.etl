@@ -1,6 +1,7 @@
 package net.madz.db.core;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
@@ -32,5 +33,5 @@ public abstract class AbsDatabaseGenerator<SMD extends SchemaMetaData<SMD, TMD, 
      * @param metadata
      * @return generated database name
      */
-    public abstract String generateDatabase(SMD metadata, String targetDatabaseName);
+    public abstract String generateDatabase(SMD metadata, String targetDatabaseName) throws SQLException;
 }

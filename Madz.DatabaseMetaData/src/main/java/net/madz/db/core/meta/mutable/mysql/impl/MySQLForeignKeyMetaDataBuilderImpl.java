@@ -77,5 +77,4 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         this.constructedMetaData = new MySQLForeignKeyMetaDataImpl(this.fkTable.getMetaData(), this);
         return constructedMetaData;
     }
-
 }
