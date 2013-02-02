@@ -115,13 +115,8 @@ public final class MySQLColumnMetaDataBuilderImpl
     }
 
     @Override
-    protected MySQLColumnMetaData createMetaData() {
-        return constructedMetaData;
-    }
-
-    @Override
-    public MySQLColumnMetaDataImpl createMetaData(MySQLTableMetaData parent) {
-        this.constructedMetaData = new MySQLColumnMetaDataImpl(parent, this);
+    public MySQLColumnMetaDataImpl createMetaData() {
+        this.constructedMetaData = new MySQLColumnMetaDataImpl(this.tableBuilder.getMetaData(), this);
         return (MySQLColumnMetaDataImpl) this.constructedMetaData;
     }
 

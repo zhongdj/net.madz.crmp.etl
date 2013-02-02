@@ -95,18 +95,13 @@ public class MySQLIndexMetaDataBuilderImpl
     }
 
     @Override
-    protected MySQLIndexMetaData createMetaData() {
-        return constructedMetaData;
-    }
-
-    @Override
     public String getIndexComment() {
         return indexComment;
     }
 
     @Override
-    public MySQLIndexMetaData createMetaData(MySQLTableMetaData parent) {
-        this.constructedMetaData = new MySQLIndexMetaDataImpl(parent, this);
+    public MySQLIndexMetaData createMetaData() {
+        this.constructedMetaData = new MySQLIndexMetaDataImpl(this.table.getMetaData(), this);
         return this.constructedMetaData;
     }
 

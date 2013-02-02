@@ -13,7 +13,6 @@ public interface MySQLIndexMetaDataBuilder
         MySQLIndexMetaData,
         IndexMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
 
-    MySQLIndexMetaData createMetaData(MySQLTableMetaData parent);
     /*
      * MySQLIndexMetaData<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder,
      * MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder,

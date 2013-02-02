@@ -95,7 +95,7 @@ public class MySQLSchemaMetaDataBuilderImpl
         }
         final List<MySQLTableMetaData> tables = new LinkedList<MySQLTableMetaData>();
         for ( MySQLTableMetaDataBuilder tableBuilder : this.tableList ) {
-            tables.add(tableBuilder.createMetaData(result));
+            tables.add(tableBuilder.getMetaData());
         }
         // Bind relations
         result.addAllTables(tables);
@@ -104,7 +104,7 @@ public class MySQLSchemaMetaDataBuilderImpl
             final Collection<MySQLForeignKeyMetaDataBuilder> foreignKeyBuilderSet = tableBuilder.getForeignKeyBuilderSet();
             final MySQLTableMetaDataImpl table = (MySQLTableMetaDataImpl) result.getTable(tableBuilder.getTableName());
             for ( MySQLForeignKeyMetaDataBuilder fkBuilder : foreignKeyBuilderSet ) {
-                fks.add(fkBuilder.createMetaData(table));
+                fks.add(fkBuilder.getMetaData());
             }
             table.addAllFks(fks);
         }
@@ -114,11 +114,6 @@ public class MySQLSchemaMetaDataBuilderImpl
     @Override
     public MySQLTableMetaDataBuilder getTableBuilder(String tableName) {
         return this.tableBuilderMap.get(tableName);
-    }
-
-    @Override
-    public MySQLSchemaMetaData getMetaData() {
-        return this.createMetaData();
     }
 
     public Map<String, LinkedList<String>> getFkNamesOfTables(final Statement stmt, final List<String> tableNames) throws SQLException {

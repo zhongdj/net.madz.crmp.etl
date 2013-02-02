@@ -127,16 +127,17 @@ public class MySQLTableMetaDataBuilderImpl
         return this.collation;
     }
 
-    public MySQLTableMetaData createMetaData(MySQLSchemaMetaData parent) {
-        MySQLTableMetaDataImpl result = new MySQLTableMetaDataImpl(parent, this);
+    public MySQLTableMetaData createMetaData() {
+        MySQLTableMetaDataImpl result = new MySQLTableMetaDataImpl(this.schema.getMetaData(), this);
+        constructedMetaData = result;
         final LinkedList<MySQLColumnMetaDataImpl> columns = new LinkedList<MySQLColumnMetaDataImpl>();
         for ( MySQLColumnMetaDataBuilder columnBuilder : this.columnMap.values() ) {
-            columns.add((MySQLColumnMetaDataImpl) columnBuilder.createMetaData(result));
+            columns.add((MySQLColumnMetaDataImpl) columnBuilder.getMetaData());
         }
         result.addAllColumns(columns);
         final List<MySQLIndexMetaData> indexes = new LinkedList<MySQLIndexMetaData>();
         for ( MySQLIndexMetaDataBuilder indexBuilder : this.indexMap.values() ) {
-            final MySQLIndexMetaData indexMetaData = indexBuilder.createMetaData(result);
+            final MySQLIndexMetaData indexMetaData = indexBuilder.getMetaData();
             indexes.add(indexMetaData);
             final boolean isPrimary = indexMetaData.getIndexName().equalsIgnoreCase("primary");
             if ( isPrimary ) {
@@ -162,8 +163,6 @@ public class MySQLTableMetaDataBuilderImpl
             }
         }
         result.addAllIndexes(indexes);
-        
-        constructedMetaData = result;
         return constructedMetaData;
     }
 
@@ -175,17 +174,6 @@ public class MySQLTableMetaDataBuilderImpl
     @Override
     public MySQLSchemaMetaData getParent() {
         return this.schema;
-    }
-
-    @Override
-    public MySQLTableMetaData getMetaData() {
-        return this.constructedMetaData;
-    }
-
-    @Override
-    protected MySQLTableMetaData createMetaData() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

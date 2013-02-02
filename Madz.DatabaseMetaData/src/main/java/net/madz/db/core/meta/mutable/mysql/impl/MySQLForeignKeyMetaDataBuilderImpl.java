@@ -73,14 +73,9 @@ public class MySQLForeignKeyMetaDataBuilderImpl
     }
 
     @Override
-    public MySQLForeignKeyMetaData createMetaData(MySQLTableMetaData parent) {
-        this.constructedMetaData = new MySQLForeignKeyMetaDataImpl(parent, this);
+    public MySQLForeignKeyMetaData createMetaData() {
+        this.constructedMetaData = new MySQLForeignKeyMetaDataImpl(this.fkTable.getMetaData(), this);
         return constructedMetaData;
     }
 
-    @Override
-    protected MySQLForeignKeyMetaData createMetaData() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }
