@@ -234,7 +234,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(pkEntry.getKey)(pk)
       Assertions.expectResult(pkEntry.getKey.getIndexName)(pk.getIndexName)
       Assertions.expectResult(pkEntry.getColumn.getColumnName)(column.getColumnName)
-      Assertions.expectResult(1)(pkEntry.getPosition)
+      Assertions.expectResult(1)(pkEntry.getPosition.intValue())
     }
 
     it("should parse auto incremental index") {

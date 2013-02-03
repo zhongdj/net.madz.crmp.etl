@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import net.madz.db.core.meta.immutable.IndexMetaData.Entry;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
@@ -155,7 +156,7 @@ public class MySQLTableMetaDataBuilderImpl
                         } else {
                             column.addNonUniqueIndexEntry(entry);
                         }
-                        if (isPrimary) {
+                        if ( isPrimary ) {
                             column.setPrimaryKey(entry);
                         }
                     }
@@ -184,5 +185,10 @@ public class MySQLTableMetaDataBuilderImpl
     @Override
     public Collection<MySQLForeignKeyMetaDataBuilder> getForeignKeyBuilderSet() {
         return this.fkList;
+    }
+
+    @Override
+    public Collection<MySQLIndexMetaDataBuilder> getIndexBuilderSet() {
+        return this.indexMap.values();
     }
 }

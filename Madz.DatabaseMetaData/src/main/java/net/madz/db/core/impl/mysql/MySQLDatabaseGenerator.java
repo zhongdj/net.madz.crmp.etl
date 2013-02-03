@@ -4,10 +4,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.LinkedList;
+//import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.core.AbsDatabaseGenerator;
+import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData.Entry;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -32,6 +33,8 @@ public class MySQLDatabaseGenerator extends
         GenerateDatabase(metaData, conn, targetDatabaseName);
         // Generate tables
         GenerateTables(metaData, conn, targetDatabaseName);
+        // Generate foreign keys
+        GenerateForeignKeys(metaData, conn, targetDatabaseName);
         return targetDatabaseName;
     }
 
@@ -110,25 +113,23 @@ public class MySQLDatabaseGenerator extends
                     result.append(")");
                 }
             }
-            // Append Unique keys
-            Collection<MySQLIndexMetaData> indexSet = table.getIndexSet();
+            final Collection<MySQLIndexMetaData> indexSet = table.getIndexSet();
             for ( MySQLIndexMetaData index : indexSet ) {
                 final KeyTypeEnum keyType = index.getKeyType();
                 final Collection<Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = index
                         .getEntrySet();
+                // Append Unique keys
                 if ( keyType.equals(KeyTypeEnum.uniqueKey) ) {
                     result.append(",");
                     result.append("UNIQUE KEY(");
-                    for (Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet) {
-                        appendBackQuotation(result);
-                        result.append(entry.getColumn().getColumnName());
-                        appendBackQuotation(result);
-                        appendSpace(result);
-                        result.append(",");
-                    }
-                    result.deleteCharAt(result.length() -1);
-                    result.append(")");
-                } 
+                    appendIndexEntries(result, entrySet);
+                }
+                // Append Indexes
+                if ( keyType.equals(KeyTypeEnum.index) ) {
+                    result.append(",");
+                    result.append("KEY(");
+                    appendIndexEntries(result, entrySet);
+                }
             }
             result.append(") ");
             if ( null != table.getEngine() && 0 >= table.getEngine().name().length() ) {
@@ -156,11 +157,76 @@ public class MySQLDatabaseGenerator extends
         conn.commit();
     }
 
-    public void appendSpace(final StringBuilder result) {
+    private void GenerateForeignKeys(MySQLSchemaMetaData metaData, Connection conn, String targetDatabaseName) throws SQLException {
+        final Statement stmt = conn.createStatement();
+        stmt.execute("USE " + targetDatabaseName + ";");
+        final Collection<MySQLTableMetaData> tables = metaData.getTables();
+        for ( MySQLTableMetaData table : tables ) {
+            final Collection<MySQLForeignKeyMetaData> foreignKeySet = table.getForeignKeySet();
+            if ( null != foreignKeySet && 0 < foreignKeySet.size() ) {
+                final StringBuilder result = new StringBuilder();
+                for ( MySQLForeignKeyMetaData fk : foreignKeySet ) {
+                    result.append("ALTER TABLE ");
+                    appendBackQuotation(result);
+                    result.append(table.getTableName());
+                    appendBackQuotation(result);
+                    appendSpace(result);
+                    result.append("ADD FOREIGN KEY ");
+                    appendBackQuotation(result);
+                    result.append(fk.getForeignKeyName());
+                    appendBackQuotation(result);
+                    result.append("(");
+                    final List<ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = fk
+                            .getEntrySet();
+                    for ( ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
+                        appendBackQuotation(result);
+                        result.append(entry.getForeignKeyColumn().getColumnName());
+                        appendBackQuotation(result);
+                        result.append(",");
+                    }
+                    result.deleteCharAt(result.length() - 1);
+                    result.append(")");
+                    appendSpace(result);
+                    result.append("REFERENCES ");
+                    appendBackQuotation(result);
+                    result.append(fk.getPrimaryKeyTable().getTableName());
+                    appendBackQuotation(result);
+                    result.append("(");
+                    for ( ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
+                        appendBackQuotation(result);
+                        result.append(entry.getPrimaryKeyColumn().getColumnName());
+                        appendBackQuotation(result);
+                        result.append(",");
+                    }
+                    result.deleteCharAt(result.length() - 1);
+                    result.append(");");
+                    System.out.println(result.toString());
+                    stmt.addBatch(result.toString());
+                }
+            }
+        }
+        stmt.executeBatch();
+        conn.commit();
+    }
+
+    private void appendIndexEntries(final StringBuilder result,
+            final Collection<Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet) {
+        for ( Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
+            appendBackQuotation(result);
+            result.append(entry.getColumn().getColumnName());
+            appendBackQuotation(result);
+            appendSpace(result);
+            result.append(",");
+        }
+        result.deleteCharAt(result.length() - 1);
+        result.append(")");
+    }
+
+    private void appendSpace(final StringBuilder result) {
         result.append(" ");
     }
 
-    public void appendBackQuotation(final StringBuilder result) {
+    private void appendBackQuotation(final StringBuilder result) {
         result.append("`");
     }
 }

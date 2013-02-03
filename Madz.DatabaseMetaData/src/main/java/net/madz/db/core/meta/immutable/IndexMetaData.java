@@ -49,6 +49,6 @@ extends MetaData {
         public CMD getColumn();
 
         /** Column position in index */
-        public Integer getPosition();
+        public Short getPosition();
     }
 }

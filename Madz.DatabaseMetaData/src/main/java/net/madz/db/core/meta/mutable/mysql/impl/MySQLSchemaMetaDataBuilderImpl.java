@@ -45,7 +45,6 @@ public class MySQLSchemaMetaDataBuilderImpl
         // database.
         stmt.executeQuery("USE information_schema;");
         setCharacterSetAndCollation(stmt);
-        
         final List<String> tableNames = getTableNames(stmt);
         // For database without tables, just return
         if ( 0 >= tableNames.size() ) {
@@ -58,7 +57,6 @@ public class MySQLSchemaMetaDataBuilderImpl
             tableBuilders.put(name, table);
             appendTableMetaDataBuilder(table);
         }
-        
         final Map<String, LinkedList<String>> fkNamesOfTables = getFkNamesOfTables(stmt, tableNames);
         // For database with no foreign keys
         if ( 0 >= fkNamesOfTables.size() ) {

@@ -28,11 +28,11 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
 
     public class Entry implements IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> {
 
-        private final Integer position;
+        private final Short position;
         private final CMD column;
         private final Integer subPart;
 
-        public Entry(CMD column, Integer position, Integer subPart) {
+        public Entry(CMD column, Short position, Integer subPart) {
             this.position = position;
             this.column = column;
             this.subPart = subPart;
@@ -47,7 +47,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
             return this.column;
         }
 
-        public Integer getPosition() {
+        public Short getPosition() {
             return this.position;
         }
 
@@ -103,7 +103,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         this.keyType = metaData.getKeyType();
         for (IMD.Entry entry: metaData.getEntrySet()) {
             CMD column = parent.getColumn(entry.getColumn().getColumnName());
-            Integer position = entry.getPosition();
+            Short position = entry.getPosition();
             Integer subPart = entry.getSubPart();
             this.entryList.add(new Entry(column, position, subPart));
         }

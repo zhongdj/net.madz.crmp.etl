@@ -34,7 +34,7 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         this.pkTable = parent.getParent().getTable(metaData.getPrimaryKeyTable().getTableName());
         this.fkName = metaData.getForeignKeyName();
         this.fkIndex = this.fkTable.getIndex(metaData.getForeignKeyIndex().getIndexName());
-        this.pkIndex = this.pkTable.getIndex(metaData.getForeignKeyIndex().getIndexName());
+        this.pkIndex = this.pkTable.getIndex(metaData.getPrimaryKeyIndex().getIndexName());
         List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entrySet = metaData.getEntrySet();
         for ( ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry : entrySet ) {
             final String fkColName = entry.getForeignKeyColumn().getColumnName();
