@@ -15,6 +15,7 @@ import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum;
+import net.madz.db.core.meta.immutable.types.KeyTypeEnum;
 import net.madz.db.utils.MessageConsts;
 
 public class MySQLDatabaseGenerator extends
@@ -74,9 +75,6 @@ public class MySQLDatabaseGenerator extends
                 if ( column.isAutoIncremented() ) {
                     result.append(" AUTO_INCREMENT ");
                 }
-                if ( column.isMemberOfUniqueIndex() ) {
-                    result.append(" UNIQUE ");
-                }
                 if ( null != column.getRemarks() && 0 > column.getRemarks().length() ) {
                     result.append(" COMMENT ");
                     result.append(column.getRemarks());
@@ -102,7 +100,7 @@ public class MySQLDatabaseGenerator extends
                 if ( entrySet.size() > 0 ) {
                     result.append(", PRIMARY KEY(");
                     for ( Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
-                        MySQLColumnMetaData column = entry.getColumn();
+                        final MySQLColumnMetaData column = entry.getColumn();
                         appendBackQuotation(result);
                         result.append(column.getColumnName());
                         appendBackQuotation(result);
@@ -111,6 +109,26 @@ public class MySQLDatabaseGenerator extends
                     result.deleteCharAt(result.length() - 1);
                     result.append(")");
                 }
+            }
+            // Append Unique keys
+            Collection<MySQLIndexMetaData> indexSet = table.getIndexSet();
+            for ( MySQLIndexMetaData index : indexSet ) {
+                final KeyTypeEnum keyType = index.getKeyType();
+                final Collection<Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = index
+                        .getEntrySet();
+                if ( keyType.equals(KeyTypeEnum.uniqueKey) ) {
+                    result.append(",");
+                    result.append("UNIQUE KEY(");
+                    for (Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet) {
+                        appendBackQuotation(result);
+                        result.append(entry.getColumn().getColumnName());
+                        appendBackQuotation(result);
+                        appendSpace(result);
+                        result.append(",");
+                    }
+                    result.deleteCharAt(result.length() -1);
+                    result.append(")");
+                } 
             }
             result.append(") ");
             if ( null != table.getEngine() && 0 >= table.getEngine().name().length() ) {
