@@ -81,7 +81,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
 
     @Override
     public boolean hasDefaultValue() {
-        return null != this.defaultValue;
+        return null != this.defaultValue && 0 > this.defaultValue.length();
     }
 
     @Override

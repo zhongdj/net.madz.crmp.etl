@@ -40,8 +40,8 @@ public final class DbOperatorFactoryImpl implements DbOperatorFactory {
         final String databaseGeneratorClass = DbConfigurationManagement.getDatabaseGeneratorClass();
         try {
             Class<?> generatorClassObj = Class.forName(databaseGeneratorClass);
-            Constructor<?> constructor = generatorClassObj.getConstructor(java.sql.Connection.class);
-            return (AbsDatabaseGenerator) constructor.newInstance(DbConfigurationManagement.createConnection(targetDatabaseName, true));
+            Constructor<?> constructor = generatorClassObj.getConstructor();
+            return (AbsDatabaseGenerator) constructor.newInstance();
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

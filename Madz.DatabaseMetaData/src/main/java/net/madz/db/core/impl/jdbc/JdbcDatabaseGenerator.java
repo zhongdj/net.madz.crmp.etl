@@ -13,12 +13,11 @@ public class JdbcDatabaseGenerator extends
         AbsDatabaseGenerator<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> {
 
     // TODO [Jan 22, 2013][barry] Reconsider resource lifecycle
-    public JdbcDatabaseGenerator(Connection conn) {
-        super(conn);
+    public JdbcDatabaseGenerator() {
     }
 
     @Override
-    public String generateDatabase(JdbcSchemaMetaData metadata, String targetDatabaseName) {
+    public String generateDatabase(JdbcSchemaMetaData metadata, Connection conn, String targetDatabaseName) {
         System.out.println("to be generated" + metadata);
         return null;
     }

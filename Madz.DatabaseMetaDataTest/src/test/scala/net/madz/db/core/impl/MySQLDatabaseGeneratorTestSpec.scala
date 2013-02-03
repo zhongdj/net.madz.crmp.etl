@@ -21,7 +21,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
   override def beforeEach {
     conn = Database.forURL(urlRoot, user, password, prop).createSession.conn
-    generator = new MySQLDatabaseGenerator(conn)
+    generator = new MySQLDatabaseGenerator()
   }
 
   override def afterEach {
@@ -38,7 +38,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       //builder.build(conn)
       val schemaMetaData: MySQLSchemaMetaData = null// = builder.getCopy()
 
-      val generatedDbName = generator.generateDatabase(schemaMetaData, databaseName)
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn,databaseName)
 
       Database.forURL(urlRoot + databaseName, user, password, driver = "com.mysql.jdbc.Driver") withSession {
         val q = Q.queryNA[String](show_tables_query)
@@ -66,7 +66,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val schemaMetaData: MySQLSchemaMetaData = null//builder.getCopy()
 
       //add table meta data into schemaMetaData
-      val generatedDbName = generator.generateDatabase(schemaMetaData, databaseName)
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn,databaseName)
 
       Database.forURL(urlRoot + databaseName, user, password, prop) withSession {
         val q = Q.queryNA[String](show_tables_query)

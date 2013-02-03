@@ -19,19 +19,16 @@ import net.madz.db.core.meta.immutable.TableMetaData;
 public abstract class AbsDatabaseGenerator<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> {
 
     // TODO [Jan 22, 2013][barry] Reconsider resource lifecycle
-    protected final Connection conn;
-    protected SMD schemaMetaData;
-
+    // protected final Connection conn;
     /**
      * @param conn
      */
-    public AbsDatabaseGenerator(Connection conn) {
-        this.conn = conn;
+    public AbsDatabaseGenerator() {
     }
 
     /**
      * @param metadata
      * @return generated database name
      */
-    public abstract String generateDatabase(SMD metadata, String targetDatabaseName) throws SQLException;
+    public abstract String generateDatabase(SMD metadata, Connection conn, String targetDatabaseName) throws SQLException;
 }
