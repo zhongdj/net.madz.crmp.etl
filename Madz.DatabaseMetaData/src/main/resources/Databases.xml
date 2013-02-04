@@ -7,7 +7,10 @@
 		<database name="crmp" sku="MySQL" url="jdbc:mysql://localhost:3306/crmp"
 			user="root" password="1q2w3e4r5t" />
 	</source-databases>
-	<database-copies />
+	<database-copies>
+		<database name="crmp2000" sku="MySQL"
+			url="jdbc:mysql://localhost:3306/crmp2000" user="root" password="1q2w3e4r5t" />
+	</database-copies>
 	<sku-conf sku="MySQL" driverClass="com.mysql.jdbc.Driver"
 		parserClass="net.madz.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl"
 		generatorClass="net.madz.db.core.impl.mysql.MySQLDatabaseGenerator" />

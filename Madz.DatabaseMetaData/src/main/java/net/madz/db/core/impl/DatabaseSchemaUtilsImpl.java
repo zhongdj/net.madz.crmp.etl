@@ -114,6 +114,7 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
         final AbsDatabaseGenerator<SMD, TMD, CMD, FMD, IMD> databaseGenerator = DbOperatorFactoryImpl.getInstance().createDatabaseGenerator(targetDatabaseName);
         final String databaseName = databaseGenerator.generateDatabase(schemaMetaData, DbConfigurationManagement.createConnection(targetDatabaseName, true),
                 targetDatabaseName);
+        DbConfigurationManagement.addDatabaseInfo(targetDatabaseName);
         return databaseName;
     }
 
