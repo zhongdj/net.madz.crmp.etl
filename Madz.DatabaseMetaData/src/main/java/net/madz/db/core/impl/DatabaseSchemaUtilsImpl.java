@@ -24,6 +24,7 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
 
     @Override
     public boolean databaseExists(String databaseName, boolean isCopy) throws SQLException {
+        validateDatabaseName(databaseName);
         Connection conn = null;
         boolean result = false;
         try {
@@ -35,7 +36,7 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
                     Statement stmt = conn.createStatement();
                     // TODO [Jan 22, 2013][barry][Done] Close Resources
                     // ResultSet
-                    rs = stmt.executeQuery("show databases");
+                    rs = stmt.executeQuery("SHOW DATABASES");
                     while ( rs.next() ) {
                         String dbName = rs.getString("Database");
                         if ( databaseName.equals(dbName) ) {
@@ -77,6 +78,8 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
     @Override
     @SuppressWarnings("unchecked")
     public boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException {
+        validateDatabaseName(sourceDatabaseName);
+        validateDatabaseName(targetDatabaseName);
         // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
         final AbsSchemaMetaDataParser<SMD, TMD, CMD, FMD, IMD> sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName,
@@ -90,9 +93,7 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
 
     @Override
     public String cloneDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws IllegalOperationException, SQLException, JAXBException {
-        if ( null == sourceDatabaseName || 0 >= sourceDatabaseName.length() ) {
-            throw new IllegalArgumentException(MessageConsts.DATABASE_NAME_SHOULD_NOT_BE_NULL);
-        }
+        validateDatabaseName(sourceDatabaseName);
         if ( null == targetDatabaseName || 0 >= targetDatabaseName.length() ) {
             targetDatabaseName = sourceDatabaseName + "_copy";
         }
@@ -120,12 +121,13 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
 
     @Override
     public boolean dropDatabase(String databaseName) throws JAXBException, SQLException {
+        validateDatabaseName(databaseName);
         if ( databaseExists(databaseName, true) ) {
             Connection conn = DbConfigurationManagement.createConnection(databaseName, true);
             Statement stmt;
             try {
                 stmt = conn.createStatement();
-                stmt.execute("drop database " + databaseName + ";");
+                stmt.execute("DROP DATABASE " + databaseName + ";");
             } catch (SQLException ignored) {
                 // TODO [Jan 22, 2013][barry][Done] use log instead at least and
                 // declare ignore
@@ -137,6 +139,12 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
         }
         DbConfigurationManagement.removeDatabaseInfo(databaseName);
         return false;
+    }
+
+    public void validateDatabaseName(String databaseName) {
+        if ( null == databaseName || 0 >= databaseName.trim().length() ) {
+            throw new IllegalArgumentException(MessageConsts.DATABASE_NAME_SHOULD_NOT_BE_NULL);
+        }
     }
 
     @SuppressWarnings("rawtypes")
