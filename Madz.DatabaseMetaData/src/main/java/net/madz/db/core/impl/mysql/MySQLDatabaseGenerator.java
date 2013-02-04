@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-//import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.core.AbsDatabaseGenerator;
@@ -15,7 +14,6 @@ import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
-import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum;
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum;
 import net.madz.db.utils.MessageConsts;
 
@@ -56,7 +54,7 @@ public class MySQLDatabaseGenerator extends
         stmt.executeUpdate("USE `" + targetDatabaseName + "`");
         for ( final MySQLTableMetaData table : metaData.getTables() ) {
             final StringBuilder result = new StringBuilder();
-            result.append("CREATE TABLE IF NOT EXISTS`");
+            result.append("CREATE TABLE IF NOT EXISTS `");
             result.append(table.getTableName());
             result.append("` (");
             for ( final MySQLColumnMetaData column : table.getColumns() ) {
@@ -64,8 +62,17 @@ public class MySQLDatabaseGenerator extends
                 result.append(column.getColumnName());
                 appendBackQuotation(result);
                 appendSpace(result);
-                result.append(column.getSqlTypeName());
+                result.append(column.getColumnType());
                 appendSpace(result);
+                if ( null != column.getCharacterSet() ) {
+                    result.append(" CHARACTER SET ");
+                    result.append(column.getCharacterSet());
+                    appendSpace(result);
+                }
+                if ( null != column.getCollationName() ) {
+                    result.append(" COLLATE ");
+                    result.append(column.getCollationName());
+                }
                 if ( column.isNullable() ) {
                     result.append(" NULL ");
                 } else {
@@ -82,15 +89,6 @@ public class MySQLDatabaseGenerator extends
                     result.append(" COMMENT ");
                     result.append(column.getRemarks());
                     appendSpace(result);
-                }
-                if ( null != column.getCharacterSet() ) {
-                    result.append(" CHARACTER SET ");
-                    result.append(column.getCharacterSet());
-                    appendSpace(result);
-                }
-                if ( null != column.getCollationName() ) {
-                    result.append(" COLLATE ");
-                    result.append(column.getCollationName());
                 }
                 result.append(",");
             }
@@ -139,17 +137,16 @@ public class MySQLDatabaseGenerator extends
                 appendSpace(result);
             }
             if ( null != table.getCharacterSet() ) {
-                result.append("CHARACTER SET = `");
+                result.append("CHARACTER SET ");
                 result.append(table.getCharacterSet());
-                appendBackQuotation(result);
                 appendSpace(result);
             }
             if ( null != table.getCollation() ) {
-                result.append("COLLATE = `");
+                result.append("COLLATE ");
                 result.append(table.getCollation());
-                appendBackQuotation(result);
                 appendSpace(result);
             }
+            result.append(";");
             System.out.println(result.toString());
             stmt.addBatch(result.toString());
         }
@@ -164,8 +161,8 @@ public class MySQLDatabaseGenerator extends
         for ( MySQLTableMetaData table : tables ) {
             final Collection<MySQLForeignKeyMetaData> foreignKeySet = table.getForeignKeySet();
             if ( null != foreignKeySet && 0 < foreignKeySet.size() ) {
-                final StringBuilder result = new StringBuilder();
                 for ( MySQLForeignKeyMetaData fk : foreignKeySet ) {
+                    final StringBuilder result = new StringBuilder();
                     result.append("ALTER TABLE ");
                     appendBackQuotation(result);
                     result.append(table.getTableName());

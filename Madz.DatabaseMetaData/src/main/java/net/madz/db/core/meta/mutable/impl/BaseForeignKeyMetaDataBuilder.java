@@ -73,6 +73,9 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
 
     @Override
     public IMD getForeignKeyIndex() {
+        if (null == this.fkIndex) {
+            return null;
+        }
         return this.fkIndex.getMetaData();
     }
 
@@ -83,6 +86,9 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
 
     @Override
     public IMD getPrimaryKeyIndex() {
+        if (null == this.pkIndex) {
+            return null;
+        }
         return this.pkIndex.getMetaData();
     }
 

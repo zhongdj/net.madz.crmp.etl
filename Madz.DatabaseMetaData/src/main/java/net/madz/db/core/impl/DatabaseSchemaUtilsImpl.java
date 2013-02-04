@@ -144,7 +144,7 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
         // boolean result = impl.compareDatabaseSchema("crmp", "crmp2");
         // System.out.println(result);
         try {
-            impl.cloneDatabaseSchema("c3", "crmp2000");
+            impl.cloneDatabaseSchema("crmp", "crmp2000");
         } catch (IllegalOperationException e) {
             e.printStackTrace();
         } catch (SQLException e) {

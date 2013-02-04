@@ -46,7 +46,7 @@ public abstract class BaseTableMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
     @Override
     public TMDB appendColumnMetaDataBuilder(CMDB column) {
         this.orderedColumns.add(column);
-        this.columnMap.put(column.getColumnName(), column);
+        this.columnMap.put(column.getColumnName().toLowerCase(), column);
         return (TMDB) this;
     }
 

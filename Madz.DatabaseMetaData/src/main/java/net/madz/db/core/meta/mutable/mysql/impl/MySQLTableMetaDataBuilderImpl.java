@@ -179,7 +179,7 @@ public class MySQLTableMetaDataBuilderImpl
 
     @Override
     public MySQLColumnMetaDataBuilder getColumnBuilder(String columnName) {
-        return this.columnMap.get(columnName);
+        return this.columnMap.get(columnName.toLowerCase());
     }
 
     @Override

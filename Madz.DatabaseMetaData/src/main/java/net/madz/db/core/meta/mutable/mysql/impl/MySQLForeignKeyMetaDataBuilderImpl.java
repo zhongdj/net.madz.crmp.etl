@@ -12,7 +12,6 @@ import java.util.Map;
 import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
-import net.madz.db.core.meta.immutable.IndexMetaData.Entry;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -21,12 +20,12 @@ import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.impl.MySQLForeignKeyMetaDataImpl;
 import net.madz.db.core.meta.immutable.types.CascadeRule;
 import net.madz.db.core.meta.mutable.impl.BaseForeignKeyMetaDataBuilder;
-import net.madz.db.core.meta.mutable.impl.BaseIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
+import net.madz.db.utils.MessageConsts;
 import net.madz.db.utils.ResourceManagementUtils;
 
 public class MySQLForeignKeyMetaDataBuilderImpl
@@ -55,6 +54,7 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                 // but actually, the referenced table could be in another
                 // schema.
                 this.pkTable = this.fkTable.getSchema().getTableBuilder(rs.getString("referenced_table_name"));
+                // Note: some times unique_constraint_name is null
                 this.pkIndex = this.pkTable.getIndexBuilder(rs.getString("unique_constraint_name"));
                 this.fkIndex = this.fkTable.getIndexBuilder(rs.getString("constraint_name"));
             }
@@ -70,8 +70,9 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                 final MySQLColumnMetaData fkColumn = this.fkTable.getColumnBuilder(columnName);
                 final MySQLColumnMetaData pkColumn = this.pkTable.getColumnBuilder(referencedColumnName);
                 final Short seq = rs.getShort("ordinal_position");
-                final BaseForeignKeyMetaDataBuilder.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(fkColumn, pkColumn, this, seq);
-                this.fkTable.getColumnBuilder(columnName).appendForeignKeyEntry(entry);
+                final BaseForeignKeyMetaDataBuilder<MySQLSchemaMetaDataBuilder,MySQLTableMetaDataBuilder,MySQLColumnMetaDataBuilder,MySQLForeignKeyMetaDataBuilder,MySQLIndexMetaDataBuilder,MySQLSchemaMetaData,MySQLTableMetaData,MySQLColumnMetaData,MySQLForeignKeyMetaData,MySQLIndexMetaData>.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(fkColumn, pkColumn, this, seq);
+                final MySQLColumnMetaDataBuilder columnBuilder = this.fkTable.getColumnBuilder(columnName);
+                columnBuilder.appendForeignKeyEntry(entry);
                 this.addEntry(entry);
             }
         } finally {
@@ -87,16 +88,17 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                 fkColumns.put(entry.getSeq(), entry.getForeignKeyColumn());
             }
             Collection<MySQLIndexMetaDataBuilder> indexSet = this.fkTable.getIndexBuilderSet();
+            Map<Short, MySQLColumnMetaData> indexColumns = null;
             for ( MySQLIndexMetaDataBuilder index : indexSet ) {
-                final Map<Short, MySQLColumnMetaData> indexColumns = new HashMap<Short, MySQLColumnMetaData>();
+                indexColumns = new HashMap<Short, MySQLColumnMetaData>();
                 final Collection<IndexMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = index
                         .getEntrySet();
                 for ( IndexMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
                     indexColumns.put(entry.getPosition(), entry.getColumn());
                 }
-                if ( fkColumns.size() != indexColumns.size() ) {
-                    continue;
-                }
+//                if ( fkColumns.size() != indexColumns.size() ) {
+//                    continue;
+//                }
                 boolean matched = true;
                 for ( Short key : fkColumns.keySet() ) {
                     MySQLColumnMetaData pkColumn = fkColumns.get(key);
@@ -110,6 +112,9 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                     this.fkIndex = this.fkTable.getIndexBuilder(index.getIndexName());
                     break;
                 }
+            }
+            if (null == this.fkIndex) {
+                throw new IllegalStateException(MessageConsts.FK_INDEX_SHOULD_NOT_BE_NULL);
             }
         }
         return this;
