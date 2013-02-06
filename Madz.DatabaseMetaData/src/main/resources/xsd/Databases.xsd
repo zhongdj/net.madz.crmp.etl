@@ -58,6 +58,8 @@
 			<xs:attribute name="parserClass" type="xs:string" use="required" />
 			<xs:attribute name="generatorClass" type="xs:string"
 				use="optional" />
+			<xs:attribute name="comparatorClass" type="xs:string"
+				use="required" />
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

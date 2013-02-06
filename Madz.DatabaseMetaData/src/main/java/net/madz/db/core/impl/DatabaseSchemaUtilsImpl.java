@@ -9,6 +9,7 @@ import javax.xml.bind.JAXBException;
 
 import net.madz.db.core.AbsDatabaseGenerator;
 import net.madz.db.core.AbsSchemaMetaDataParser;
+import net.madz.db.core.SchemaMetaDataComparator;
 import net.madz.db.core.DatabaseSchemaUtils;
 import net.madz.db.core.IllegalOperationException;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
@@ -86,9 +87,10 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
                 false);
         final AbsSchemaMetaDataParser<SMD, TMD, CMD, FMD, IMD> targetDbParser = DbOperatorFactoryImpl.getInstance()
                 .createSchemaParser(targetDatabaseName, true);
+        final SchemaMetaDataComparator databaseComparator = DbOperatorFactoryImpl.getInstance().createDatabaseComparator(sourceDatabaseName);
         final SMD sourceSchemaMetaData = sourceDbParser.parseSchemaMetaData();
         final SMD targetSchemaMetaData = targetDbParser.parseSchemaMetaData();
-        return sourceSchemaMetaData.equals(targetSchemaMetaData);
+        return databaseComparator.compare(sourceSchemaMetaData, targetSchemaMetaData);
     }
 
     @Override
@@ -147,19 +149,4 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    public static void main(String[] args) {
-        DatabaseSchemaUtilsImpl impl = new DatabaseSchemaUtilsImpl();
-        // boolean result = impl.compareDatabaseSchema("crmp", "crmp2");
-        // System.out.println(result);
-        try {
-            impl.cloneDatabaseSchema("crmp", "crmp2000");
-        } catch (IllegalOperationException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-    }
 }

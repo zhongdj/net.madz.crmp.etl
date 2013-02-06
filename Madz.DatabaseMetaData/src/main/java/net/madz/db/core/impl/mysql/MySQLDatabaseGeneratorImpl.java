@@ -17,10 +17,10 @@ import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum;
 import net.madz.db.utils.MessageConsts;
 
-public class MySQLDatabaseGenerator extends
+public class MySQLDatabaseGeneratorImpl extends
         AbsDatabaseGenerator<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
 
-    public MySQLDatabaseGenerator() {
+    public MySQLDatabaseGeneratorImpl() {
     }
 
     @Override

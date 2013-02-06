@@ -13,9 +13,10 @@
 	</database-copies>
 	<sku-conf sku="MySQL" driverClass="com.mysql.jdbc.Driver"
 		parserClass="net.madz.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl"
-		generatorClass="net.madz.db.core.impl.mysql.MySQLDatabaseGenerator" />
+		generatorClass="net.madz.db.core.impl.mysql.MySQLDatabaseGenerator" 
+		comparatorClass="net.madz.db.core.impl.mysql.MySQLSchemaComparator"/>
 	<sku-conf sku="MS Access" driverClass="sun.jdbc.odbc.JdbcOdbcDriver"
-		parserClass="" />
+		parserClass="" comparatorClass="net.madz.db.core.impl.jdbc.AccessSchemaComparator"/>
 	<database-copies-server>
 		<database name="DatabaseCopyServer" sku="MySQL"
 			url="jdbc:mysql://localhost:3306/" user="root" password="1q2w3e4r5t" />

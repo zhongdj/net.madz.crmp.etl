@@ -1,10 +1,13 @@
 package net.madz.db.core.impl;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import net.madz.db.core.AbsDatabaseGenerator;
 import net.madz.db.core.AbsSchemaMetaDataParser;
+import net.madz.db.core.SchemaMetaDataComparator;
 import net.madz.db.core.DbOperatorFactory;
+import net.madz.db.utils.MessageConsts;
 
 // TODO [Jan 22, 2013][barry][Done] Is there any chance to extend this class with subClass?
 public final class DbOperatorFactoryImpl implements DbOperatorFactory {
@@ -44,6 +47,21 @@ public final class DbOperatorFactoryImpl implements DbOperatorFactory {
             return (AbsDatabaseGenerator) constructor.newInstance();
         } catch (Exception e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
+    public SchemaMetaDataComparator createDatabaseComparator(String databaseName) {
+        if ( null == databaseName || 0 >= databaseName.trim().length() ) {
+            throw new IllegalArgumentException(MessageConsts.DATABASE_NAME_SHOULD_NOT_BE_NULL);
+        }
+        final String databaseComparatorClass = DbConfigurationManagement.getDatabaseComparatorClass(databaseName);
+        try {
+            Class<?> comparatorClassObj = Class.forName(databaseComparatorClass);
+            Constructor<?> constructor = comparatorClassObj.getConstructor();
+            return (SchemaMetaDataComparator) constructor.newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getMessage());
         }
     }
 }

@@ -17,6 +17,7 @@ import javax.xml.bind.Unmarshaller;
 
 
 import net.madz.db.utils.LogUtils;
+import net.madz.db.utils.MessageConsts;
 import net.madz.db.configuration.*;
 
 public class DbConfigurationManagement {
@@ -172,5 +173,14 @@ public class DbConfigurationManagement {
             // TODO [Jan 22, 2013][barry][Done] How to handle this exception
             LogUtils.error(DbConfigurationManagement.class, e);
         }
+    }
+
+    public static String getDatabaseComparatorClass(final String databaseName) {
+        if (null == databaseName || 0 >= databaseName.trim().length()) {
+            throw new IllegalArgumentException(MessageConsts.DATABASE_NAME_SHOULD_NOT_BE_NULL);
+        }
+        final Database database = sourceDatabaseCache.get(databaseName);
+        final Sku sku = database.getSku();
+        return skuConfs.get(sku).getComparatorClass();
     }
 }

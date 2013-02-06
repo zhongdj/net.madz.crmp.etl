@@ -17,11 +17,11 @@ import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
 class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
   var conn: Connection = null
-  var generator: MySQLDatabaseGenerator = null
+  var generator: MySQLDatabaseGeneratorImpl = null
 
   override def beforeEach {
     conn = Database.forURL(urlRoot, user, password, prop).createSession.conn
-    generator = new MySQLDatabaseGenerator()
+    generator = new MySQLDatabaseGeneratorImpl()
   }
 
   override def afterEach {
