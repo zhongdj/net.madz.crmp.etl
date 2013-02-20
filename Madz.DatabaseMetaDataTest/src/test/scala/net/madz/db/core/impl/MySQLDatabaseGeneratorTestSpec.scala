@@ -8,11 +8,11 @@ import scala.slick.session.Database.threadLocalSession
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
-import net.madz.db.core.impl.mysql.MySQLDatabaseGenerator
 import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData
 import net.madz.db.core.meta.mutable.jdbc.JdbcSchemaMetaDataBuilder
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
+import net.madz.db.core.impl.mysql.MySQLDatabaseGeneratorImpl
 
 class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 

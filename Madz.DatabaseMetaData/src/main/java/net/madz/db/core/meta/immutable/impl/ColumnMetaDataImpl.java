@@ -142,7 +142,7 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
 
     @Override
     public boolean hasDefaultValue() {
-        return null != defaultValue && 0 > defaultValue.length();
+        return null != defaultValue && 0 < defaultValue.length();
     }
 
     @Override

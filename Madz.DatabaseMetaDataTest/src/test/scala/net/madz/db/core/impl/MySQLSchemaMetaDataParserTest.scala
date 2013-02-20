@@ -100,7 +100,8 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
 
   }
 
-  describe("Parse columns from a single table Database") {
+  describe("Parse columns from database with simple tables") {
+
     it("should parse all kinds of data types defined in MySQL documents") {
       exec(
         "USE `madz_database_parser_test`;"
@@ -167,7 +168,9 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       val result = parser parseSchemaMetaData
 
       Assertions.expectResult("Hello")(result.getTable("table_with_default_option").getColumn("defaulted_column_name").getDefaultValue())
+      Assertions.expectResult(true)(result.getTable("table_with_default_option").getColumn("defaulted_column_name").hasDefaultValue())
       Assertions.expectResult(null)(result.getTable("table_with_default_option").getColumn("not_defaulted_column_name").getDefaultValue())
+      Assertions.expectResult(false)(result.getTable("table_with_default_option").getColumn("not_defaulted_column_name").hasDefaultValue())
     }
 
     it("should parse column with column comment") {
@@ -217,7 +220,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       val result = parser parseSchemaMetaData
       val pk = result.getTable("table_with_single_column_pk").getPrimaryKey()
       val column = result.getTable("table_with_single_column_pk").getColumn("single_column_pk")
-      Assertions.expectResult(MySQLIndexMethod.btree)(pk getIndexMethod ())
+      Assertions.expectResult(MySQLIndexMethod.btree)(pk getIndexMethod)
       Assertions.expectResult(true)(pk isUnique)
       Assertions.expectResult(0)(pk getCardinality)
       Assertions.expectResult("PRIMARY")(pk getIndexName)
@@ -226,15 +229,15 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       //      Assertions.expectResult(0 /*"unknown"*/ )(pk getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(pk getSortDirection)
       Assertions.expectResult("table_with_single_column_pk")(pk.getTable getTableName)
-      Assertions.expectResult(false)(pk.isNull)
-      Assertions.expectResult(true)(pk.containsColumn(column))
-      Assertions.expectResult(true)(column.isMemberOfPrimaryKey)
-      val pkEntry = collectionAsScalaIterable(pk.getEntrySet).toList.get(0)
+      Assertions.expectResult(false)(pk isNull)
+      Assertions.expectResult(true)(pk containsColumn column)
+      Assertions.expectResult(true)(column isMemberOfPrimaryKey)
+      val pkEntry = collectionAsScalaIterable(pk getEntrySet).toList.get(0)
       Assertions.expectResult(pkEntry.getColumn)(column)
       Assertions.expectResult(pkEntry.getKey)(pk)
-      Assertions.expectResult(pkEntry.getKey.getIndexName)(pk.getIndexName)
-      Assertions.expectResult(pkEntry.getColumn.getColumnName)(column.getColumnName)
-      Assertions.expectResult(1)(pkEntry.getPosition.intValue())
+      Assertions.expectResult(pkEntry.getKey.getIndexName)(pk getIndexName)
+      Assertions.expectResult(pkEntry.getColumn.getColumnName)(column getColumnName)
+      Assertions.expectResult(1)(pkEntry.getPosition intValue)
     }
 
     it("should parse auto incremental index") {
@@ -506,6 +509,23 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(true)(nickname_index.isNull)
 
     }
+    it("should parse single column with both unique key and primary key options") {
+      exec(
+        """
+          USE `madz_database_parser_test`;
+          """ :: """
+          CREATE TABLE `table_with_single_column_unique_primary_key` (
+            `id` INTEGER(32) UNIQUE KEY,
+            PRIMARY KEY(`id`)
+          )ENGINE = `InnoDB` DEFAULT CHARACTER SET = 'utf8' DEFAULT COLLATE = 'utf8_bin';
+          """ :: Nil)
+
+      val result = parser parseSchemaMetaData
+      val table = result.getTable("table_with_single_column_unique_primary_key")
+      Assertions.assert(null != table.getIndex("PRIMARY"))
+      Assertions.assert(null != table.getIndex("id"))
+
+    }
 
     it("should parse composite UNIQUE KEY with multiple columns") {
       exec("""
@@ -578,7 +598,7 @@ mysql> select * from columns where table_name='table_with_increment_non_primary_
       val table = schema.getTable("table_with_increment_non_primary_key")
       val composite_unique_key = table.getIndex("non_pk_incremental_key")
       val column = table.getColumn("id")
-      //suppose msyql defect
+      //suppose mysql defect
       Assertions.expectResult(false)(composite_unique_key isUnique)
       Assertions.expectResult(null)(table.getPrimaryKey)
       Assertions.expectResult(true)(column.isAutoIncremented())
@@ -824,7 +844,7 @@ mysql> select * from key_column_usage where constraint_schema='madz_database_par
       Assertions.expectResult(false)(index.containsColumn(t1 getColumn "data"))
       Assertions.expectResult(0)(index.getCardinality)
       Assertions.expectResult("single_column_index")(index.getIndexName)
-//      Assertions.expectResult(IndexTypeEnum.statistic)(index.getIndexType)
+      //      Assertions.expectResult(IndexTypeEnum.statistic)(index.getIndexType)
       Assertions.expectResult(KeyTypeEnum.index)(index.getKeyType)
       Assertions.expectResult(null)(index.getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(index.getSortDirection)
@@ -890,7 +910,7 @@ mysql> select * from columns where table_name= 'table_composite_index_test';
       Assertions.expectResult(false)(index.containsColumn(t1 getColumn "data"))
       Assertions.expectResult(0)(index.getCardinality)
       Assertions.expectResult("composite_column_index")(index.getIndexName)
-//      Assertions.expectResult(IndexTypeEnum.statistic)(index.getIndexType)
+      //      Assertions.expectResult(IndexTypeEnum.statistic)(index.getIndexType)
       Assertions.expectResult(KeyTypeEnum.index)(index.getKeyType)
       Assertions.expectResult(null)(index.getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(index.getSortDirection)
