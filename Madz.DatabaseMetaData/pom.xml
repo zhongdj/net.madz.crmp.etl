@@ -60,6 +60,7 @@
 						<excludes>
 							<exclude>net/madz/db/metadata/mysql/impl/builder/MySQLSchemaMetaDataBuilder.java</exclude>
 							<exclude>net/madz/db/metadata/**/*.java</exclude>
+							<exclude>net/madz/db/core/meta/immutable/jdbc/impl/*.java</exclude>
 						</excludes>
 					</configuration>
 				</plugin>

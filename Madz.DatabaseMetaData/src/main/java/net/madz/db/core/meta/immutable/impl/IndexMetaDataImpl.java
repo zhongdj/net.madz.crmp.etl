@@ -101,7 +101,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         this.pages = metaData.getPageCount();
         this.ascending = metaData.getSortDirection();
         this.keyType = metaData.getKeyType();
-        for (IMD.Entry entry: metaData.getEntrySet()) {
+        for (IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry: metaData.getEntrySet()) {
             CMD column = parent.getColumn(entry.getColumn().getColumnName());
             Short position = entry.getPosition();
             Integer subPart = entry.getSubPart();
