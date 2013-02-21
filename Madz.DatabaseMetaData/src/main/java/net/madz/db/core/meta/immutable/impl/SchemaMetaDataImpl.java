@@ -23,6 +23,11 @@ public class SchemaMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
     public SchemaMetaDataImpl(SMD metaData) {
         this.name = metaData.getSchemaPath();
     }
+    
+    public SchemaMetaDataImpl(DottedPath name) {
+        super();
+        this.name = name;
+    }
 
     @Override
     public DottedPath getSchemaPath() {

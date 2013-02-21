@@ -2,6 +2,7 @@ package net.madz.db.core.meta.immutable.mysql.impl;
 
 import java.util.List;
 
+import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.impl.SchemaMetaDataImpl;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -21,6 +22,12 @@ public final class MySQLSchemaMetaDataImpl extends
         super(metaData);
         this.charSet = metaData.getCharSet();
         this.collation = metaData.getCollation();
+    }
+    
+    public MySQLSchemaMetaDataImpl(DottedPath name, String charSet, String collation) {
+        super(name);
+        this.charSet = charSet;
+        this.collation = collation;
     }
 
     @Override

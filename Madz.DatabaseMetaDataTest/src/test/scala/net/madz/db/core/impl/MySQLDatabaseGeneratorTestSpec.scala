@@ -1,18 +1,21 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
+
 import scala.collection.mutable.ListBuffer
 import scala.slick.jdbc.{ StaticQuery => Q }
 import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
+
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
-import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData
-import net.madz.db.core.meta.mutable.jdbc.JdbcSchemaMetaDataBuilder
-import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder
-import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
+
 import net.madz.db.core.impl.mysql.MySQLDatabaseGeneratorImpl
+import net.madz.db.core.meta.DottedPath
+import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
+import net.madz.db.core.meta.immutable.mysql.impl.MySQLSchemaMetaDataImpl
+import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder
 
 class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -34,16 +37,28 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   describe("Generate an Empty Database") {
     it("should generate an empty database with a specified database name") {
 
-      val builder : MySQLSchemaMetaDataBuilder = null//= new JdbcSchemaMetaDataBuilder(new DottedPath(databaseName))
-      //builder.build(conn)
-      val schemaMetaData: MySQLSchemaMetaData = null// = builder.getCopy()
+      val schemaMetaData: MySQLSchemaMetaData = new MySQLSchemaMetaDataImpl(new DottedPath(databaseName), "utf8", "utf8_bin")
 
-      val generatedDbName = generator.generateDatabase(schemaMetaData, conn,databaseName)
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
 
       Database.forURL(urlRoot + databaseName, user, password, driver = "com.mysql.jdbc.Driver") withSession {
         val q = Q.queryNA[String](show_tables_query)
         Assertions.expectResult(0)(q.list().size)
+        Q.queryNA[String]("USE INFORMATION_SCHEMA;").execute
+        val db = Q.query[String, MySQLSchema]("""
+            SELECT 
+                CATALOG_NAME,SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME,DEFAULT_COLLATION_NAME,SQL_PATH
+            FROM 
+                SCHEMATA
+            WHERE
+                SCHEMA_NAME=?
+            """).list(databaseName)
+
+        Assertions.expectResult(1)(db.size)
+        Assertions.expectResult("utf8")(db(0).defaultCharset)
+        Assertions.expectResult("utf8_bin")(db(0).defaultCollation)
       }
+
     }
   }
 
@@ -61,12 +76,12 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   describe("Generate correct columns") {
 
     it("should generate with all kinds of data type defined in JDBC specification") {
-      val builder : MySQLSchemaMetaDataBuilder = null //(new DottedPath(databaseName))
+      val builder: MySQLSchemaMetaDataBuilder = null //(new DottedPath(databaseName))
       //builder.build(conn)
-      val schemaMetaData: MySQLSchemaMetaData = null//builder.getCopy()
+      val schemaMetaData: MySQLSchemaMetaData = null //builder.getCopy()
 
       //add table meta data into schemaMetaData
-      val generatedDbName = generator.generateDatabase(schemaMetaData, conn,databaseName)
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
 
       Database.forURL(urlRoot + databaseName, user, password, prop) withSession {
         val q = Q.queryNA[String](show_tables_query)
@@ -111,6 +126,18 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     }
 
     it("should generate with composite PK with multiple columns in a specific order") {
+      pending
+    }
+
+    it("should generate BTREE mode index") {
+      pending
+    }
+
+    it("should generate HASH mode index") {
+      pending
+    }
+
+    it("should generate nullable index") {
       pending
     }
 
