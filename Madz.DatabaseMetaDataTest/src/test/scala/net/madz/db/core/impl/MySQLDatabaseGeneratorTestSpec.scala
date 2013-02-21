@@ -74,7 +74,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
   describe("Generate correct tables") {
 
-    it("should generate table with specific storage engine, such as InnoDB") {
+    it("should generate table with specific storage engine, such as InnoDB, charsetEncoding") {
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(new DottedPath(databaseName))
       schemaMetaDataBuilder setCharSet "utf8"
       schemaMetaDataBuilder setCollation "utf8_bin"
@@ -147,14 +147,24 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
     }
 
-    it("should generate table with specific charsetEncoding") {
-      pending
-    }
   }
 
   describe("Generate correct columns") {
 
-    it("should generate with all kinds of data type defined in JDBC specification") {
+    it("should generate with all kinds of data type defined in MySQL Manual") {
+      
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(new DottedPath(databaseName))
+      schemaMetaDataBuilder setCharSet "utf8"
+      schemaMetaDataBuilder setCollation "utf8_bin"
+      
+      val tableMetaDataBuilder: MySQLTableMetaDataBuilder = new MySQLTableMetaDataBuilderImpl(schemaMetaDataBuilder, "test_table")
+      tableMetaDataBuilder.setRemarks("Test Table Comments")
+      tableMetaDataBuilder.setType(TableType.table)
+      tableMetaDataBuilder.setCharacterSet("gbk")
+      tableMetaDataBuilder.setCollation("gbk_bin")
+      tableMetaDataBuilder.setEngine(MySQLEngineEnum.MyISAM)
+      val columnMetaDataBuilder: MySQLColumnMetaDataBuilder = new MySQLColumnMetaDataBuilderImpl(tableMetaDataBuilder, "test_column")
+      
       val builder: MySQLSchemaMetaDataBuilder = null //(new DottedPath(databaseName))
       //builder.build(conn)
       val schemaMetaData: MySQLSchemaMetaData = null //builder.getCopy()

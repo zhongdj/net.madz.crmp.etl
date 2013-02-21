@@ -988,65 +988,7 @@ mysql> select * from columns where table_name= 'table_composite_index_test';
   ) ENGINE=InnoDB DEFAULT CHARSET=latin7;
   """
 
-  case class ColumnMetaData(
-    val TABLE_NAME: String, val COLUMN_NAME: String, val ORDINAL_POSITION: Integer,
-    val COLUMN_DEFAULT: String, val IS_NULLABLE: Boolean, val DATA_TYPE: String,
-    val CHARACTER_MAXIMUM_LENGTH: java.lang.Long, val NUMERIC_PRECISION: Integer,
-    val NUMERIC_SCALE: Integer, val CHARACTER_SET_NAME: String, val COLLATION_NAME: String,
-    val COLUMN_TYPE: String)
-
-  val columns_in_table1 =
-    ColumnMetaData("table_with_all_data_types_p1", "BIT_COLUMN", 1, null, true, "bit", 0, 1, 0, null, null, "bit(1)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "BIT_PLUS_COLUMN", 2, null, true, "bit", 0, 2, 0, null, null, "bit(2)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "TINYINT_COLUMN", 3, null, true, "tinyint", 0, 3, 0, null, null, "tinyint(1)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "TINYINT_PLUS_COLUMN", 4, null, true, "tinyint", 0, 3, 0, null, null, "tinyint(8)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "TINYINT_UNSIGNED_COLUMN", 5, null, true, "tinyint", 0, 3, 0, null, null, "tinyint(8) unsigned") ::
-      ColumnMetaData("table_with_all_data_types_p1", "BOOL_COLUMN", 6, null, true, "tinyint", 0, 3, 0, null, null, "tinyint(1)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "BOOLEAN_COLUMN", 7, null, true, "tinyint", 0, 3, 0, null, null, "tinyint(1)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "SMALLINT_COLUMN", 8, null, true, "smallint", 0, 5, 0, null, null, "smallint(16)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "SMALLINT_UNSIGNED_COLUMN", 9, null, true, "smallint", 0, 5, 0, null, null, "smallint(16) unsigned") ::
-      ColumnMetaData("table_with_all_data_types_p1", "MEDIUMINT_COLUMN", 10, null, true, "mediumint", 0, 7, 0, null, null, "mediumint(24)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "MEDIUMINT_UNSIGNED_COLUMN", 11, null, true, "mediumint", 0, 7, 0, null, null, "mediumint(24) unsigned") ::
-      ColumnMetaData("table_with_all_data_types_p1", "INT_COLUMN", 12, null, true, "int", 0, 10, 0, null, null, "int(32)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "INT_UNSIGNED_COLUMN", 13, null, true, "int", 0, 10, 0, null, null, "int(32) unsigned") ::
-      ColumnMetaData("table_with_all_data_types_p1", "INTEGER_COLUMN", 14, null, true, "int", 0, 10, 0, null, null, "int(32)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "INTEGER_UNSIGNED_COLUMN", 15, null, true, "int", 0, 10, 0, null, null, "int(32) unsigned") ::
-      ColumnMetaData("table_with_all_data_types_p1", "BIGINT_COLUMN", 16, null, true, "bigint", 0, 19, 0, null, null, "bigint(64)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "BIGINT_UNSIGNED_COLUMN", 17, null, true, "bigint", 0, 20, 0, null, null, "bigint(64) unsigned") ::
-      ColumnMetaData("table_with_all_data_types_p1", "FLOAT_COLUMN", 18, null, true, "float", 0, 7, 4, null, null, "float(7,4)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DOUBLE_COLUMN", 19, null, true, "double", 0, 64, 30, null, null, "double(64,30)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DOUBLE_PLUS_COLUMN", 20, null, true, "double", 0, 128, 30, null, null, "double(128,30)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DECIMAL_COLUMN", 21, null, true, "decimal", 0, 10, 0, null, null, "decimal(10,0)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DECIMAL_NO_SCALE_COLUMN", 22, null, true, "decimal", 0, 65, 0, null, null, "decimal(65,0)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DECIMAL_SCALE_COLUMN", 23, null, true, "decimal", 0, 65, 30, null, null, "decimal(65,30)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DATE_COLUMN", 24, null, true, "date", 0, 0, 0, null, null, "date") ::
-      ColumnMetaData("table_with_all_data_types_p1", "DATETIME_COLUMN", 25, null, true, "datetime", 0, 0, 0, null, null, "datetime") ::
-      ColumnMetaData("table_with_all_data_types_p1", "TIMESTAMP_COLUMN", 26, "2010-12-10 14:12:09", false, "timestamp", 0, 0, 0, null, null, "timestamp") ::
-      ColumnMetaData("table_with_all_data_types_p1", "TIME_COLUMN", 27, null, true, "time", 0, 0, 0, null, null, "time") ::
-      ColumnMetaData("table_with_all_data_types_p1", "YEAR_COLUMN", 28, null, true, "year", 0, 0, 0, null, null, "year(2)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "YEAR_PLUS_COLUMN", 29, null, true, "year", 0, 0, 0, null, null, "year(4)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "CHAR_COLUMN", 30, null, true, "char", 255, 0, 0, "latin7", "latin7_general_ci", "char(255)") ::
-      ColumnMetaData("table_with_all_data_types_p1", "BINARY_COLUMN", 31, null, true, "binary", 255, 0, 0, null, null, "binary(255)") :: Nil
-
-  val columns_in_table2 =
-    ColumnMetaData("table_with_all_data_types_p2", "VARBINARY_COLUMN", 1, null, true, "varbinary", 65532, 0, 0, null, null, "varbinary(65532)") :: Nil
-
-  val columns_in_table3 =
-    ColumnMetaData("table_with_all_data_types_p3", "TINYBLOB_COLUMN", 1, null, true, "tinyblob", 255, 0, 0, null, null, "tinyblob") ::
-      ColumnMetaData("table_with_all_data_types_p3", "TINYTEXT_COLUMN", 2, null, true, "tinytext", 255, 0, 0, "latin7", "latin7_general_ci", "tinytext") ::
-      ColumnMetaData("table_with_all_data_types_p3", "BLOB_COLUMN", 3, null, true, "blob", 65535, 0, 0, null, null, "blob") ::
-      ColumnMetaData("table_with_all_data_types_p3", "TEXT_COLUMN", 4, null, true, "text", 65535, 0, 0, "latin7", "latin7_general_ci", "text") ::
-      ColumnMetaData("table_with_all_data_types_p3", "MEDIUMBLOB_COLUMN", 5, null, true, "mediumblob", 16777215L, 0, 0, null, null, "mediumblob") ::
-      ColumnMetaData("table_with_all_data_types_p3", "MEDIUMTEXT_COLUMN", 6, null, true, "mediumtext", 16777215L, 0, 0, "latin7", "latin7_general_ci", "mediumtext") ::
-      ColumnMetaData("table_with_all_data_types_p3", "LONGBLOB_COLUMN", 7, null, true, "longblob", 4294967295L, 0, 0, null, null, "longblob") ::
-      ColumnMetaData("table_with_all_data_types_p3", "LONGTEXT_COLUMN", 8, null, true, "longtext", 4294967295L, 0, 0, "latin7", "latin7_general_ci", "longtext") ::
-      ColumnMetaData("table_with_all_data_types_p3", "ENUM_COLUMN", 9, null, true, "enum", 1, 0, 0, "latin7", "latin7_general_ci", "enum('A','B','C')") ::
-      ColumnMetaData("table_with_all_data_types_p3", "SET_COLUMN", 10, null, true, "set", 9, 0, 0, "latin7", "latin7_general_ci", "set('HLJ','JX','BJ')") :: Nil
-  val columns_in_table4 =
-    ColumnMetaData("table_with_all_data_types_p4", "VARCHAR_COLUMN", 1, null, true, "varchar", 65532, 0, 0, "latin7", "latin7_general_ci", "varchar(65532)") :: Nil
-  val columns_in_table5 =
-    ColumnMetaData("table_with_all_data_types_p5", "VARCHAR_BINARY_COLUMN", 1, null, true, "varchar", 65532, 0, 0, "latin7", "latin7_bin", "varchar(65532)") :: Nil
-  def verifyColumns(expectedColumnList: List[ColumnMetaData], actualColumnList: java.util.List[MySQLColumnMetaData]) {
+def verifyColumns(expectedColumnList: List[ColumnMetaData], actualColumnList: java.util.List[MySQLColumnMetaData]) {
     val actualScalaList = collectionAsScalaIterable[MySQLColumnMetaData](actualColumnList).toList
     Assertions.expectResult(expectedColumnList.length)(actualScalaList.length)
     val tuples = expectedColumnList zip actualScalaList
