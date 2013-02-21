@@ -133,10 +133,9 @@ public class MySQLDatabaseGeneratorImpl extends
                 }
             }
             result.append(") ");
-            if ( null != table.getEngine() && 0 >= table.getEngine().name().length() ) {
-                result.append("ENGINE='");
+            if ( null != table.getEngine() && 0 <= table.getEngine().name().length() ) {
+                result.append("ENGINE ");
                 result.append(table.getEngine());
-                appendBackQuotation(result);
                 appendSpace(result);
             }
             if ( null != table.getCharacterSet() ) {
