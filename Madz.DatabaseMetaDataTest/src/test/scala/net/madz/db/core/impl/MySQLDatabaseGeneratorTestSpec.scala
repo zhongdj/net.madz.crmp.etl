@@ -2,7 +2,6 @@ package net.madz.db.core.impl
 
 import java.sql.Connection
 
-import scala.collection.mutable.ListBuffer
 import scala.slick.jdbc.{ StaticQuery => Q }
 import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
@@ -152,41 +151,46 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   describe("Generate correct columns") {
 
     it("should generate with all kinds of data type defined in MySQL Manual") {
-      
+
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(new DottedPath(databaseName))
       schemaMetaDataBuilder setCharSet "utf8"
       schemaMetaDataBuilder setCollation "utf8_bin"
-      
-      val tableMetaDataBuilder: MySQLTableMetaDataBuilder = new MySQLTableMetaDataBuilderImpl(schemaMetaDataBuilder, "test_table")
+
+      var tableMetaDataBuilder: MySQLTableMetaDataBuilder = new MySQLTableMetaDataBuilderImpl(schemaMetaDataBuilder, "test_table_1")
       tableMetaDataBuilder.setRemarks("Test Table Comments")
       tableMetaDataBuilder.setType(TableType.table)
       tableMetaDataBuilder.setCharacterSet("gbk")
       tableMetaDataBuilder.setCollation("gbk_bin")
       tableMetaDataBuilder.setEngine(MySQLEngineEnum.MyISAM)
-      val columnMetaDataBuilder: MySQLColumnMetaDataBuilder = new MySQLColumnMetaDataBuilderImpl(tableMetaDataBuilder, "test_column")
+
+      columns_in_table1.foreach(rawColumn => {
+        val result = new MySQLColumnMetaDataBuilderImpl(tableMetaDataBuilder, rawColumn.COLUMN_NAME)
+        result.setCharacterMaximumLength(rawColumn.CHARACTER_MAXIMUM_LENGTH)
+        result.setCharacterSet(rawColumn.CHARACTER_SET_NAME)
+        result.setCollationName(rawColumn.COLLATION_NAME)
+        result.setDefaultValue(rawColumn.COLUMN_DEFAULT)
+        result.setColumnType(rawColumn.COLUMN_TYPE)
+        result.setNumericPrecision(rawColumn.NUMERIC_PRECISION)
+        result.setNumericScale(rawColumn.NUMERIC_SCALE)
+        result.setAutoIncremented(false)
+        result.setNullable(rawColumn.IS_NULLABLE)
+        result.setOrdinalPosition(rawColumn.ORDINAL_POSITION.shortValue)
+        result.setRemarks("")
+        //result.setSize(rawColumn.)
+        //result.setSqlTypeName(x$1)
+        tableMetaDataBuilder.appendColumnMetaDataBuilder(result)
+      })
+
+      schemaMetaDataBuilder.appendTableMetaDataBuilder(tableMetaDataBuilder)
       
-      val builder: MySQLSchemaMetaDataBuilder = null //(new DottedPath(databaseName))
-      //builder.build(conn)
-      val schemaMetaData: MySQLSchemaMetaData = null //builder.getCopy()
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
 
       //add table meta data into schemaMetaData
       val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
 
       Database.forURL(urlRoot + databaseName, user, password, prop) withSession {
-        val q = Q.queryNA[String](show_tables_query)
-        //Assertions.expectResult(0)(q.list().size)
-      }
 
-      val rs = conn.getMetaData().getTables(databaseName, null, null, Array("Table"))
-      val tables: ListBuffer[String] = ListBuffer()
-      while (rs.next())
-        tables += rs.getString("TABLE_NAME")
-      tables.foreach(tableName => {
-        val column = conn.getMetaData().getColumns(databaseName, null, tableName, null);
-        while (column.next()) {
-          println(column.getString("COLUMN_NAME") + "\t" + column.getInt("DATA_TYPE"))
-        }
-      })
+      }
 
     }
 
