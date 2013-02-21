@@ -57,7 +57,7 @@ public class MySQLDatabaseGeneratorImpl extends
             result.append("CREATE TABLE IF NOT EXISTS `");
             result.append(table.getTableName());
             result.append("` (");
-            if (0 >= table.getColumns().size()) {
+            if ( 0 >= table.getColumns().size() ) {
                 throw new IllegalStateException("Table: " + table.getTableName() + " has no columns.");
             }
             for ( final MySQLColumnMetaData column : table.getColumns() ) {
@@ -147,6 +147,12 @@ public class MySQLDatabaseGeneratorImpl extends
             if ( null != table.getCollation() ) {
                 result.append("COLLATE ");
                 result.append(table.getCollation());
+                appendSpace(result);
+            }
+            if ( null != table.getRemarks() ) {
+                result.append("COMMENT '");
+                result.append(table.getRemarks());
+                result.append("'");
                 appendSpace(result);
             }
             result.append(";");
