@@ -1,21 +1,21 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
-
 import scala.collection.mutable.ListBuffer
 import scala.slick.jdbc.{ StaticQuery => Q }
 import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
-
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
-
 import net.madz.db.core.impl.mysql.MySQLDatabaseGeneratorImpl
 import net.madz.db.core.meta.DottedPath
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
 import net.madz.db.core.meta.immutable.mysql.impl.MySQLSchemaMetaDataImpl
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder
+import net.madz.db.core.meta.mutable.mysql.impl.MySQLSchemaMetaDataBuilderImpl
+import net.madz.db.core.meta.mutable.mysql.impl.MySQLTableMetaDataBuilderImpl
+import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder
 
 class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -37,7 +37,11 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   describe("Generate an Empty Database") {
     it("should generate an empty database with a specified database name") {
 
-      val schemaMetaData: MySQLSchemaMetaData = new MySQLSchemaMetaDataImpl(new DottedPath(databaseName), "utf8", "utf8_bin")
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(new DottedPath(databaseName))
+      schemaMetaDataBuilder setCharSet "utf8"
+      schemaMetaDataBuilder setCollation "utf8_bin"
+
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
 
       val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
 
@@ -65,7 +69,12 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   describe("Generate correct tables") {
 
     it("should generate table with specific storage engine, such as InnoDB") {
-      pending
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(new DottedPath(databaseName))
+      schemaMetaDataBuilder setCharSet "utf8"
+      schemaMetaDataBuilder setCollation "utf8_bin"
+      val tableMetaDataBuilder: MySQLTableMetaDataBuilder = new MySQLTableMetaDataBuilderImpl(schemaMetaDataBuilder, "test_table")
+      
+      schemaMetaDataBuilder.appendTableMetaDataBuilder(tableMetaDataBuilder)
     }
 
     it("should generate table with specific charsetEncoding") {

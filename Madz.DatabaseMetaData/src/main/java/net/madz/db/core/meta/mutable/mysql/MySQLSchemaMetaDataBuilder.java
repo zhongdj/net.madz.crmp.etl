@@ -6,8 +6,6 @@ import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.mutable.SchemaMetaDataBuilder;
-import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
-import net.madz.db.core.meta.mutable.impl.BaseTableMetaDataBuilder;
 
 public interface MySQLSchemaMetaDataBuilder
         extends
@@ -34,6 +32,10 @@ public interface MySQLSchemaMetaDataBuilder
      * MySQLIndexMetaData<MySQLSchemaMetaData, MySQLTableMetaData,
      * MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> {
      */
+    void setCharSet(String charSet);
+
+    void setCollation(String collation);
+
 }
 /*
  * The interface SchemaMetaData cannot be implemented more than once with

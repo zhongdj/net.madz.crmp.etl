@@ -85,6 +85,16 @@ public class MySQLSchemaMetaDataBuilderImpl
     }
 
     @Override
+    public void setCharSet(String charSet) {
+        this.charSet = charSet;
+    }
+
+    @Override
+    public void setCollation(String collation) {
+        this.collation = collation;
+    }
+
+    @Override
     protected MySQLSchemaMetaData createMetaData() {
         MySQLSchemaMetaDataImpl result = new MySQLSchemaMetaDataImpl(this);
         this.constructedMetaData = result;
@@ -150,13 +160,13 @@ public class MySQLSchemaMetaDataBuilderImpl
         return tableNames;
     }
 
-    public void setCharacterSetAndCollation(final Statement stmt) throws SQLException {
+    private void setCharacterSetAndCollation(final Statement stmt) throws SQLException {
         ResultSet rs = null;
         try {
             rs = stmt.executeQuery("SELECT * FROM schemata WHERE schema_name = '" + schemaPath.getName() + "'");
             if ( rs.next() && rs.getRow() == 1 ) {
-                charSet = rs.getString("default_character_set_name");
-                collation = rs.getString("default_collation_name");
+                setCharSet(rs.getString("default_character_set_name"));
+                setCollation(rs.getString("default_collation_name"));
             } else {
                 throw new IllegalStateException(MessageConsts.ONLY_ONE_SCHEMA_INFORMATION_IS_OK);
             }
