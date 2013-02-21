@@ -20,4 +20,22 @@ public interface ColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, 
     CMDB appendUniqueIndexEntry(IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
     
     CMDB appendForeignKeyEntry(ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
+
+    void setSqlTypeName(String sqlTypeName);
+
+    void setSize(Integer size);
+
+    void setNullable(boolean isNullable);
+
+    void setAutoIncremented(boolean isAutoIncremented);
+
+    void setRadix(Integer radix);
+
+    void setCharacterOctetLength(long characterOctetLength);
+
+    void setRemarks(String remarks);
+
+    void setDefaultValue(String defaultValue);
+
+    void setOrdinalPosition(Short ordinalPosition);
 }

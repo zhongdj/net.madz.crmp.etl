@@ -7,6 +7,7 @@ import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
+import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum;
 import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
 
 public interface MySQLTableMetaDataBuilder
@@ -20,6 +21,12 @@ public interface MySQLTableMetaDataBuilder
     Collection<MySQLForeignKeyMetaDataBuilder> getForeignKeyBuilderSet();
 
     Collection<MySQLIndexMetaDataBuilder> getIndexBuilderSet();
+
+    void setEngine(MySQLEngineEnum engine);
+
+    void setCharacterSet(String characterSet);
+
+    void setCollation(String collation);
         
         /*
         MySQLTableMetaData<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder>,

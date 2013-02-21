@@ -57,6 +57,9 @@ public class MySQLDatabaseGeneratorImpl extends
             result.append("CREATE TABLE IF NOT EXISTS `");
             result.append(table.getTableName());
             result.append("` (");
+            if (0 >= table.getColumns().size()) {
+                throw new IllegalStateException("Table: " + table.getTableName() + " has no columns.");
+            }
             for ( final MySQLColumnMetaData column : table.getColumns() ) {
                 appendBackQuotation(result);
                 result.append(column.getColumnName());

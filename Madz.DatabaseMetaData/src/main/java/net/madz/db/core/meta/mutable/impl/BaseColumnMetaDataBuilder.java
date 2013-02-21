@@ -21,8 +21,8 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
         extends BaseMetaDataBuilder<CMD> implements ColumnMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>,
         ColumnMetaData<SMD, TMD, CMD, FMD, IMD> {
 
-    protected DottedPath columnPath;
-    protected TMDB tableBuilder;
+    protected final DottedPath columnPath;
+    protected final TMDB tableBuilder;
     protected String sqlTypeName;
     protected Integer size;
     protected boolean isNullable;
@@ -39,9 +39,9 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
 
     // protected final TMDB jdbcTableMetaDataBuilder;
     // protected final MetaDataResultSet<ColumnDbMetaDataEnum> colRs;
-    public BaseColumnMetaDataBuilder(TMDB tableBuilder, DottedPath name) {
+    public BaseColumnMetaDataBuilder(TMDB tableBuilder, String name) {
         this.tableBuilder = tableBuilder;
-        this.columnPath = name;
+        this.columnPath = tableBuilder.getTablePath().append(name);
     }
 
     @Override
@@ -107,6 +107,51 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     @Override
     public boolean isAutoIncremented() {
         return this.isAutoIncremented;
+    }
+    
+    @Override
+    public void setSqlTypeName(String sqlTypeName) {
+        this.sqlTypeName = sqlTypeName;
+    }
+
+    @Override
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    @Override
+    public void setNullable(boolean isNullable) {
+        this.isNullable = isNullable;
+    }
+
+    @Override
+    public void setAutoIncremented(boolean isAutoIncremented) {
+        this.isAutoIncremented = isAutoIncremented;
+    }
+
+    @Override
+    public void setRadix(Integer radix) {
+        this.radix = radix;
+    }
+
+    @Override
+    public void setCharacterOctetLength(long characterOctetLength) {
+        this.characterOctetLength = characterOctetLength;
+    }
+
+    @Override
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    @Override
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    @Override
+    public void setOrdinalPosition(Short ordinalPosition) {
+        this.ordinalPosition = ordinalPosition;
     }
 
     @Override

@@ -1,21 +1,27 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
+
 import scala.collection.mutable.ListBuffer
 import scala.slick.jdbc.{ StaticQuery => Q }
 import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
+
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
+
 import net.madz.db.core.impl.mysql.MySQLDatabaseGeneratorImpl
 import net.madz.db.core.meta.DottedPath
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
-import net.madz.db.core.meta.immutable.mysql.impl.MySQLSchemaMetaDataImpl
+import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum
+import net.madz.db.core.meta.immutable.types.TableType
+import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder
+import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder
+import net.madz.db.core.meta.mutable.mysql.impl.MySQLColumnMetaDataBuilderImpl
 import net.madz.db.core.meta.mutable.mysql.impl.MySQLSchemaMetaDataBuilderImpl
 import net.madz.db.core.meta.mutable.mysql.impl.MySQLTableMetaDataBuilderImpl
-import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder
 
 class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -73,8 +79,72 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       schemaMetaDataBuilder setCharSet "utf8"
       schemaMetaDataBuilder setCollation "utf8_bin"
       val tableMetaDataBuilder: MySQLTableMetaDataBuilder = new MySQLTableMetaDataBuilderImpl(schemaMetaDataBuilder, "test_table")
-      
+      tableMetaDataBuilder.setRemarks("Test Table Comments")
+      tableMetaDataBuilder.setType(TableType.table)
+      tableMetaDataBuilder.setCharacterSet("gbk")
+      tableMetaDataBuilder.setCollation("gbk_bin")
+      tableMetaDataBuilder.setEngine(MySQLEngineEnum.MyISAM)
+      val columnMetaDataBuilder: MySQLColumnMetaDataBuilder = new MySQLColumnMetaDataBuilderImpl(tableMetaDataBuilder, "test_column")
+      //Which setter is useful?
+      columnMetaDataBuilder.setCharacterMaximumLength(20)
+      columnMetaDataBuilder.setCharacterSet(null)
+      columnMetaDataBuilder.setColumnKey("")
+      columnMetaDataBuilder.setColumnType("bigint(20)")
+      columnMetaDataBuilder.setExtra("")
+      columnMetaDataBuilder.setNumericPrecision(20)
+      columnMetaDataBuilder.setNumericScale(20)
+      columnMetaDataBuilder.setAutoIncremented(false)
+      columnMetaDataBuilder.setCharacterOctetLength(20)
+      columnMetaDataBuilder.setDefaultValue(null)
+      columnMetaDataBuilder.setNullable(false)
+      columnMetaDataBuilder.setOrdinalPosition(new java.lang.Short("1"))
+      //val pk : MySQLIndexMetaData = new MySQLIndexMetaDataBuilderImpl
+      //columnMetaDataBuilder.setPrimaryKey(pk)
+      columnMetaDataBuilder.setRadix(2)
+      columnMetaDataBuilder.setRemarks("Test Column Comment")
+      columnMetaDataBuilder.setSize(20)
+
+      tableMetaDataBuilder.appendColumnMetaDataBuilder(columnMetaDataBuilder)
       schemaMetaDataBuilder.appendTableMetaDataBuilder(tableMetaDataBuilder)
+
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder.getMetaData()
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
+
+      Database.forURL(urlRoot + databaseName, user, password, driver = "com.mysql.jdbc.Driver") withSession {
+        val q = Q.queryNA[String](show_tables_query)
+        Assertions.expectResult(1)(q.list().size)
+        Q.queryNA[String]("USE INFORMATION_SCHEMA;").execute
+        val db = Q.query[String, MySQLSchema]("""
+            SELECT 
+                CATALOG_NAME,SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME,DEFAULT_COLLATION_NAME,SQL_PATH
+            FROM 
+                SCHEMATA
+            WHERE
+                SCHEMA_NAME=?
+            """).list(databaseName)
+
+        Assertions.expectResult(1)(db.size)
+        Assertions.expectResult("utf8")(db(0).defaultCharset)
+        Assertions.expectResult("utf8_bin")(db(0).defaultCollation)
+
+        val tables = Q.query[(String, String), MySQLTable](""" 
+            SELECT 
+                TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE, ENGINE, VERSION, ROW_FORMAT, TABLE_ROWS, AVG_ROW_LENGTH,
+                DATA_LENGTH, MAX_DATA_LENGTH, INDEX_LENGTH, DATA_FREE, AUTO_INCREMENT, CREATE_TIME, UPDATE_TIME,CHECK_TIME,
+                TABLE_COLLATION, CHECKSUM, CREATE_OPTIONS, TABLE_COMMENT
+            FROM 
+                TABLES
+            WHERE 
+                TABLE_SCHEMA=? AND TABLE_NAME=?
+            """).list((databaseName, "test_table"))
+
+        Assertions.expectResult(1)(tables.size)
+        Assertions.expectResult("gbk_bin")(tables(0).tableCollation)
+        Assertions.expectResult("BASE TABLE")(tables(0).tableType.toUpperCase)
+        Assertions.expectResult("Test Table Comments")(tables(0).tableComment)
+        Assertions.expectResult(MySQLEngineEnum.MyISAM.name.toLowerCase)(tables(0).engine.toLowerCase)
+      }
+
     }
 
     it("should generate table with specific charsetEncoding") {

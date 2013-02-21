@@ -140,4 +140,22 @@ public abstract class BaseTableMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
     public SMDB getSchema() {
         return this.schema;
     }
+
+    public void setType(TableType type) {
+        this.type = type;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public void setIdCol(String idCol) {
+        this.idCol = idCol;
+    }
+
+    public void setIdGeneration(String idGeneration) {
+        this.idGeneration = idGeneration;
+    }
+    
+    
 }

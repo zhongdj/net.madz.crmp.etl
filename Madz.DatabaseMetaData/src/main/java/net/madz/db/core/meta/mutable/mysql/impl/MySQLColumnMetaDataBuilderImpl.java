@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData.Entry;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -37,8 +36,8 @@ public final class MySQLColumnMetaDataBuilderImpl
     private String columnKey;
     private String extra;
 
-    public MySQLColumnMetaDataBuilderImpl(MySQLTableMetaDataBuilder tableBuilder, DottedPath columnPath) {
-        super(tableBuilder, columnPath);
+    public MySQLColumnMetaDataBuilderImpl(MySQLTableMetaDataBuilder tableBuilder, String columnName) {
+        super(tableBuilder, columnName);
     }
 
     @Override
@@ -112,6 +111,54 @@ public final class MySQLColumnMetaDataBuilderImpl
     @Override
     public String getExtra() {
         return extra;
+    }
+
+    
+    @Override
+    public void setCharacterSet(String characterSet) {
+        this.characterSet = characterSet;
+    }
+
+    
+    @Override
+    public void setColumnType(String columnType) {
+        this.columnType = columnType;
+    }
+
+    
+    @Override
+    public void setCharacterMaximumLength(long characterMaximumLength) {
+        this.characterMaximumLength = characterMaximumLength;
+    }
+
+    
+    @Override
+    public void setNumericPrecision(Integer numericPrecision) {
+        this.numericPrecision = numericPrecision;
+    }
+
+    
+    @Override
+    public void setNumericScale(Integer numericScale) {
+        this.numericScale = numericScale;
+    }
+
+    
+    @Override
+    public void setCollationName(String collationName) {
+        this.collationName = collationName;
+    }
+
+    
+    @Override
+    public void setColumnKey(String columnKey) {
+        this.columnKey = columnKey;
+    }
+
+    
+    @Override
+    public void setExtra(String extra) {
+        this.extra = extra;
     }
 
     @Override

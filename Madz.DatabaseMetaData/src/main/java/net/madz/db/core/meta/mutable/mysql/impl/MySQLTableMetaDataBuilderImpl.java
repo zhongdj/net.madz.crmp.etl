@@ -56,9 +56,9 @@ public class MySQLTableMetaDataBuilderImpl
                     this.type = TableType.convertTableType(MySQLTableTypeEnum.getType(rs.getString(MySQLTableDbMetaDataEnum.TABLE_TYPE.name())));
                     this.idCol = null;
                     this.idGeneration = null;
-                    this.collation = rs.getString(MySQLTableDbMetaDataEnum.TABLE_COLLATION.name());
-                    this.engine = MySQLEngineEnum.valueOf(rs.getString(MySQLTableDbMetaDataEnum.ENGINE.name()));
-                    this.characterSet = rs.getString(MySQLTableDbMetaDataEnum.CHARACTER_SET_NAME.name());
+                    setCollation(rs.getString(MySQLTableDbMetaDataEnum.TABLE_COLLATION.name()));
+                    setEngine(MySQLEngineEnum.valueOf(rs.getString(MySQLTableDbMetaDataEnum.ENGINE.name())));
+                    setCharacterSet(rs.getString(MySQLTableDbMetaDataEnum.CHARACTER_SET_NAME.name()));
                 }
             } finally {
                 ResourceManagementUtils.closeResultSet(rs);
@@ -75,7 +75,7 @@ public class MySQLTableMetaDataBuilderImpl
                 ResourceManagementUtils.closeResultSet(rs);
             }
             for ( String colName : colNames ) {
-                MySQLColumnMetaDataBuilder columnBuilder = new MySQLColumnMetaDataBuilderImpl(this, this.tablePath.append(colName)).build(conn);
+                MySQLColumnMetaDataBuilder columnBuilder = new MySQLColumnMetaDataBuilderImpl(this, colName).build(conn);
                 appendColumnMetaDataBuilder(columnBuilder);
             }
             // Parse Index
@@ -125,6 +125,21 @@ public class MySQLTableMetaDataBuilderImpl
     @Override
     public String getCollation() {
         return this.collation;
+    }
+    
+    @Override
+    public void setEngine(MySQLEngineEnum engine) {
+        this.engine = engine;
+    }
+
+    @Override
+    public void setCharacterSet(String characterSet) {
+        this.characterSet = characterSet;
+    }
+
+    @Override
+    public void setCollation(String collation) {
+        this.collation = collation;
     }
 
     public MySQLTableMetaData createMetaData() {
