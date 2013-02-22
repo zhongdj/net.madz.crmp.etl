@@ -922,73 +922,8 @@ mysql> select * from columns where table_name= 'table_composite_index_test';
   val database_name = "madz_database_parser_test"
   val drop_database_query = "DROP DATABASE IF EXISTS " + database_name + ";"
   val create_database_query = "CREATE DATABASE " + database_name + ";"
-  val create_table_with_all_data_types_DDL_1 = """
-    CREATE TABLE `table_with_all_data_types_p1` (
-      `BIT_COLUMN`                      BIT(1)                          DEFAULT null,
-      `BIT_PLUS_COLUMN`                 BIT(2)                          DEFAULT null,
-      `TINYINT_COLUMN`                  TINYINT(1)                      DEFAULT null,
-      `TINYINT_PLUS_COLUMN`             TINYINT(8)                      DEFAULT null,
-      `TINYINT_UNSIGNED_COLUMN`         TINYINT(8) UNSIGNED             DEFAULT null,
-      `BOOL_COLUMN`                     TINYINT(1)                      DEFAULT null,
-      `BOOLEAN_COLUMN`                  TINYINT(1)                      DEFAULT null,
-      `SMALLINT_COLUMN`                 SMALLINT(16)                    DEFAULT null,
-      `SMALLINT_UNSIGNED_COLUMN`        SMALLINT(16) UNSIGNED           DEFAULT null,
-      `MEDIUMINT_COLUMN`                MEDIUMINT(24)                   DEFAULT null,
-      `MEDIUMINT_UNSIGNED_COLUMN`       MEDIUMINT(24) UNSIGNED          DEFAULT null,
-      `INT_COLUMN`                      INT(32)                         DEFAULT null,
-      `INT_UNSIGNED_COLUMN`             INT(32) UNSIGNED                DEFAULT null,
-      `INTEGER_COLUMN`                  INTEGER(32)                     DEFAULT null,
-      `INTEGER_UNSIGNED_COLUMN`         INTEGER(32) UNSIGNED            DEFAULT null,
-      `BIGINT_COLUMN`                   BIGINT(64)                      DEFAULT null,                   
-      `BIGINT_UNSIGNED_COLUMN`          BIGINT(64) UNSIGNED             DEFAULT null,
-      `FLOAT_COLUMN`                    FLOAT(7,4)                      DEFAULT null,
-      `DOUBLE_COLUMN`                   DOUBLE PRECISION (64,30)        DEFAULT null,
-      `DOUBLE_PLUS_COLUMN`              DOUBLE PRECISION (128,30)       DEFAULT null,
-      `DECIMAL_COLUMN`                  DECIMAL                         DEFAULT null,
-      `DECIMAL_NO_SCALE_COLUMN`         DECIMAL(65, 0)                  DEFAULT null,
-      `DECIMAL_SCALE_COLUMN`            DECIMAL(65, 30)                 DEFAULT null,
-      `DATE_COLUMN`                     DATE                            DEFAULT null,
-      `DATETIME_COLUMN`                 DATETIME                        DEFAULT null,
-      `TIMESTAMP_COLUMN`                TIMESTAMP                       DEFAULT '2010-12-10 14:12:09',
-      `TIME_COLUMN`                     TIME                            DEFAULT null,
-      `YEAR_COLUMN`                     YEAR(2)                         DEFAULT null,
-      `YEAR_PLUS_COLUMN`                YEAR(4)                         DEFAULT null,
-      `CHAR_COLUMN`                     CHAR(255)                       DEFAULT null,
-      `BINARY_COLUMN`                   BINARY(255)                     DEFAULT null
-    ) ENGINE=InnoDB DEFAULT CHARSET=latin7;
-  """
-  val create_table_with_all_data_types_DDL_2 = """
-    CREATE TABLE `table_with_all_data_types_p2` (
-      `VARBINARY_COLUMN`                VARBINARY(65532)                DEFAULT null
-    ) ENGINE=InnoDB DEFAULT CHARSET=latin7;
-  """
-  val create_table_with_all_data_types_DDL_3 = """
-    CREATE TABLE `table_with_all_data_types_p3` (
-      `TINYBLOB_COLUMN`                 TINYBLOB                        DEFAULT null,
-      `TINYTEXT_COLUMN`                 TINYTEXT                        DEFAULT null,
-      `BLOB_COLUMN`                     BLOB                            DEFAULT null,
-      `TEXT_COLUMN`                     TEXT(65535)                     DEFAULT null,
-      `MEDIUMBLOB_COLUMN`               MEDIUMBLOB                      DEFAULT null,
-      `MEDIUMTEXT_COLUMN`               MEDIUMTEXT                      DEFAULT null,
-      `LONGBLOB_COLUMN`                 LONGBLOB                        DEFAULT null,
-      `LONGTEXT_COLUMN`                 LONGTEXT                        DEFAULT null,
-      `ENUM_COLUMN`                     ENUM('A','B','C')               DEFAULT null,
-      `SET_COLUMN`                      SET('HLJ','JX','BJ')            DEFAULT null
-    ) ENGINE=InnoDB DEFAULT CHARSET=latin7;
-  """
 
-  val create_table_with_all_data_types_DDL_4 = """
-    CREATE TABLE `table_with_all_data_types_p4` (
-      `VARCHAR_COLUMN`                  VARCHAR(65532)                  DEFAULT null
-    ) ENGINE=InnoDB DEFAULT CHARSET=latin7;
-  """
-  val create_table_with_all_data_types_DDL_5 = """
-    CREATE TABLE `table_with_all_data_types_p5` (
-      `VARCHAR_BINARY_COLUMN`           VARCHAR(65532)  BINARY          DEFAULT null
-  ) ENGINE=InnoDB DEFAULT CHARSET=latin7;
-  """
-
-def verifyColumns(expectedColumnList: List[ColumnMetaData], actualColumnList: java.util.List[MySQLColumnMetaData]) {
+  def verifyColumns(expectedColumnList: List[MySQLColumn], actualColumnList: java.util.List[MySQLColumnMetaData]) {
     val actualScalaList = collectionAsScalaIterable[MySQLColumnMetaData](actualColumnList).toList
     Assertions.expectResult(expectedColumnList.length)(actualScalaList.length)
     val tuples = expectedColumnList zip actualScalaList
@@ -996,19 +931,22 @@ def verifyColumns(expectedColumnList: List[ColumnMetaData], actualColumnList: ja
       compare(pair._1, pair._2))
   }
 
-  def compare(expect: ColumnMetaData, actual: MySQLColumnMetaData) {
-    println(expect.TABLE_NAME + "_" + expect.COLUMN_NAME);
-    Assertions.expectResult(expect.TABLE_NAME)(actual.getTableMetaData getTableName)
-    Assertions.expectResult(expect.COLUMN_NAME)(actual getColumnName)
-    Assertions.expectResult(expect.ORDINAL_POSITION)(actual getOrdinalPosition)
-    Assertions.expectResult(expect.COLUMN_DEFAULT)(actual getDefaultValue)
-    Assertions.expectResult(expect.IS_NULLABLE)(actual isNullable)
-    Assertions.expectResult(expect.DATA_TYPE.toUpperCase())(actual getSqlTypeName)
-    Assertions.expectResult(expect.CHARACTER_MAXIMUM_LENGTH)(actual getCharacterMaximumLength ())
-    Assertions.expectResult(expect.NUMERIC_PRECISION)(actual getNumericPrecision ())
-    Assertions.expectResult(expect.NUMERIC_SCALE)(actual getNumericScale ())
-    Assertions.expectResult(expect.CHARACTER_SET_NAME)(actual getCharacterSet ())
-    Assertions.expectResult(expect.COLLATION_NAME)(actual getCollationName ())
-    Assertions.expectResult(expect.COLUMN_TYPE)(actual getColumnType ())
+  def compare(expect: MySQLColumn, actual: MySQLColumnMetaData) {
+    Assertions.expectResult(expect.tableName)(actual.getTableMetaData getTableName)
+    Assertions.expectResult(expect.columnName)(actual getColumnName)
+    Assertions.expectResult(expect.ordinalPosition)(actual getOrdinalPosition)
+    Assertions.expectResult(expect.columnDefault)(actual getDefaultValue)
+    Assertions.expectResult(expect.isNullable)(actual isNullable)
+    Assertions.expectResult(expect.dataType toUpperCase)(actual.getSqlTypeName toUpperCase)
+    Assertions.expectResult(expect.characterMaximumLengh)(actual getCharacterMaximumLength)
+    Assertions.expectResult(expect.characterOctetLength)(actual.getCharOctetLength)
+    Assertions.expectResult(expect.numberPrecision)(actual getNumericPrecision)
+    Assertions.expectResult(expect.numberScale)(actual getNumericScale)
+    Assertions.expectResult(expect.characterSetName)(actual getCharacterSet)
+    Assertions.expectResult(expect.collationName)(actual getCollationName)
+    Assertions.expectResult(expect.columnType)(actual getColumnType)
+    Assertions.expectResult(expect.extra)(actual getExtra)
+    Assertions.expectResult(expect.columnKey)(actual getColumnKey)
+    Assertions.expectResult(expect.columnComment)(actual getRemarks)
   }
 }

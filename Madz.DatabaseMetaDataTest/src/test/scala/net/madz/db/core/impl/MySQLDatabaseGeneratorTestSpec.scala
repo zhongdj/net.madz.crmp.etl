@@ -156,40 +156,25 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       schemaMetaDataBuilder setCharSet "utf8"
       schemaMetaDataBuilder setCollation "utf8_bin"
 
-      var tableMetaDataBuilder: MySQLTableMetaDataBuilder = new MySQLTableMetaDataBuilderImpl(schemaMetaDataBuilder, "test_table_1")
-      tableMetaDataBuilder.setRemarks("Test Table Comments")
-      tableMetaDataBuilder.setType(TableType.table)
-      tableMetaDataBuilder.setCharacterSet("gbk")
-      tableMetaDataBuilder.setCollation("gbk_bin")
-      tableMetaDataBuilder.setEngine(MySQLEngineEnum.MyISAM)
+      val tableMetaDataBuilder1: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_1")
+      makeColumns(tableMetaDataBuilder1, columns_in_table1)
+      val tableMetaDataBuilder2: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_2")
+      makeColumns(tableMetaDataBuilder2, columns_in_table2)
+      val tableMetaDataBuilder3: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_3")
+      makeColumns(tableMetaDataBuilder3, columns_in_table3)
+      val tableMetaDataBuilder4: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_4")
+      makeColumns(tableMetaDataBuilder4, columns_in_table4)
+      val tableMetaDataBuilder5: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_5")
+      makeColumns(tableMetaDataBuilder5, columns_in_table5)
 
-      columns_in_table1.foreach(rawColumn => {
-        val result = new MySQLColumnMetaDataBuilderImpl(tableMetaDataBuilder, rawColumn.COLUMN_NAME)
-        result.setCharacterMaximumLength(rawColumn.CHARACTER_MAXIMUM_LENGTH)
-        result.setCharacterSet(rawColumn.CHARACTER_SET_NAME)
-        result.setCollationName(rawColumn.COLLATION_NAME)
-        result.setDefaultValue(rawColumn.COLUMN_DEFAULT)
-        result.setColumnType(rawColumn.COLUMN_TYPE)
-        result.setNumericPrecision(rawColumn.NUMERIC_PRECISION)
-        result.setNumericScale(rawColumn.NUMERIC_SCALE)
-        result.setAutoIncremented(false)
-        result.setNullable(rawColumn.IS_NULLABLE)
-        result.setOrdinalPosition(rawColumn.ORDINAL_POSITION.shortValue)
-        result.setRemarks("")
-        //result.setSize(rawColumn.)
-        //result.setSqlTypeName(x$1)
-        tableMetaDataBuilder.appendColumnMetaDataBuilder(result)
-      })
-
-      schemaMetaDataBuilder.appendTableMetaDataBuilder(tableMetaDataBuilder)
-      
       val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
 
       //add table meta data into schemaMetaData
       val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
 
-      Database.forURL(urlRoot + databaseName, user, password, prop) withSession {
-
+      Database.forURL(urlRoot, user, password, prop) withSession {
+        val columns = queryColumns("test_table_1")
+        Assertions.expectResult(columns_in_table1)(columns)
       }
 
     }
@@ -268,4 +253,48 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   val create_database_query = "CREATE DATABASE " + databaseName + ";"
   val show_tables_query = "SHOW tables;"
 
+  def makeTable(schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder, tableName: String): MySQLTableMetaDataBuilder = {
+    val tableBuilder: MySQLTableMetaDataBuilder = new MySQLTableMetaDataBuilderImpl(schemaMetaDataBuilder, tableName)
+    tableBuilder.setRemarks("Test Table Comments")
+    tableBuilder.setType(TableType.table)
+    tableBuilder.setCharacterSet("latin7")
+    tableBuilder.setCollation("latin7_bin")
+    tableBuilder.setEngine(MySQLEngineEnum.InnoDB)
+    schemaMetaDataBuilder.appendTableMetaDataBuilder(tableBuilder)
+    tableBuilder
+  }
+
+  def makeColumns(tableBuilder: MySQLTableMetaDataBuilder, columns: List[MySQLColumn]): Unit = {
+
+    columns.foreach(rawColumn => {
+      val result = new MySQLColumnMetaDataBuilderImpl(tableBuilder, rawColumn.columnName)
+      result.setCharacterMaximumLength(rawColumn.characterMaximumLengh)
+      result.setCharacterSet(rawColumn.characterSetName)
+      result.setCollationName(rawColumn.collationName)
+      result.setDefaultValue(rawColumn.columnDefault)
+      result.setColumnType(rawColumn.columnType)
+      result.setNumericPrecision(rawColumn.numberPrecision.intValue)
+      result.setNumericScale(rawColumn.numberScale.intValue)
+      result.setAutoIncremented(false)
+      result.setNullable(rawColumn.isNullable)
+      result.setOrdinalPosition(rawColumn.ordinalPosition.shortValue)
+      result.setRemarks(rawColumn.columnComment)
+      //result.setSize(rawColumn.)
+      //result.setSqlTypeName(x$1)
+      tableBuilder.appendColumnMetaDataBuilder(result)
+    })
+  }
+
+  def queryColumns(tableName: String): List[MySQLColumn] = {
+    Q.query[(String, String), MySQLColumn]("""
+             SELECT
+                 TABLE_NAME, COLUMN_NAME, ORDINAL_POSITION, COLUMN_DEFAULT, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, CHARACTER_SET_NAME, COLLATION_NAME, COLUMN_TYPE, COLUMN_KEY, EXTRA, COLUMN_COMMENT
+             FROM
+                 COLUMNS
+             WHERE
+                 TABLE_SCHEMA=? AND TABLE_NAME=?
+             ORDER BY
+                 ORDINAL_POSITION ASC
+         """).list((databaseName, tableName))
+  }
 }
