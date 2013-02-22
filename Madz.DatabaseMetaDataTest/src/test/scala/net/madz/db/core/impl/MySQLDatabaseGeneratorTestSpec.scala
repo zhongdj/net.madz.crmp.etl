@@ -1,15 +1,12 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
-
 import scala.slick.jdbc.{ StaticQuery => Q }
 import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
-
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
-
 import net.madz.db.core.impl.mysql.MySQLDatabaseGeneratorImpl
 import net.madz.db.core.meta.DottedPath
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
@@ -21,6 +18,9 @@ import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder
 import net.madz.db.core.meta.mutable.mysql.impl.MySQLColumnMetaDataBuilderImpl
 import net.madz.db.core.meta.mutable.mysql.impl.MySQLSchemaMetaDataBuilderImpl
 import net.madz.db.core.meta.mutable.mysql.impl.MySQLTableMetaDataBuilderImpl
+import net.madz.db.core.meta.mutable.mysql.impl.MySQLIndexMetaDataBuilderImpl
+import net.madz.db.core.meta.immutable.types.KeyTypeEnum
+import net.madz.db.core.meta.mutable.impl.BaseIndexMetaDataBuilder
 
 class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -42,9 +42,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   describe("Generate an Empty Database") {
     it("should generate an empty database with a specified database name") {
 
-      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(new DottedPath(databaseName))
-      schemaMetaDataBuilder setCharSet "utf8"
-      schemaMetaDataBuilder setCollation "utf8_bin"
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
 
       val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
 
@@ -74,10 +72,8 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   describe("Generate correct tables") {
 
     it("should generate table with specific storage engine, such as InnoDB, charsetEncoding") {
-      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(new DottedPath(databaseName))
-      schemaMetaDataBuilder setCharSet "utf8"
-      schemaMetaDataBuilder setCollation "utf8_bin"
-      val tableMetaDataBuilder: MySQLTableMetaDataBuilder = new MySQLTableMetaDataBuilderImpl(schemaMetaDataBuilder, "test_table")
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
+      val tableMetaDataBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table")
       tableMetaDataBuilder.setRemarks("Test Table Comments")
       tableMetaDataBuilder.setType(TableType.table)
       tableMetaDataBuilder.setCharacterSet("gbk")
@@ -224,7 +220,42 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   describe("Generate correct indexes") {
 
     it("should generate with single column PK") {
-      pending
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
+      val tableName: String = "single_column_pk_table"
+      val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
+      val rawColumn = MySQLColumn(tableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val column = makeColumn(tableBuilder, rawColumn)
+      val pkIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "PRIMARY")
+      pkIndex.setKeyType(KeyTypeEnum.primaryKey)
+
+      //More attributes?
+
+      val entry = new pkIndex.Entry(pkIndex, 0, column, 1.shortValue)
+      //Do I need to bind them?
+      column.appendUniqueIndexEntry(entry)
+      pkIndex.addEntry(entry)
+      tableBuilder.appendIndexMetaDataBuilder(pkIndex)
+
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
+
+      Database.forURL(urlRoot, user, password, prop) withSession {
+        Q.queryNA[String]("use information_schema").execute
+        val indexes = Q.query[(String, String), MySQLStatistic]("""
+           SELECT
+                TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, NON_UNIQUE, INDEX_SCHEMA, 
+                INDEX_NAME, SEQ_IN_INDEX, COLUMN_NAME, COLLATION, CARDINALITY,
+                SUB_PART, PACKED, NULLABLE, INDEX_TYPE, COMMENT, INDEX_COMMENT
+            FROM
+                statistics
+            WHERE
+                TABLE_SCHEMA=? AND TABLE_NAME=?
+        """).list((databaseName, tableName))
+        		
+        Assertions.expectResult(1)(indexes.size)
+        Assertions.expectResult("PRIMARY")(indexes(0).indexName)
+        
+      }
     }
 
     it("should generate with auto incremental PK") {
@@ -302,22 +333,27 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   def makeColumns(tableBuilder: MySQLTableMetaDataBuilder, columns: List[MySQLColumn]): Unit = {
 
     columns.foreach(rawColumn => {
-      val result = new MySQLColumnMetaDataBuilderImpl(tableBuilder, rawColumn.columnName)
-      result.setCharacterMaximumLength(rawColumn.characterMaximumLengh)
-      result.setCharacterSet(rawColumn.characterSetName)
-      result.setCollationName(rawColumn.collationName)
-      result.setDefaultValue(rawColumn.columnDefault)
-      result.setColumnType(rawColumn.columnType)
-      result.setNumericPrecision(rawColumn.numberPrecision.intValue)
-      result.setNumericScale(rawColumn.numberScale.intValue)
-      result.setAutoIncremented(false)
-      result.setNullable(rawColumn.isNullable)
-      result.setOrdinalPosition(rawColumn.ordinalPosition.shortValue)
-      result.setRemarks(rawColumn.columnComment)
-      //result.setSize(rawColumn.)
-      //result.setSqlTypeName(x$1)
-      tableBuilder.appendColumnMetaDataBuilder(result)
+      makeColumn(tableBuilder, rawColumn)
     })
+  }
+
+  def makeColumn(tableBuilder: MySQLTableMetaDataBuilder, rawColumn: MySQLColumn): MySQLColumnMetaDataBuilder = {
+    val result = new MySQLColumnMetaDataBuilderImpl(tableBuilder, rawColumn.columnName)
+    result.setCharacterMaximumLength(rawColumn.characterMaximumLengh)
+    result.setCharacterSet(rawColumn.characterSetName)
+    result.setCollationName(rawColumn.collationName)
+    result.setDefaultValue(rawColumn.columnDefault)
+    result.setColumnType(rawColumn.columnType)
+    result.setNumericPrecision(rawColumn.numberPrecision.intValue)
+    result.setNumericScale(rawColumn.numberScale.intValue)
+    result.setAutoIncremented(false)
+    result.setNullable(rawColumn.isNullable)
+    result.setOrdinalPosition(rawColumn.ordinalPosition.shortValue)
+    result.setRemarks(rawColumn.columnComment)
+    //result.setSize(rawColumn.)
+    //result.setSqlTypeName(x$1)
+    tableBuilder.appendColumnMetaDataBuilder(result)
+    result
   }
 
   def queryColumns(tableName: String): List[MySQLColumn] = {

@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -32,8 +31,8 @@ public class MySQLIndexMetaDataBuilderImpl
     private MySQLIndexMethod indexMethod;
     private String indexComment;
 
-    public MySQLIndexMetaDataBuilderImpl(MySQLTableMetaDataBuilder table, DottedPath indexPath) {
-        super(table, indexPath);
+    public MySQLIndexMetaDataBuilderImpl(MySQLTableMetaDataBuilder table, String indexName) {
+        super(table, indexName);
     }
 
     @Override

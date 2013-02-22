@@ -89,7 +89,7 @@ public class MySQLTableMetaDataBuilderImpl
                 ResourceManagementUtils.closeResultSet(rs);
             }
             for ( String indexName : indexNames ) {
-                MySQLIndexMetaDataBuilder indexBuilder = new MySQLIndexMetaDataBuilderImpl(this, this.tablePath.append(indexName)).build(conn);
+                MySQLIndexMetaDataBuilder indexBuilder = new MySQLIndexMetaDataBuilderImpl(this, indexName).build(conn);
                 appendIndexMetaDataBuilder(indexBuilder);
             }
             // Parse Primary Key
@@ -126,7 +126,7 @@ public class MySQLTableMetaDataBuilderImpl
     public String getCollation() {
         return this.collation;
     }
-    
+
     @Override
     public void setEngine(MySQLEngineEnum engine) {
         this.engine = engine;

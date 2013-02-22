@@ -33,10 +33,10 @@ public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
     protected Integer pages;
     protected List<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();;
 
-    public BaseIndexMetaDataBuilder(TMDB table, DottedPath indexPath) {
+    public BaseIndexMetaDataBuilder(TMDB table, String indexName) {
         super();
         this.table = table;
-        this.indexPath = indexPath;
+        this.indexPath = table.getTablePath().append(indexName);
     }
 
     public class Entry implements IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> {
