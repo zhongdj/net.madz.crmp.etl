@@ -136,6 +136,9 @@ public class MySQLDatabaseGeneratorImpl extends
                     result.append(",");
                     result.append("KEY(");
                     appendIndexEntries(result, entrySet);
+                    result.append("USING {");
+                    result.append(index.getIndexType());
+                    result.append("}");
                 }
             }
             result.append(") ");
