@@ -182,31 +182,38 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     }
 
     it("should generate columns with modifier as NULLABLE(true or false)") {
-      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName = "nullable_column_test_table"
       val columns: List[MySQLColumn] =
         MySQLColumn(tableName, "nullable_COLUMN", 1, null, true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") ::
           MySQLColumn(tableName, "not_nullable_COLUMN", 2, null, false, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") :: Nil
-      val tableMetaDataBuilder1: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
-      makeColumns(tableMetaDataBuilder1, columns)
-      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
 
-      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
-
-      Database.forURL(urlRoot, user, password, prop) withSession {
-        Q.queryNA[String]("use information_schema").execute
-        Assertions.expectResult(columns)(queryColumns(tableName))
-      }
+      verifyColumnFeature(tableName, columns)
     }
 
     it("should generate columns with modifier as DEFAULT value") {
-      pending
+      val tableName = "default_value_test_table"
+      val columns: List[MySQLColumn] =
+        MySQLColumn(tableName, "default_value_COLUMN", 1, "1", true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") ::
+        MySQLColumn(tableName, "no_default_value_COLUMN", 2, null, false, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") :: Nil
+
+      verifyColumnFeature(tableName, columns)
     }
 
     it("should generate columns with specific collation") {
       pending
     }
 
+    def verifyColumnFeature(tableName: String, columns: List[MySQLColumn]): Unit = {
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
+      val tableMetaDataBuilder1: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
+      makeColumns(tableMetaDataBuilder1, columns)
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
+      Database.forURL(urlRoot, user, password, prop) withSession {
+        Q.queryNA[String]("use information_schema").execute
+        Assertions.expectResult(columns)(queryColumns(tableName))
+      }
+    }
   }
 
   describe("Generate correct indexes") {
