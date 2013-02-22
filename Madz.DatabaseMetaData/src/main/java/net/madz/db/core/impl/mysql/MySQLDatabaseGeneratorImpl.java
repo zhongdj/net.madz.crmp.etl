@@ -83,9 +83,13 @@ public class MySQLDatabaseGeneratorImpl extends
                 }
                 if ( column.hasDefaultValue() ) {
                     result.append(" DEFAULT ");
-                    result.append("'");
+                    if ( !column.getColumnType().contains("bit") ) {
+                        result.append("'");
+                    }
                     result.append(column.getDefaultValue());
-                    result.append("'");
+                    if ( !column.getColumnType().contains("bit") ) {
+                        result.append("'");
+                    }
                 }
                 if ( column.isAutoIncremented() ) {
                     result.append(" AUTO_INCREMENT ");
