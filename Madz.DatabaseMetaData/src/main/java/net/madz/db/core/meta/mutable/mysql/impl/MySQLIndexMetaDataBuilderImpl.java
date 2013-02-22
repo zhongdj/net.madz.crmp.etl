@@ -93,6 +93,21 @@ public class MySQLIndexMetaDataBuilderImpl
     }
 
     @Override
+    public void setNull(boolean isNull) {
+        this.isNull = isNull;
+    }
+
+    @Override
+    public void setIndexMethod(MySQLIndexMethod indexMethod) {
+        this.indexMethod = indexMethod;
+    }
+    
+    @Override
+    public void setIndexComment(String indexComment) {
+        this.indexComment = indexComment;
+    }
+
+    @Override
     public String getIndexComment() {
         return indexComment;
     }

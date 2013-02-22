@@ -5,6 +5,7 @@ import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
+import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod;
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum;
 import net.madz.db.core.meta.mutable.IndexMetaDataBuilder;
 
@@ -33,4 +34,10 @@ public interface MySQLIndexMetaDataBuilder
      */
 
     void setKeyType(KeyTypeEnum keyType);
+
+    public abstract void setIndexComment(String indexComment);
+
+    public abstract void setIndexMethod(MySQLIndexMethod indexMethod);
+
+    public abstract void setNull(boolean isNull);
 }
