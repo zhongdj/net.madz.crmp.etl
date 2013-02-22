@@ -443,7 +443,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
         Assertions.expectResult(1)(indexes.size)
         val expect = MySQLStatistic("def", "madz_database_generator_test", "single_column_pk_table", false, "madz_database_generator_test",
-          "PRIMARY", 1, "pk_COLUMN", "A", 0, 0, false, true, "BTREE", "", "")
+          "PRIMARY", 1, "pk_COLUMN", "A", 0, 0, false, false, "BTREE", "", "")
         Assertions.expectResult(expect)(indexes(0))
 
       }
