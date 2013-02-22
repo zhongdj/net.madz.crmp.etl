@@ -156,15 +156,15 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       schemaMetaDataBuilder setCharSet "utf8"
       schemaMetaDataBuilder setCollation "utf8_bin"
 
-      val tableMetaDataBuilder1: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_1")
-      makeColumns(tableMetaDataBuilder1, columns_in_table1)
-      val tableMetaDataBuilder2: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_2")
+      //      val tableMetaDataBuilder1: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_1")
+      //      makeColumns(tableMetaDataBuilder1, columns_in_table1)
+      val tableMetaDataBuilder2: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "table_with_all_data_types_p2")
       makeColumns(tableMetaDataBuilder2, columns_in_table2)
-      val tableMetaDataBuilder3: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_3")
+      val tableMetaDataBuilder3: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "table_with_all_data_types_p3")
       makeColumns(tableMetaDataBuilder3, columns_in_table3)
-      val tableMetaDataBuilder4: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_4")
+      val tableMetaDataBuilder4: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "table_with_all_data_types_p4")
       makeColumns(tableMetaDataBuilder4, columns_in_table4)
-      val tableMetaDataBuilder5: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_5")
+      val tableMetaDataBuilder5: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "table_with_all_data_types_p5")
       makeColumns(tableMetaDataBuilder5, columns_in_table5)
 
       val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
@@ -173,8 +173,10 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
 
       Database.forURL(urlRoot, user, password, prop) withSession {
-        val columns = queryColumns("test_table_1")
-        Assertions.expectResult(columns_in_table1)(columns)
+        Q.queryNA[String]("use information_schema").execute
+        val columns = queryColumns("table_with_all_data_types_p2")
+        println(columns)
+        Assertions.expectResult(columns_in_table2)(columns)
       }
 
     }
@@ -288,7 +290,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   def queryColumns(tableName: String): List[MySQLColumn] = {
     Q.query[(String, String), MySQLColumn]("""
              SELECT
-                 TABLE_NAME, COLUMN_NAME, ORDINAL_POSITION, COLUMN_DEFAULT, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, CHARACTER_SET_NAME, COLLATION_NAME, COLUMN_TYPE, COLUMN_KEY, EXTRA, COLUMN_COMMENT
+                 TABLE_NAME, COLUMN_NAME, ORDINAL_POSITION, COLUMN_DEFAULT, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, CHARACTER_OCTET_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, CHARACTER_SET_NAME, COLLATION_NAME, COLUMN_TYPE, COLUMN_KEY, EXTRA, COLUMN_COMMENT
              FROM
                  COLUMNS
              WHERE
