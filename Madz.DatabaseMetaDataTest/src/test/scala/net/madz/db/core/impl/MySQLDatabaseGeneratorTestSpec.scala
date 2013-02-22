@@ -465,7 +465,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
       val entry = new uniqueIndex.Entry(uniqueIndex, 0, column, 1.shortValue)
       //Do I need to bind them?
-      column.appendNonUniqueIndexEntry(entry)
+      column.appendUniqueIndexEntry(entry)
       uniqueIndex.addEntry(entry)
       tableBuilder.appendIndexMetaDataBuilder(uniqueIndex)
 
@@ -492,12 +492,56 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
       }
     
-    
-    
     }
 
     it("should generate with composite UNIQUE KEY with multiple columns in a specific order") {
-      pending
+      
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
+      val tableName: String = "composite_unique_key_table"
+      val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
+      val rawColumn1 = MySQLColumn(tableName, "unique_key_1_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val rawColumn2 = MySQLColumn(tableName, "unique_key_2_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val column1 = makeColumn(tableBuilder, rawColumn1)
+      val column2 = makeColumn(tableBuilder, rawColumn2)
+      val uniqueIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "TEST UNIQUE INDEX")
+      uniqueIndex.setKeyType(KeyTypeEnum.uniqueKey)
+      uniqueIndex.setNull(true)
+      //More attributes?
+
+      val entry1 = new uniqueIndex.Entry(uniqueIndex, 0, column1, 1.shortValue)
+      val entry2 = new uniqueIndex.Entry(uniqueIndex, 0, column2, 2.shortValue)
+      //Do I need to bind them?
+      column1.appendUniqueIndexEntry(entry1)
+      column2.appendUniqueIndexEntry(entry2)
+      uniqueIndex.addEntry(entry1)
+      uniqueIndex.addEntry(entry2)
+      tableBuilder.appendIndexMetaDataBuilder(uniqueIndex)
+
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
+
+      Database.forURL(urlRoot, user, password, prop) withSession {
+        Q.queryNA[String]("use information_schema").execute
+        val indexes = Q.query[(String, String), MySQLStatistic]("""
+           SELECT
+                TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, NON_UNIQUE, INDEX_SCHEMA, 
+                INDEX_NAME, SEQ_IN_INDEX, COLUMN_NAME, COLLATION, CARDINALITY,
+                SUB_PART, PACKED, NULLABLE, INDEX_TYPE, COMMENT, INDEX_COMMENT
+            FROM
+                statistics
+            WHERE
+                TABLE_SCHEMA=? AND TABLE_NAME=?
+        """).list((databaseName, tableName))
+
+        Assertions.expectResult(2)(indexes.size)
+        val expect = MySQLStatistic("def", "madz_database_generator_test", "composite_unique_key_table", false, "madz_database_generator_test",
+          "TEST UNIQUE INDEX", 1, "unique_key_1_COLUMN", "A", 0, 0, false, true, "BTREE", "", "") ::
+          MySQLStatistic("def", "madz_database_generator_test", "composite_unique_key_table", false, "madz_database_generator_test",
+          "TEST UNIQUE INDEX", 2, "unique_key_2_COLUMN", "A", 0, 0, false, true, "BTREE", "", "") :: Nil
+        Assertions.expectResult(expect)(indexes)
+
+      }
+    
     }
 
     it("should generate with auto incremental KEY (non-PK)") {
