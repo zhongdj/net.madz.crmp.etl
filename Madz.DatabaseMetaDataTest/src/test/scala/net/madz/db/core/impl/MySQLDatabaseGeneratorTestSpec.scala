@@ -545,16 +545,59 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     }
 
     it("should generate with auto incremental KEY (non-PK)") {
-      pending
+      
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
+      val tableName: String = "npk_incremental_table"
+      val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
+      val rawColumn = MySQLColumn(tableName, "npk_incremental_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      //difference
+      val column = makeColumn(tableBuilder, rawColumn, true)
+
+      val npkIncrementalIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "NON_PK_INCREMENTAL")
+      npkIncrementalIndex.setKeyType(KeyTypeEnum.uniqueKey)
+
+      //More attributes?
+
+      val entry = new npkIncrementalIndex.Entry(npkIncrementalIndex, 0, column, 1.shortValue)
+      //Do I need to bind them?
+      column.appendUniqueIndexEntry(entry)
+      npkIncrementalIndex.addEntry(entry)
+      tableBuilder.appendIndexMetaDataBuilder(npkIncrementalIndex)
+
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
+
+      Database.forURL(urlRoot, user, password, prop) withSession {
+        Q.queryNA[String]("use information_schema").execute
+        val indexes = Q.query[(String, String), MySQLStatistic]("""
+           SELECT
+                TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, NON_UNIQUE, INDEX_SCHEMA, 
+                INDEX_NAME, SEQ_IN_INDEX, COLUMN_NAME, COLLATION, CARDINALITY,
+                SUB_PART, PACKED, NULLABLE, INDEX_TYPE, COMMENT, INDEX_COMMENT
+            FROM
+                statistics
+            WHERE
+                TABLE_SCHEMA=? AND TABLE_NAME=?
+        """).list((databaseName, tableName))
+
+        Assertions.expectResult(1)(indexes.size)
+        val expect = MySQLStatistic("def", "madz_database_generator_test", "npk_incremental_table", false, "madz_database_generator_test",
+          "NON_PK_INCREMENTAL", 1, "npk_incremental_COLUMN", "A", 0, 0, false, false, "BTREE", "", "")
+        Assertions.expectResult(expect)(indexes(0))
+        val generatedColumns = queryColumns(tableName)
+        Assertions.assert("auto_increment".equalsIgnoreCase(generatedColumns(0).extra))
+        Assertions.assert("PRI".equalsIgnoreCase(generatedColumns(0).columnKey))
+      }
+
     }
 
-    it("should generate with single column index") {
-      pending
-    }
-
-    it("should generate with multiple columns index in a specific order") {
-      pending
-    }
+//    it("should generate with single column index") {
+//      pending
+//    }
+//
+//    it("should generate with multiple columns index in a specific order") {
+//      pending
+//    }
 
     it("should generate with single column FOREIGN KEY") {
       pending
