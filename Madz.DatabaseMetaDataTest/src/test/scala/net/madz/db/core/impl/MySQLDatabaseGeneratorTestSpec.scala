@@ -83,27 +83,27 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       tableMetaDataBuilder.setCharacterSet("gbk")
       tableMetaDataBuilder.setCollation("gbk_bin")
       tableMetaDataBuilder.setEngine(MySQLEngineEnum.MyISAM)
-      val columnMetaDataBuilder: MySQLColumnMetaDataBuilder = new MySQLColumnMetaDataBuilderImpl(tableMetaDataBuilder, "test_column")
+      val atLeastOneColumn: MySQLColumnMetaDataBuilder = new MySQLColumnMetaDataBuilderImpl(tableMetaDataBuilder, "test_column")
       //Which setter is useful?
-      columnMetaDataBuilder.setCharacterMaximumLength(20)
-      columnMetaDataBuilder.setCharacterSet(null)
-      columnMetaDataBuilder.setColumnKey("")
-      columnMetaDataBuilder.setColumnType("bigint(20)")
-      columnMetaDataBuilder.setExtra("")
-      columnMetaDataBuilder.setNumericPrecision(20)
-      columnMetaDataBuilder.setNumericScale(20)
-      columnMetaDataBuilder.setAutoIncremented(false)
-      columnMetaDataBuilder.setCharacterOctetLength(20)
-      columnMetaDataBuilder.setDefaultValue(null)
-      columnMetaDataBuilder.setNullable(false)
-      columnMetaDataBuilder.setOrdinalPosition(new java.lang.Short("1"))
+      atLeastOneColumn.setCharacterMaximumLength(20)
+      atLeastOneColumn.setCharacterSet(null)
+      atLeastOneColumn.setColumnKey("")
+      atLeastOneColumn.setColumnType("bigint(20)")
+      atLeastOneColumn.setExtra("")
+      atLeastOneColumn.setNumericPrecision(20)
+      atLeastOneColumn.setNumericScale(20)
+      atLeastOneColumn.setAutoIncremented(false)
+      atLeastOneColumn.setCharacterOctetLength(20)
+      atLeastOneColumn.setDefaultValue(null)
+      atLeastOneColumn.setNullable(false)
+      atLeastOneColumn.setOrdinalPosition(new java.lang.Short("1"))
       //val pk : MySQLIndexMetaData = new MySQLIndexMetaDataBuilderImpl
       //columnMetaDataBuilder.setPrimaryKey(pk)
-      columnMetaDataBuilder.setRadix(2)
-      columnMetaDataBuilder.setRemarks("Test Column Comment")
-      columnMetaDataBuilder.setSize(20)
+      atLeastOneColumn.setRadix(2)
+      atLeastOneColumn.setRemarks("Test Column Comment")
+      atLeastOneColumn.setSize(20)
 
-      tableMetaDataBuilder.appendColumnMetaDataBuilder(columnMetaDataBuilder)
+      tableMetaDataBuilder.appendColumnMetaDataBuilder(atLeastOneColumn)
       schemaMetaDataBuilder.appendTableMetaDataBuilder(tableMetaDataBuilder)
 
       val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder.getMetaData()
@@ -152,9 +152,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
     it("should generate with all kinds of data type defined in MySQL Manual") {
 
-      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(new DottedPath(databaseName))
-      schemaMetaDataBuilder setCharSet "utf8"
-      schemaMetaDataBuilder setCollation "utf8_bin"
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
 
       val tableMetaDataBuilder1: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "table_with_all_data_types_p1")
       makeColumns(tableMetaDataBuilder1, columns_in_table1)
@@ -184,7 +182,21 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     }
 
     it("should generate columns with modifier as NULLABLE(true or false)") {
-      pending
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
+      val tableName = "nullable_column_test_table"
+      val columns: List[MySQLColumn] =
+        MySQLColumn(tableName, "nullable_COLUMN", 1, null, true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") ::
+          MySQLColumn(tableName, "not_nullable_COLUMN", 2, null, false, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") :: Nil
+      val tableMetaDataBuilder1: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
+      makeColumns(tableMetaDataBuilder1, columns)
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
+
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
+
+      Database.forURL(urlRoot, user, password, prop) withSession {
+        Q.queryNA[String]("use information_schema").execute
+        Assertions.expectResult(columns)(queryColumns(tableName))
+      }
     }
 
     it("should generate columns with modifier as DEFAULT value") {
@@ -256,6 +268,13 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   val drop_database_query = "DROP DATABASE IF EXISTS " + databaseName + ";"
   val create_database_query = "CREATE DATABASE " + databaseName + ";"
   val show_tables_query = "SHOW tables;"
+
+  def makeSchema(charsetName: String, collationName: String): MySQLSchemaMetaDataBuilder = {
+    val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(new DottedPath(databaseName))
+    schemaMetaDataBuilder setCharSet "utf8"
+    schemaMetaDataBuilder setCollation "utf8_bin"
+    schemaMetaDataBuilder
+  }
 
   def makeTable(schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder, tableName: String): MySQLTableMetaDataBuilder = {
     val tableBuilder: MySQLTableMetaDataBuilder = new MySQLTableMetaDataBuilderImpl(schemaMetaDataBuilder, tableName)

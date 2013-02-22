@@ -42,20 +42,6 @@ trait MySQLCommandLine extends MySQLConnector {
   implicit val getTableResult = GetResult(r => MySQLTable(r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<))
   implicit val getColumnResult = GetResult(r => MySQLColumn(r.<<, r.<<, r.<<, r.<<, r.nextString.equalsIgnoreCase("YES") , r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<))
 
-//  case class MySQLColumn(
-//
-//    val TABLE_NAME: String, val COLUMN_NAME: String, val ORDINAL_POSITION: Integer,
-//    val COLUMN_DEFAULT: String, val IS_NULLABLE: Boolean, val DATA_TYPE: String,
-//    val CHARACTER_MAXIMUM_LENGTH: java.lang.Long,
-//
-//    val characterOctetLength: Long,
-//
-//    val NUMERIC_PRECISION: Integer,
-//    val NUMERIC_SCALE: Integer, val CHARACTER_SET_NAME: String, val COLLATION_NAME: String,
-//    val COLUMN_TYPE: String,
-//
-//    val columnKey: String, val extra: String, val columnComment: String)
-
   val columns_in_table1 =
     MySQLColumn("table_with_all_data_types_p1", "BIT_COLUMN", 1, null, true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") ::
       MySQLColumn("table_with_all_data_types_p1", "BIT_PLUS_COLUMN", 2, null, true, "bit", 0, 0, 2, 0, null, null, "bit(2)", "", "", "") ::
