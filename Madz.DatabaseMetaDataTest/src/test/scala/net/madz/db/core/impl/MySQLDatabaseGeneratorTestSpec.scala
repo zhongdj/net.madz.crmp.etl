@@ -251,15 +251,60 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
             WHERE
                 TABLE_SCHEMA=? AND TABLE_NAME=?
         """).list((databaseName, tableName))
-        		
+
         Assertions.expectResult(1)(indexes.size)
-        Assertions.expectResult("PRIMARY")(indexes(0).indexName)
-        
+        val expect = MySQLStatistic("def", "madz_database_generator_test", "single_column_pk_table", false, "madz_database_generator_test",
+          "PRIMARY", 1, "pk_COLUMN", "A", 0, 0, false, false, "BTREE", "", "")
+        Assertions.expectResult(expect)(indexes(0))
+
       }
     }
 
     it("should generate with auto incremental PK") {
-      pending
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
+      val tableName: String = "single_column_pk_table"
+      val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
+      val rawColumn = MySQLColumn(tableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      //difference
+      val column = makeColumn(tableBuilder, rawColumn, true)
+      
+      val pkIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "PRIMARY")
+      pkIndex.setKeyType(KeyTypeEnum.primaryKey)
+
+      //More attributes?
+
+      val entry = new pkIndex.Entry(pkIndex, 0, column, 1.shortValue)
+      //Do I need to bind them?
+      column.appendUniqueIndexEntry(entry)
+      pkIndex.addEntry(entry)
+      tableBuilder.appendIndexMetaDataBuilder(pkIndex)
+
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
+
+      Database.forURL(urlRoot, user, password, prop) withSession {
+        Q.queryNA[String]("use information_schema").execute
+        val indexes = Q.query[(String, String), MySQLStatistic]("""
+           SELECT
+                TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, NON_UNIQUE, INDEX_SCHEMA, 
+                INDEX_NAME, SEQ_IN_INDEX, COLUMN_NAME, COLLATION, CARDINALITY,
+                SUB_PART, PACKED, NULLABLE, INDEX_TYPE, COMMENT, INDEX_COMMENT
+            FROM
+                statistics
+            WHERE
+                TABLE_SCHEMA=? AND TABLE_NAME=?
+        """).list((databaseName, tableName))
+
+        Assertions.expectResult(1)(indexes.size)
+        val expect = MySQLStatistic("def", "madz_database_generator_test", "single_column_pk_table", false, "madz_database_generator_test",
+          "PRIMARY", 1, "pk_COLUMN", "A", 0, 0, false, false, "BTREE", "", "")
+        Assertions.expectResult(expect)(indexes(0))
+        val generatedColumns = queryColumns(tableName)
+        Assertions.assert("auto_increment".equalsIgnoreCase(generatedColumns(0).extra))
+        Assertions.assert("PRI".equalsIgnoreCase(generatedColumns(0).columnKey))
+
+      }
+
     }
 
     it("should generate with composite PK with multiple columns in a specific order") {
@@ -337,7 +382,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     })
   }
 
-  def makeColumn(tableBuilder: MySQLTableMetaDataBuilder, rawColumn: MySQLColumn): MySQLColumnMetaDataBuilder = {
+  def makeColumn(tableBuilder: MySQLTableMetaDataBuilder, rawColumn: MySQLColumn, increment: Boolean = false): MySQLColumnMetaDataBuilder = {
     val result = new MySQLColumnMetaDataBuilderImpl(tableBuilder, rawColumn.columnName)
     result.setCharacterMaximumLength(rawColumn.characterMaximumLengh)
     result.setCharacterSet(rawColumn.characterSetName)
@@ -346,7 +391,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     result.setColumnType(rawColumn.columnType)
     result.setNumericPrecision(rawColumn.numberPrecision.intValue)
     result.setNumericScale(rawColumn.numberScale.intValue)
-    result.setAutoIncremented(false)
+    result.setAutoIncremented(increment)
     result.setNullable(rawColumn.isNullable)
     result.setOrdinalPosition(rawColumn.ordinalPosition.shortValue)
     result.setRemarks(rawColumn.columnComment)
