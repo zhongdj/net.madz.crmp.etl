@@ -194,13 +194,18 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val tableName = "default_value_test_table"
       val columns: List[MySQLColumn] =
         MySQLColumn(tableName, "default_value_COLUMN", 1, "1", true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") ::
-        MySQLColumn(tableName, "no_default_value_COLUMN", 2, null, false, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") :: Nil
+          MySQLColumn(tableName, "no_default_value_COLUMN", 2, null, false, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") :: Nil
 
       verifyColumnFeature(tableName, columns)
     }
 
     it("should generate columns with specific collation") {
-      pending
+      val tableName = "collation_test_table"
+      val columns: List[MySQLColumn] =
+        MySQLColumn(tableName, "VARCHAR_COLUMN", 1, null, false, "varchar", 255, 510, 0, 0, "gbk", "gbk_bin", "varchar(255)", "", "", "") ::
+          MySQLColumn(tableName, "CHAR_COLUMN", 2, null, false, "char", 255, 510, 0, 0, "gbk", "gbk_chinese_ci", "char(255)", "", "", "") :: Nil
+
+      verifyColumnFeature(tableName, columns)
     }
 
     def verifyColumnFeature(tableName: String, columns: List[MySQLColumn]): Unit = {
