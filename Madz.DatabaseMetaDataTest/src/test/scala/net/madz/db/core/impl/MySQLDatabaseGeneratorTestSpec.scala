@@ -189,7 +189,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     it("should generate columns with modifier as DEFAULT value") {
       val tableName = "default_value_test_table"
       val columns: List[MySQLColumn] =
-        MySQLColumn(tableName, "default_value_COLUMN", 1, "1", true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") ::
+        MySQLColumn(tableName, "default_value_COLUMN", 1, "b'1'", true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") ::
           MySQLColumn(tableName, "no_default_value_COLUMN", 2, null, false, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") :: Nil
 
       verifyColumnFeature(tableName, columns)
