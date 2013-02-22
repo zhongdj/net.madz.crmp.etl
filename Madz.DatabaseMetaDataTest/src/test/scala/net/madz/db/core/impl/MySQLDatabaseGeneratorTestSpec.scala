@@ -156,8 +156,8 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       schemaMetaDataBuilder setCharSet "utf8"
       schemaMetaDataBuilder setCollation "utf8_bin"
 
-      //      val tableMetaDataBuilder1: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "test_table_1")
-      //      makeColumns(tableMetaDataBuilder1, columns_in_table1)
+      val tableMetaDataBuilder1: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "table_with_all_data_types_p1")
+      makeColumns(tableMetaDataBuilder1, columns_in_table1)
       val tableMetaDataBuilder2: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "table_with_all_data_types_p2")
       makeColumns(tableMetaDataBuilder2, columns_in_table2)
       val tableMetaDataBuilder3: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, "table_with_all_data_types_p3")
@@ -174,9 +174,11 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
       Database.forURL(urlRoot, user, password, prop) withSession {
         Q.queryNA[String]("use information_schema").execute
-        val columns = queryColumns("table_with_all_data_types_p2")
-        println(columns)
-        Assertions.expectResult(columns_in_table2)(columns)
+        Assertions.expectResult(columns_in_table1)(queryColumns("table_with_all_data_types_p1"))
+        Assertions.expectResult(columns_in_table2)(queryColumns("table_with_all_data_types_p2"))
+        Assertions.expectResult(columns_in_table3)(queryColumns("table_with_all_data_types_p3"))
+        Assertions.expectResult(columns_in_table4)(queryColumns("table_with_all_data_types_p4"))
+        Assertions.expectResult(columns_in_table5)(queryColumns("table_with_all_data_types_p5"))
       }
 
     }
