@@ -409,7 +409,6 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
     it("should generate nullable index") {
       
-      
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "single_column_pk_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
@@ -453,7 +452,48 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     }
 
     it("should generate with single column UNIQUE KEY") {
-      pending
+      
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
+      val tableName: String = "single_column_unique_key_table"
+      val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
+      val rawColumn = MySQLColumn(tableName, "unique_key_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val column = makeColumn(tableBuilder, rawColumn)
+      val uniqueIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "TEST UNIQUE INDEX")
+      uniqueIndex.setKeyType(KeyTypeEnum.uniqueKey)
+      uniqueIndex.setNull(true)
+      //More attributes?
+
+      val entry = new uniqueIndex.Entry(uniqueIndex, 0, column, 1.shortValue)
+      //Do I need to bind them?
+      column.appendNonUniqueIndexEntry(entry)
+      uniqueIndex.addEntry(entry)
+      tableBuilder.appendIndexMetaDataBuilder(uniqueIndex)
+
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
+
+      Database.forURL(urlRoot, user, password, prop) withSession {
+        Q.queryNA[String]("use information_schema").execute
+        val indexes = Q.query[(String, String), MySQLStatistic]("""
+           SELECT
+                TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, NON_UNIQUE, INDEX_SCHEMA, 
+                INDEX_NAME, SEQ_IN_INDEX, COLUMN_NAME, COLLATION, CARDINALITY,
+                SUB_PART, PACKED, NULLABLE, INDEX_TYPE, COMMENT, INDEX_COMMENT
+            FROM
+                statistics
+            WHERE
+                TABLE_SCHEMA=? AND TABLE_NAME=?
+        """).list((databaseName, tableName))
+
+        Assertions.expectResult(1)(indexes.size)
+        val expect = MySQLStatistic("def", "madz_database_generator_test", "single_column_unique_key_table", false, "madz_database_generator_test",
+          "TEST UNIQUE INDEX", 1, "unique_key_COLUMN", "A", 0, 0, false, true, "BTREE", "", "")
+        Assertions.expectResult(expect)(indexes(0))
+
+      }
+    
+    
+    
     }
 
     it("should generate with composite UNIQUE KEY with multiple columns in a specific order") {
