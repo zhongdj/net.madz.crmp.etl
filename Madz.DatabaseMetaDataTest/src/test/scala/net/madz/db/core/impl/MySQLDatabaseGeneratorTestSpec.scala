@@ -460,7 +460,6 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val column = makeColumn(tableBuilder, rawColumn)
       val uniqueIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "TEST UNIQUE INDEX")
       uniqueIndex.setKeyType(KeyTypeEnum.uniqueKey)
-      uniqueIndex.setNull(true)
       //More attributes?
 
       val entry = new uniqueIndex.Entry(uniqueIndex, 0, column, 1.shortValue)
@@ -487,7 +486,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
         Assertions.expectResult(1)(indexes.size)
         val expect = MySQLStatistic("def", "madz_database_generator_test", "single_column_unique_key_table", false, "madz_database_generator_test",
-          "TEST UNIQUE INDEX", 1, "unique_key_COLUMN", "A", 0, 0, false, true, "BTREE", "", "")
+          "TEST UNIQUE INDEX", 1, "unique_key_COLUMN", "A", 0, 0, false, false, "BTREE", "", "")
         Assertions.expectResult(expect)(indexes(0))
 
       }
@@ -499,13 +498,12 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "composite_unique_key_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
-      val rawColumn1 = MySQLColumn(tableName, "unique_key_1_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val rawColumn1 = MySQLColumn(tableName, "unique_key_1_COLUMN", 1, null, true, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
       val rawColumn2 = MySQLColumn(tableName, "unique_key_2_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
       val column1 = makeColumn(tableBuilder, rawColumn1)
       val column2 = makeColumn(tableBuilder, rawColumn2)
       val uniqueIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "TEST UNIQUE INDEX")
       uniqueIndex.setKeyType(KeyTypeEnum.uniqueKey)
-      uniqueIndex.setNull(true)
       //More attributes?
 
       val entry1 = new uniqueIndex.Entry(uniqueIndex, 0, column1, 1.shortValue)
@@ -537,7 +535,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
         val expect = MySQLStatistic("def", "madz_database_generator_test", "composite_unique_key_table", false, "madz_database_generator_test",
           "TEST UNIQUE INDEX", 1, "unique_key_1_COLUMN", "A", 0, 0, false, true, "BTREE", "", "") ::
           MySQLStatistic("def", "madz_database_generator_test", "composite_unique_key_table", false, "madz_database_generator_test",
-          "TEST UNIQUE INDEX", 2, "unique_key_2_COLUMN", "A", 0, 0, false, true, "BTREE", "", "") :: Nil
+          "TEST UNIQUE INDEX", 2, "unique_key_2_COLUMN", "A", 0, 0, false, false, "BTREE", "", "") :: Nil
         Assertions.expectResult(expect)(indexes)
 
       }

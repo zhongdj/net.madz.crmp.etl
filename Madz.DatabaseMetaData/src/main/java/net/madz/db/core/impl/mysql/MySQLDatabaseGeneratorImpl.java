@@ -128,13 +128,17 @@ public class MySQLDatabaseGeneratorImpl extends
                 // Append Unique keys
                 if ( keyType.equals(KeyTypeEnum.uniqueKey) ) {
                     result.append(",");
-                    result.append("UNIQUE KEY(");
+                    result.append("UNIQUE KEY");
+                    appendIndexName(result, index);
+                    result.append("(");
                     appendIndexEntries(result, entrySet);
                 }
                 // Append Indexes
                 if ( keyType.equals(KeyTypeEnum.index) ) {
                     result.append(",");
-                    result.append("KEY(");
+                    result.append("KEY");
+                    appendIndexName(result, index);
+                    result.append("(");
                     appendIndexEntries(result, entrySet);
                     result.append("USING {");
                     result.append(index.getIndexType());
@@ -170,6 +174,7 @@ public class MySQLDatabaseGeneratorImpl extends
         stmt.executeBatch();
         conn.commit();
     }
+
 
     private void GenerateForeignKeys(MySQLSchemaMetaData metaData, Connection conn, String targetDatabaseName) throws SQLException {
         final Statement stmt = conn.createStatement();
@@ -234,6 +239,15 @@ public class MySQLDatabaseGeneratorImpl extends
         }
         result.deleteCharAt(result.length() - 1);
         result.append(")");
+    }
+
+    private void appendIndexName(final StringBuilder result, MySQLIndexMetaData index) {
+        if ( null != index.getIndexName() && index.getIndexName().length() > 0 ) {
+            appendSpace(result);
+            appendBackQuotation(result);
+            result.append(index.getIndexName());
+            appendBackQuotation(result);
+        }
     }
 
     private void appendSpace(final StringBuilder result) {
