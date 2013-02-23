@@ -66,8 +66,7 @@ public class MySQLSchemaMetaDataBuilderImpl
         for ( final String tableName : fkNamesOfTables.keySet() ) {
             final LinkedList<String> fks = fkNamesOfTables.get(tableName);
             for ( String name : fks ) {
-                final MySQLForeignKeyMetaDataBuilder fkBuilder = new MySQLForeignKeyMetaDataBuilderImpl(tableBuilders.get(tableName), this.schemaPath.append(
-                        tableName).append(name)).build(conn);
+                final MySQLForeignKeyMetaDataBuilder fkBuilder = new MySQLForeignKeyMetaDataBuilderImpl(tableBuilders.get(tableName), name).build(conn);
                 tableBuilders.get(tableName).appendForeignKeyMetaDataBuilder(fkBuilder);
             }
         }

@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
@@ -33,9 +32,9 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         BaseForeignKeyMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
         implements MySQLForeignKeyMetaDataBuilder {
 
-    public MySQLForeignKeyMetaDataBuilderImpl(MySQLTableMetaDataBuilder table, DottedPath foreignKeyPath) {
+    public MySQLForeignKeyMetaDataBuilderImpl(MySQLTableMetaDataBuilder table, String name) {
         this.fkTable = table;
-        this.foreignKeyPath = foreignKeyPath;
+        this.foreignKeyPath = table.getTablePath().append(name);
     }
 
     @Override

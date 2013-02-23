@@ -12,4 +12,10 @@ public interface ForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SM
         MetaDataBuilder<FMD>, SQLBasedMetaDataBuilder<FMDB> {
 
     void addEntry(ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
+
+    void setPkTable(TMDB pkTable);
+
+    void setPkIndex(IMDB pkIndex);
+
+    void setFkIndex(IMDB fkIndex);
 }

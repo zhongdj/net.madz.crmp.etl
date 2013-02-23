@@ -1,27 +1,32 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
+
 import scala.slick.jdbc.{ StaticQuery => Q }
 import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
+
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
+
 import net.madz.db.core.impl.mysql.MySQLDatabaseGeneratorImpl
 import net.madz.db.core.meta.DottedPath
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum
+import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod
+import net.madz.db.core.meta.immutable.types.KeyTypeEnum
 import net.madz.db.core.meta.immutable.types.TableType
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder
+import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder
+import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder
 import net.madz.db.core.meta.mutable.mysql.impl.MySQLColumnMetaDataBuilderImpl
+import net.madz.db.core.meta.mutable.mysql.impl.MySQLForeignKeyMetaDataBuilderImpl
+import net.madz.db.core.meta.mutable.mysql.impl.MySQLIndexMetaDataBuilderImpl
 import net.madz.db.core.meta.mutable.mysql.impl.MySQLSchemaMetaDataBuilderImpl
 import net.madz.db.core.meta.mutable.mysql.impl.MySQLTableMetaDataBuilderImpl
-import net.madz.db.core.meta.mutable.mysql.impl.MySQLIndexMetaDataBuilderImpl
-import net.madz.db.core.meta.immutable.types.KeyTypeEnum
-import net.madz.db.core.meta.mutable.impl.BaseIndexMetaDataBuilder
-import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod
 
 class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -364,7 +369,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     }
 
     it("should generate HASH mode index") {
-      
+
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "single_column_pk_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
@@ -404,11 +409,11 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
         Assertions.expectResult(expect)(indexes(0))
 
       }
-    
+
     }
 
     it("should generate nullable index") {
-      
+
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "single_column_pk_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
@@ -447,12 +452,11 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
         Assertions.expectResult(expect)(indexes(0))
 
       }
-    
-    
+
     }
 
     it("should generate with single column UNIQUE KEY") {
-      
+
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "single_column_unique_key_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
@@ -490,11 +494,11 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
         Assertions.expectResult(expect)(indexes(0))
 
       }
-    
+
     }
 
     it("should generate with composite UNIQUE KEY with multiple columns in a specific order") {
-      
+
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "composite_unique_key_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
@@ -535,15 +539,15 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
         val expect = MySQLStatistic("def", "madz_database_generator_test", "composite_unique_key_table", false, "madz_database_generator_test",
           "TEST UNIQUE INDEX", 1, "unique_key_1_COLUMN", "A", 0, 0, false, true, "BTREE", "", "") ::
           MySQLStatistic("def", "madz_database_generator_test", "composite_unique_key_table", false, "madz_database_generator_test",
-          "TEST UNIQUE INDEX", 2, "unique_key_2_COLUMN", "A", 0, 0, false, false, "BTREE", "", "") :: Nil
+            "TEST UNIQUE INDEX", 2, "unique_key_2_COLUMN", "A", 0, 0, false, false, "BTREE", "", "") :: Nil
         Assertions.expectResult(expect)(indexes)
 
       }
-    
+
     }
 
     it("should generate with auto incremental KEY (non-PK)") {
-      
+
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "npk_incremental_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
@@ -584,21 +588,52 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
         Assertions.expectResult(expect)(indexes(0))
         val generatedColumns = queryColumns(tableName)
         Assertions.assert("auto_increment".equalsIgnoreCase(generatedColumns(0).extra))
+        //Weird, what does PRI mean?
         Assertions.assert("PRI".equalsIgnoreCase(generatedColumns(0).columnKey))
       }
 
     }
 
-//    it("should generate with single column index") {
-//      pending
-//    }
-//
-//    it("should generate with multiple columns index in a specific order") {
-//      pending
-//    }
+    //    it("should generate with single column index") {
+    //      pending
+    //    }
+    //
+    //    it("should generate with multiple columns index in a specific order") {
+    //      pending
+    //    }
 
     it("should generate with single column FOREIGN KEY") {
-      pending
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
+      val pkTableName = "pk_table"
+      val pkTableBuilder = makeTable(schemaMetaDataBuilder, pkTableName)
+      val pkRawColumn = MySQLColumn(pkTableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val pkColumn = makeColumn(pkTableBuilder, pkRawColumn, true)
+      val pkIndex = makePk(pkTableBuilder, pkColumn)
+
+      val fkTableName = "fk_table"
+      val fkTableBuilder = makeTable(schemaMetaDataBuilder, fkTableName)
+      val fkRawColumn = MySQLColumn(fkTableName, "fk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val fkColumn = makeColumn(fkTableBuilder, fkRawColumn, false)
+      val fkIndex = makeFk(pkTableBuilder, fkTableBuilder, pkColumn, fkColumn)
+
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
+
+      Database.forURL(urlRoot, user, password, prop) withSession {
+        Q.queryNA[String]("use information_schema").execute
+        val fks = Q.query[String, MySQLKeyColumnUsage](""" 
+            SELECT 
+                CONSTRAINT_CATALOG,CONSTRAINT_SCHEMA,CONSTRAINT_NAME,TABLE_CATALOG,
+                TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,ORDINAL_POSITION,POSITION_IN_UNIQUE_CONSTRAINT,
+                REFERENCED_TABLE_SCHEMA,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
+            FROM 
+                key_column_usage
+            WHERE 
+                CONSTRAINT_NAME=? 
+        """).list("FK_fk_column_pk_table_pk_column")
+        Assertions.expectResult(1)(fks.size)
+      }
+
     }
 
     it("should generate with multiple columns FOREIGN KEY in a specific order") {
@@ -652,6 +687,47 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     //result.setSize(rawColumn.)
     //result.setSqlTypeName(x$1)
     tableBuilder.appendColumnMetaDataBuilder(result)
+    result
+  }
+
+  def makePk(pkTableBuilder: MySQLTableMetaDataBuilder, pkColumn: MySQLColumnMetaDataBuilder): MySQLIndexMetaDataBuilder = {
+    val pkRawColumn = MySQLColumn(pkTableBuilder.getTableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+    val pkColumn = makeColumn(pkTableBuilder, pkRawColumn, true)
+    val pkIndex = new MySQLIndexMetaDataBuilderImpl(pkTableBuilder, "PRIMARY")
+    pkIndex.setKeyType(KeyTypeEnum.primaryKey)
+    val pkEntry = new pkIndex.Entry(pkIndex, 0, pkColumn, 1.shortValue)
+    pkColumn.appendUniqueIndexEntry(pkEntry)
+    pkIndex.addEntry(pkEntry)
+    pkTableBuilder.appendIndexMetaDataBuilder(pkIndex)
+    pkIndex
+  }
+
+  def makeFk(pkTableBuilder: MySQLTableMetaDataBuilder, fkTableBuilder: MySQLTableMetaDataBuilder, pkColumn: MySQLColumnMetaDataBuilder, fkColumn: MySQLColumnMetaDataBuilder): MySQLForeignKeyMetaDataBuilder = {
+    val result = new MySQLForeignKeyMetaDataBuilderImpl(fkTableBuilder, "FK_" + fkColumn.getColumnName + "_" + pkTableBuilder.getTableName + "_" + pkColumn.getColumnName)
+    val entry = new result.Entry(fkColumn, pkColumn, result, 1.shortValue)
+    result.setPkTable(pkTableBuilder)
+    val fkIndex = makeIndex("TEST_FK_INDEX", fkTableBuilder, fkColumn, KeyTypeEnum.index)
+    result.setFkIndex(fkIndex)
+    fkTableBuilder.appendForeignKeyMetaDataBuilder(result)
+    result
+  }
+
+  def makeIndex(indexName: String, tableBuilder: MySQLTableMetaDataBuilder, column: MySQLColumnMetaDataBuilder, keyType: KeyTypeEnum): MySQLIndexMetaDataBuilder = {
+    val result = new MySQLIndexMetaDataBuilderImpl(tableBuilder, indexName)
+    result.setKeyType(keyType)
+
+    //More attributes?
+
+    val entry = new result.Entry(result, 0, column, 1.shortValue)
+    if (keyType == KeyTypeEnum.index) {
+      column.appendNonUniqueIndexEntry(entry)
+    } else {
+      column.appendUniqueIndexEntry(entry)
+    }
+    //result.setIndexMethod(MySQLIndexMethod.btree)
+    result.addEntry(entry)
+    tableBuilder.appendIndexMetaDataBuilder(result)
+
     result
   }
 

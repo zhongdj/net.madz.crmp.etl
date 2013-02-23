@@ -59,11 +59,9 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
             return this.key;
         }
 
-        
         public Short getSeq() {
             return seq;
         }
-        
     }
 
     @Override
@@ -73,7 +71,7 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
 
     @Override
     public IMD getForeignKeyIndex() {
-        if (null == this.fkIndex) {
+        if ( null == this.fkIndex ) {
             return null;
         }
         return this.fkIndex.getMetaData();
@@ -86,7 +84,7 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
 
     @Override
     public IMD getPrimaryKeyIndex() {
-        if (null == this.pkIndex) {
+        if ( null == this.pkIndex ) {
             return null;
         }
         return this.pkIndex.getMetaData();
@@ -125,5 +123,20 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
     @Override
     public void addEntry(ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry) {
         this.entryList.add(entry);
+    }
+
+    @Override
+    public void setPkTable(TMDB pkTable) {
+        this.pkTable = pkTable;
+    }
+
+    @Override
+    public void setPkIndex(IMDB pkIndex) {
+        this.pkIndex = pkIndex;
+    }
+
+    @Override
+    public void setFkIndex(IMDB fkIndex) {
+        this.fkIndex = fkIndex;
     }
 }
