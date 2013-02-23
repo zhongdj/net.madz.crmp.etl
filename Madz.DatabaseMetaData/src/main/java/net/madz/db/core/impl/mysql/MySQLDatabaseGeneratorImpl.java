@@ -153,9 +153,9 @@ public class MySQLDatabaseGeneratorImpl extends
                     appendIndexName(result, index);
                     result.append("(");
                     appendIndexEntries(result, entrySet);
-                    if ( null != index.getIndexType() && 0 < index.getIndexType().name().length()) {
+                    if ( null != index.getIndexType() ) {
                         result.append("USING {");
-                        result.append(index.getIndexType().name());
+                        result.append(index.getIndexType());
                         result.append("}");
                     }
                 }
@@ -204,16 +204,20 @@ public class MySQLDatabaseGeneratorImpl extends
                     result.append(table.getTableName());
                     appendBackQuotation(result);
                     appendSpace(result);
-                    result.append("ADD FOREIGN KEY ");
-                    appendBackQuotation(result);
-                    result.append(fk.getForeignKeyName());
-                    appendBackQuotation(result);
-                    final List<ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = fk
-                            .getEntrySet();
-                    if (null == entrySet || 0 >= entrySet.size()) {
-                        throw new IllegalArgumentException(MessageConsts.FK_INDEX_SHOULD_CONTAINS_ENTRIES);
+                    result.append("ADD ");
+                    if ( null != fk.getForeignKeyName() && 0 < fk.getForeignKeyName().length() ) {
+                        result.append("CONSTRAINT ");
+                        appendBackQuotation(result);
+                        result.append(fk.getForeignKeyName());
+                        appendBackQuotation(result);
+                    }
+                    result.append("FOREIGN KEY ");
+                    if ( null != fk.getForeignKeyIndex() && 0 < fk.getForeignKeyIndex().getIndexName().length() ) {
+                        result.append(fk.getForeignKeyIndex().getIndexName());
                     }
                     result.append("(");
+                    final List<ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = fk
+                            .getEntrySet();
                     for ( ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
                         appendBackQuotation(result);
                         result.append(entry.getForeignKeyColumn().getColumnName());

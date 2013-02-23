@@ -707,7 +707,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     val entry = new result.Entry(fkColumn, pkColumn, result, 1.shortValue)
     result.setPkTable(pkTableBuilder)
     val fkIndex = makeIndex("TEST_FK_INDEX", fkTableBuilder, fkColumn, KeyTypeEnum.index)
-    result.setFkIndex(fkIndex)
+//    result.setFkIndex(fkIndex)
     result.addEntry(entry);
     fkTableBuilder.appendForeignKeyMetaDataBuilder(result)
     result

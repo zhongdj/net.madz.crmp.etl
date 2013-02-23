@@ -33,7 +33,9 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         this.fkTable = parent.getParent().getTable(metaData.getForeignKeyTable().getTableName());
         this.pkTable = parent.getParent().getTable(metaData.getPrimaryKeyTable().getTableName());
         this.fkName = metaData.getForeignKeyName();
-        this.fkIndex = this.fkTable.getIndex(metaData.getForeignKeyIndex().getIndexName());
+        if (null != metaData.getForeignKeyIndex()) {
+            this.fkIndex = this.fkTable.getIndex(metaData.getForeignKeyIndex().getIndexName());
+        }
         if ( null != metaData.getPrimaryKeyIndex() ) {
             this.pkIndex = this.pkTable.getIndex(metaData.getPrimaryKeyIndex().getIndexName());
         }

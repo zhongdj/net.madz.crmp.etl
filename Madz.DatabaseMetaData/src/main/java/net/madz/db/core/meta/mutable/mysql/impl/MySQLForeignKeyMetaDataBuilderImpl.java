@@ -112,9 +112,9 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                     break;
                 }
             }
-            if (null == this.fkIndex) {
-                throw new IllegalStateException(MessageConsts.FK_INDEX_SHOULD_NOT_BE_NULL);
-            }
+//            if (null == this.fkIndex) {
+//                throw new IllegalStateException(MessageConsts.FK_INDEX_SHOULD_NOT_BE_NULL);
+//            }
         }
         return this;
     }
