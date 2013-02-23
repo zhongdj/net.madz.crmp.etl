@@ -153,9 +153,11 @@ public class MySQLDatabaseGeneratorImpl extends
                     appendIndexName(result, index);
                     result.append("(");
                     appendIndexEntries(result, entrySet);
-                    result.append("USING {");
-                    result.append(index.getIndexType());
-                    result.append("}");
+                    if ( null != index.getIndexType() ) {
+                        result.append("USING {");
+                        result.append(index.getIndexType());
+                        result.append("}");
+                    }
                 }
             }
             result.append(") ");
