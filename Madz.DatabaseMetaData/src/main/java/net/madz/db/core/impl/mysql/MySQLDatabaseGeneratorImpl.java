@@ -153,9 +153,9 @@ public class MySQLDatabaseGeneratorImpl extends
                     appendIndexName(result, index);
                     result.append("(");
                     appendIndexEntries(result, entrySet);
-                    if ( null != index.getIndexType() ) {
+                    if ( null != index.getIndexType() && 0 < index.getIndexType().name().length()) {
                         result.append("USING {");
-                        result.append(index.getIndexType());
+                        result.append(index.getIndexType().name());
                         result.append("}");
                     }
                 }
@@ -208,9 +208,12 @@ public class MySQLDatabaseGeneratorImpl extends
                     appendBackQuotation(result);
                     result.append(fk.getForeignKeyName());
                     appendBackQuotation(result);
-                    result.append("(");
                     final List<ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = fk
                             .getEntrySet();
+                    if (null == entrySet || 0 >= entrySet.size()) {
+                        throw new IllegalArgumentException(MessageConsts.FK_INDEX_SHOULD_CONTAINS_ENTRIES);
+                    }
+                    result.append("(");
                     for ( ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
                         appendBackQuotation(result);
                         result.append(entry.getForeignKeyColumn().getColumnName());
