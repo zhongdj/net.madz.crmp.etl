@@ -27,9 +27,9 @@ public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuil
     protected final Map<String, TMDB> tableBuilderMap = new TreeMap<String, TMDB>(String.CASE_INSENSITIVE_ORDER);
     protected final Collection<TMDB> tableList = new LinkedList<TMDB>();
 
-    public BasedSchemaMetaDataBuilder(final DottedPath schemaPath) throws SQLException {
+    public BasedSchemaMetaDataBuilder(final String databaseName) throws SQLException {
         super();
-        this.schemaPath = schemaPath;
+        this.schemaPath = new DottedPath(databaseName);
     }
 
     @SuppressWarnings("unchecked")

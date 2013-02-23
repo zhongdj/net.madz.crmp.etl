@@ -26,7 +26,7 @@ public class MySQLSchemaMetaDataParserImpl extends
         try {
             // TODO [Jan 22, 2013][barry][Done] Close Resources Connection
             // somewhere
-            MySQLSchemaMetaDataBuilderImpl mySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(new DottedPath(databaseName));
+            MySQLSchemaMetaDataBuilderImpl mySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(databaseName);
             return mySQLSchemaMetaDataBuilder.build(conn).getMetaData();
         } finally {
             conn.close();

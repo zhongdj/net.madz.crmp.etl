@@ -612,7 +612,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   val show_tables_query = "SHOW tables;"
 
   def makeSchema(charsetName: String, collationName: String): MySQLSchemaMetaDataBuilder = {
-    val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(new DottedPath(databaseName))
+    val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = new MySQLSchemaMetaDataBuilderImpl(databaseName)
     schemaMetaDataBuilder setCharSet "utf8"
     schemaMetaDataBuilder setCollation "utf8_bin"
     schemaMetaDataBuilder

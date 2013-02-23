@@ -31,12 +31,12 @@ public class MySQLSchemaMetaDataBuilderImpl
         extends
         BasedSchemaMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
         implements MySQLSchemaMetaDataBuilder {
-
+    
     private String charSet;
     private String collation;
 
-    public MySQLSchemaMetaDataBuilderImpl(final DottedPath schemaPath) throws SQLException {
-        super(schemaPath);
+    public MySQLSchemaMetaDataBuilderImpl(final String databaseName) throws SQLException {
+        super(databaseName);
     }
 
     public MySQLSchemaMetaDataBuilder build(Connection conn) throws SQLException {
