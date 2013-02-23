@@ -37,9 +37,22 @@ public class MySQLDatabaseGeneratorImpl extends
     }
 
     private void GenerateDatabase(final MySQLSchemaMetaData metaData, final Connection conn, final String targetDatabaseName) throws SQLException {
-        Statement stmt = conn.createStatement();
-        stmt.execute("CREATE DATABASE IF NOT EXISTS " + targetDatabaseName + " CHARACTER SET = '" + metaData.getCharSet() + "' COLLATE = '"
-                + metaData.getCollation() + "';");
+        final Statement stmt = conn.createStatement();
+        final StringBuilder result = new StringBuilder();
+        result.append("CREATE DATABASE IF NOT EXISTS ");
+        result.append(targetDatabaseName);
+        if ( null != metaData.getCharSet() && 0 < metaData.getCharSet().length() ) {
+            result.append(" DEFAULT CHARACTER SET = '");
+            result.append(metaData.getCharSet());
+            result.append("'");
+        }
+        if ( null != metaData.getCollation() && 0 < metaData.getCollation().length() ) {
+            result.append(" DEFAULT COLLATE = '");
+            result.append(metaData.getCollation());
+            result.append("'");
+        }
+        result.append(";");
+        stmt.execute(result.toString());
     }
 
     /**
@@ -174,7 +187,6 @@ public class MySQLDatabaseGeneratorImpl extends
         stmt.executeBatch();
         conn.commit();
     }
-
 
     private void GenerateForeignKeys(MySQLSchemaMetaData metaData, Connection conn, String targetDatabaseName) throws SQLException {
         final Statement stmt = conn.createStatement();
