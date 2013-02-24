@@ -637,7 +637,41 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     }
 
     it("should generate with multiple columns FOREIGN KEY in a specific order") {
-      pending
+      val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
+      val pkTableName = "pk_table"
+      val pkTableBuilder = makeTable(schemaMetaDataBuilder, pkTableName)
+      val pkRawColumn1 = MySQLColumn(pkTableName, "pk_1_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val pkRawColumn2 = MySQLColumn(pkTableName, "pk_2_COLUMN", 2, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val pkColumn1 = makeColumn(pkTableBuilder, pkRawColumn1, false)
+      val pkColumn2 = makeColumn(pkTableBuilder, pkRawColumn2, false)
+      val pkIndex = makePk(pkTableBuilder, pkColumn1 :: pkColumn2 :: Nil)
+
+      val fkTableName = "fk_table"
+      val fkTableBuilder = makeTable(schemaMetaDataBuilder, fkTableName)
+      val fkRawColumn1 = MySQLColumn(fkTableName, "fk_1_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val fkRawColumn2 = MySQLColumn(fkTableName, "fk_2_COLUMN", 2, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val fkColumn1 = makeColumn(fkTableBuilder, fkRawColumn1, false)
+      val fkColumn2 = makeColumn(fkTableBuilder, fkRawColumn2, false)
+      val fkIndex = makeFk(pkTableBuilder, fkTableBuilder, pkColumn1 :: pkColumn2 :: Nil, fkColumn1 :: fkColumn2 :: Nil)
+
+      val schemaMetaData: MySQLSchemaMetaData = schemaMetaDataBuilder getMetaData
+      val generatedDbName = generator.generateDatabase(schemaMetaData, conn, databaseName)
+
+      Database.forURL(urlRoot, user, password, prop) withSession {
+        Q.queryNA[String]("use information_schema").execute
+        val fks = Q.query[String, MySQLKeyColumnUsage](""" 
+            SELECT 
+                CONSTRAINT_CATALOG,CONSTRAINT_SCHEMA,CONSTRAINT_NAME,TABLE_CATALOG,
+                TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,ORDINAL_POSITION,POSITION_IN_UNIQUE_CONSTRAINT,
+                REFERENCED_TABLE_SCHEMA,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
+            FROM 
+                key_column_usage
+            WHERE 
+                CONSTRAINT_NAME=? 
+        """).list("FK_composite")
+        Assertions.expectResult(2)(fks.size)
+      }
+
     }
 
   }
@@ -690,9 +724,26 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     result
   }
 
+  def makePk(pkTableBuilder: MySQLTableMetaDataBuilder, pkColumns: List[MySQLColumnMetaDataBuilder]): MySQLIndexMetaDataBuilder = {
+    val pkIndex = new MySQLIndexMetaDataBuilderImpl(pkTableBuilder, "PRIMARY")
+    pkIndex.setKeyType(KeyTypeEnum.primaryKey)
+    val entries = pkColumns.map(column => new pkIndex.Entry(pkIndex, 0, column, column.getOrdinalPosition))
+
+    val tuple = pkColumns zip entries
+
+    tuple.foreach(p =>
+      {
+        p._1.appendUniqueIndexEntry(p._2)
+        pkIndex.addEntry(p._2)
+      })
+
+    pkTableBuilder.appendIndexMetaDataBuilder(pkIndex)
+    pkIndex
+  }
+  
   def makePk(pkTableBuilder: MySQLTableMetaDataBuilder, pkColumn: MySQLColumnMetaDataBuilder): MySQLIndexMetaDataBuilder = {
-    val pkRawColumn = MySQLColumn(pkTableBuilder.getTableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
-    val pkColumn = makeColumn(pkTableBuilder, pkRawColumn, true)
+    //    val pkRawColumn = MySQLColumn(pkTableBuilder.getTableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+    //    val pkColumn = makeColumn(pkTableBuilder, pkRawColumn, true)
     val pkIndex = new MySQLIndexMetaDataBuilderImpl(pkTableBuilder, "PRIMARY")
     pkIndex.setKeyType(KeyTypeEnum.primaryKey)
     val pkEntry = new pkIndex.Entry(pkIndex, 0, pkColumn, 1.shortValue)
@@ -702,12 +753,23 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     pkIndex
   }
 
+  def makeFk(pkTableBuilder: MySQLTableMetaDataBuilder, fkTableBuilder: MySQLTableMetaDataBuilder, pkColumns: List[MySQLColumnMetaDataBuilder], fkColumns: List[MySQLColumnMetaDataBuilder]): MySQLForeignKeyMetaDataBuilder = {
+    val result = new MySQLForeignKeyMetaDataBuilderImpl(fkTableBuilder, "FK_composite")
+    val pks_vs_fks = pkColumns zip fkColumns
+    val entries = pks_vs_fks.map(p => new result.Entry(p._2, p._1, result, p._1.getOrdinalPosition))
+    result.setPkTable(pkTableBuilder)
+    //val fkIndex = makeIndex("TEST_FK_INDEX", fkTableBuilder, fkColumn, KeyTypeEnum.index)
+    //    result.setFkIndex(fkIndex)
+    entries.foreach(result.addEntry(_))
+    fkTableBuilder.appendForeignKeyMetaDataBuilder(result)
+    result
+  }
   def makeFk(pkTableBuilder: MySQLTableMetaDataBuilder, fkTableBuilder: MySQLTableMetaDataBuilder, pkColumn: MySQLColumnMetaDataBuilder, fkColumn: MySQLColumnMetaDataBuilder): MySQLForeignKeyMetaDataBuilder = {
     val result = new MySQLForeignKeyMetaDataBuilderImpl(fkTableBuilder, "FK_" + fkColumn.getColumnName + "_" + pkTableBuilder.getTableName + "_" + pkColumn.getColumnName)
     val entry = new result.Entry(fkColumn, pkColumn, result, 1.shortValue)
     result.setPkTable(pkTableBuilder)
     val fkIndex = makeIndex("TEST_FK_INDEX", fkTableBuilder, fkColumn, KeyTypeEnum.index)
-//    result.setFkIndex(fkIndex)
+    //    result.setFkIndex(fkIndex)
     result.addEntry(entry);
     fkTableBuilder.appendForeignKeyMetaDataBuilder(result)
     result
