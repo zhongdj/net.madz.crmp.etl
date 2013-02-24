@@ -19,7 +19,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     protected final TMD table;
     protected final String indexName;
     protected final IndexTypeEnum indexType;
-    protected final SortDirectionEnum ascending;
+    protected final SortDirectionEnum sortDirection;
     protected final Integer cardinatlity;
     protected final Integer pages;
     protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
@@ -99,7 +99,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         this.indexType = metaData.getIndexType();
         this.cardinatlity = metaData.getCardinality();
         this.pages = metaData.getPageCount();
-        this.ascending = metaData.getSortDirection();
+        this.sortDirection = metaData.getSortDirection();
         this.keyType = metaData.getKeyType();
         for (IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry: metaData.getEntrySet()) {
             CMD column = parent.getColumn(entry.getColumn().getColumnName());
@@ -128,7 +128,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
 
     /** Ascending/descending order */
     public SortDirectionEnum getSortDirection() {
-        return this.ascending;
+        return this.sortDirection;
     }
 
     /** Index cardinality, if known */
@@ -174,7 +174,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( ascending == null ) ? 0 : ascending.hashCode() );
+        result = prime * result + ( ( sortDirection == null ) ? 0 : sortDirection.hashCode() );
         result = prime * result + ( ( entryList == null ) ? 0 : entryList.hashCode() );
         result = prime * result + ( ( indexName == null ) ? 0 : indexName.hashCode() );
         result = prime * result + ( ( indexType == null ) ? 0 : indexType.hashCode() );
@@ -189,7 +189,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         if ( obj == null ) return false;
         if ( getClass() != obj.getClass() ) return false;
         IndexMetaDataImpl other = (IndexMetaDataImpl) obj;
-        if ( ascending != other.ascending ) return false;
+        if ( sortDirection != other.sortDirection ) return false;
         if ( entryList == null ) {
             if ( other.entryList != null ) return false;
         } else if ( !entryList.equals(other.entryList) ) return false;
