@@ -630,10 +630,11 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
                 key_column_usage
             WHERE 
                 CONSTRAINT_NAME=? 
-        """).list("FK_fk_column_pk_table_pk_column")
+        """).list("FK_fk_COLUMN_pk_table_pk_COLUMN")
         Assertions.expectResult(1)(fks.size)
+        Assertions.expectResult(MySQLKeyColumnUsage("def", databaseName, "FK_fk_COLUMN_pk_table_pk_COLUMN", "def", databaseName, fkTableName, 
+            fkColumn.getColumnName, 1, 1, databaseName, pkTableName, pkColumn.getColumnName))(fks(0))
       }
-
     }
 
     it("should generate with multiple columns FOREIGN KEY in a specific order") {
@@ -670,6 +671,10 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
                 CONSTRAINT_NAME=? 
         """).list("FK_composite")
         Assertions.expectResult(2)(fks.size)
+        Assertions.expectResult(MySQLKeyColumnUsage("def", databaseName, "FK_composite", "def", databaseName, fkTableName, 
+            fkColumn1.getColumnName, 1, 1, databaseName, pkTableName, pkColumn1.getColumnName))(fks(0))
+            Assertions.expectResult(MySQLKeyColumnUsage("def", databaseName, "FK_composite", "def", databaseName, fkTableName, 
+            		fkColumn2.getColumnName, 2, 2, databaseName, pkTableName, pkColumn2.getColumnName))(fks(1))
       }
 
     }
