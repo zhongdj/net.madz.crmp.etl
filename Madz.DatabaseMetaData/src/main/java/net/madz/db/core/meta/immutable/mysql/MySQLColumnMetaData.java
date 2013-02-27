@@ -1,5 +1,7 @@
 package net.madz.db.core.meta.immutable.mysql;
 
+import java.util.List;
+
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 
 public interface MySQLColumnMetaData extends
@@ -29,4 +31,12 @@ public interface MySQLColumnMetaData extends
     Integer getNumericPrecision();
 
     long getCharacterMaximumLength();
+    
+    boolean isUnsigned();
+    
+    boolean isZeroFill();
+    
+    boolean isCollationWithBin();
+    
+    List<String> getTypeValues();
 }

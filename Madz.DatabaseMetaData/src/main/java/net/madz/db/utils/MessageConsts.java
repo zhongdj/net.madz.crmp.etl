@@ -8,4 +8,5 @@ public class MessageConsts {
     public static final String DATABASE_NAME_SHOULD_NOT_BE_NULL = "Database name should not be empty.";
     public static final String FK_INDEX_SHOULD_NOT_BE_NULL = "Foreign key index should not be null, please contact developer.";
     public static final String FK_INDEX_SHOULD_CONTAINS_ENTRIES = "Foreign key index should contain at least one entry, please check.";
+    public static final String SQL_TYPE_NAME_IS_NULL = "SQL type name should not be null, please check.";
 }

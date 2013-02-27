@@ -1,5 +1,8 @@
 package net.madz.db.core.meta.immutable.mysql.impl;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData.Entry;
 import net.madz.db.core.meta.immutable.impl.ColumnMetaDataImpl;
@@ -21,6 +24,10 @@ public final class MySQLColumnMetaDataImpl extends
     private String collationName;
     private String columnKey;
     private String extra;
+    private boolean isUnsigned;
+    private boolean isZeroFill;
+    private boolean isCollationWithBin;
+    private LinkedList<String> typeValues = new LinkedList<String>();
 
     public MySQLColumnMetaDataImpl(MySQLTableMetaData parent, MySQLColumnMetaData metaData) {
         super(parent, metaData);
@@ -32,6 +39,12 @@ public final class MySQLColumnMetaDataImpl extends
         this.collationName = metaData.getCollationName();
         this.columnKey = metaData.getColumnKey();
         this.extra = metaData.getExtra();
+        this.isUnsigned = metaData.isUnsigned();
+        this.isZeroFill = metaData.isZeroFill();
+        this.isCollationWithBin = metaData.isCollationWithBin();
+        for ( String value : metaData.getTypeValues() ) {
+            this.typeValues.add(value);
+        }
     }
 
     @Override
@@ -88,5 +101,25 @@ public final class MySQLColumnMetaDataImpl extends
 
     public void setPrimaryKey(Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
         this.primaryKey = entry;
+    }
+
+    @Override
+    public boolean isUnsigned() {
+        return this.isUnsigned;
+    }
+
+    @Override
+    public boolean isZeroFill() {
+        return this.isZeroFill;
+    }
+
+    @Override
+    public boolean isCollationWithBin() {
+        return this.isCollationWithBin;
+    }
+
+    @Override
+    public List<String> getTypeValues() {
+        return this.typeValues;
     }
 }

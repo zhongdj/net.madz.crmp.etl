@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData.Entry;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
@@ -35,6 +37,10 @@ public final class MySQLColumnMetaDataBuilderImpl
     private String collationName;
     private String columnKey;
     private String extra;
+    private boolean isUnsigned;
+    private boolean isZeroFill;
+    private boolean isCollationWithBin;
+    private LinkedList<String> typeValues = new LinkedList<String>();
 
     public MySQLColumnMetaDataBuilderImpl(MySQLTableMetaDataBuilder tableBuilder, String columnName) {
         super(tableBuilder, columnName);
@@ -44,7 +50,7 @@ public final class MySQLColumnMetaDataBuilderImpl
     public MySQLColumnMetaDataBuilder build(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
         ResultSet rs = null;
-        stmt.executeQuery("use information_schema;");
+        stmt.executeQuery("USE information_schema;");
         try {
             rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + this.tableBuilder.getTablePath().getParent().getName() + "' AND table_name='"
                     + this.tableBuilder.getTableName() + "' AND column_name='" + this.columnPath.getName() + "';");
@@ -59,7 +65,26 @@ public final class MySQLColumnMetaDataBuilderImpl
                 this.numericScale = rs.getInt("numeric_scale");
                 this.characterSet = rs.getString("character_set_name");
                 this.collationName = rs.getString("collation_name");
+                if ( null != this.collationName ) {
+                    if ( this.collationName.toUpperCase().endsWith("_BIN") ) {
+                        this.isCollationWithBin = true;
+                    }
+                }
                 this.columnType = rs.getString("column_type");
+                if ( null != this.columnType ) {
+                    if ( this.columnType.toUpperCase().contains("UNSIGNED") ) {
+                        setUnsigned(true);
+                    }
+                    if ( this.columnType.toUpperCase().contains("ZEROFILL") ) {
+                        setZeroFill(true);
+                    }
+                    if ( this.columnType.toUpperCase().contains("ENUM") || this.columnType.toUpperCase().contains("SET") ) {
+                        final String[] result = this.columnType.substring(this.columnType.indexOf("(") + 1, this.columnType.indexOf(")")).split(",");
+                        for ( String value : result ) {
+                            this.addTypeValue(value);
+                        }
+                    }
+                }
                 this.columnKey = rs.getString("column_key");
                 this.extra = rs.getString("extra");
                 if ( this.extra.equalsIgnoreCase("auto_increment") ) {
@@ -113,49 +138,41 @@ public final class MySQLColumnMetaDataBuilderImpl
         return extra;
     }
 
-    
     @Override
     public void setCharacterSet(String characterSet) {
         this.characterSet = characterSet;
     }
 
-    
     @Override
     public void setColumnType(String columnType) {
         this.columnType = columnType;
     }
 
-    
     @Override
     public void setCharacterMaximumLength(long characterMaximumLength) {
         this.characterMaximumLength = characterMaximumLength;
     }
 
-    
     @Override
     public void setNumericPrecision(Integer numericPrecision) {
         this.numericPrecision = numericPrecision;
     }
 
-    
     @Override
     public void setNumericScale(Integer numericScale) {
         this.numericScale = numericScale;
     }
 
-    
     @Override
     public void setCollationName(String collationName) {
         this.collationName = collationName;
     }
 
-    
     @Override
     public void setColumnKey(String columnKey) {
         this.columnKey = columnKey;
     }
 
-    
     @Override
     public void setExtra(String extra) {
         this.extra = extra;
@@ -172,5 +189,45 @@ public final class MySQLColumnMetaDataBuilderImpl
             Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
         this.fkList.add(entry);
         return this;
+    }
+
+    @Override
+    public boolean isUnsigned() {
+        return this.isUnsigned;
+    }
+
+    @Override
+    public boolean isZeroFill() {
+        return this.isZeroFill;
+    }
+
+    @Override
+    public void setUnsigned(Boolean isUnsigned) {
+        this.isUnsigned = isUnsigned;
+    }
+
+    @Override
+    public void setZeroFill(Boolean isZeroFill) {
+        this.isZeroFill = isZeroFill;
+    }
+
+    @Override
+    public void setCollationWithBin(Boolean isCollationWithBin) {
+        this.isCollationWithBin = isCollationWithBin;
+    }
+
+    @Override
+    public boolean isCollationWithBin() {
+        return this.isCollationWithBin;
+    }
+
+    @Override
+    public List<String> getTypeValues() {
+        return this.typeValues;
+    }
+
+    @Override
+    public void addTypeValue(String typeValue) {
+        this.typeValues.add(typeValue);
     }
 }

@@ -78,16 +78,12 @@ public class MySQLDatabaseGeneratorImpl extends
                 result.append(column.getColumnName());
                 appendBackQuotation(result);
                 appendSpace(result);
-                result.append(column.getColumnType());
-                appendSpace(result);
-                if ( null != column.getCharacterSet() ) {
-                    result.append(" CHARACTER SET ");
-                    result.append(column.getCharacterSet());
-                    appendSpace(result);
-                }
-                if ( null != column.getCollationName() ) {
-                    result.append(" COLLATE ");
-                    result.append(column.getCollationName());
+                if ( null != column.getColumnType() ) {
+                    result.append(column.getColumnType());
+                    appendCharSet(result, column);
+                    appendCollation(result, column);
+                } else {
+                    result.append(assembleColumnType(column));
                 }
                 if ( column.isNullable() ) {
                     result.append(" NULL ");
@@ -96,11 +92,11 @@ public class MySQLDatabaseGeneratorImpl extends
                 }
                 if ( column.hasDefaultValue() ) {
                     result.append(" DEFAULT ");
-                    if ( !column.getColumnType().contains("bit") ) {
+                    if ( !column.getSqlTypeName().equalsIgnoreCase("BIT") ) {
                         result.append("'");
                     }
                     result.append(column.getDefaultValue());
-                    if ( !column.getColumnType().contains("bit") ) {
+                    if ( !column.getSqlTypeName().equalsIgnoreCase("BIT") ) {
                         result.append("'");
                     }
                 }
@@ -188,6 +184,103 @@ public class MySQLDatabaseGeneratorImpl extends
         }
         stmt.executeBatch();
         conn.commit();
+    }
+
+    private void appendCollation(final StringBuilder result, final MySQLColumnMetaData column) {
+        if ( null != column.getCollationName() ) {
+            result.append(" COLLATE ");
+            result.append(column.getCollationName());
+            appendSpace(result);
+        }
+    }
+
+    private void appendCharSet(final StringBuilder result, final MySQLColumnMetaData column) {
+        if ( null != column.getCharacterSet() ) {
+            result.append(" CHARACTER SET ");
+            result.append(column.getCharacterSet());
+            appendSpace(result);
+        }
+    }
+
+    private String assembleColumnType(final MySQLColumnMetaData column) {
+        final StringBuilder result = new StringBuilder();
+        String sqlTypeName = column.getSqlTypeName();
+        if ( null == sqlTypeName ) {
+            throw new IllegalArgumentException(MessageConsts.SQL_TYPE_NAME_IS_NULL);
+        }
+        if ( sqlTypeName.equalsIgnoreCase("BIT") || sqlTypeName.equalsIgnoreCase("BINARY") || sqlTypeName.equalsIgnoreCase("VARBINARY") ) {
+            result.append(sqlTypeName);
+            result.append("(");
+            result.append(column.getNumericPrecision());
+            result.append(") ");
+        } else if ( sqlTypeName.equalsIgnoreCase("TINYINT") || sqlTypeName.equalsIgnoreCase("SMALLINT") || sqlTypeName.equalsIgnoreCase("MEDIUMINT")
+                || sqlTypeName.equalsIgnoreCase("INT") || sqlTypeName.equalsIgnoreCase("INTEGER") || sqlTypeName.equalsIgnoreCase("BIGINT") ) {
+            result.append(sqlTypeName);
+            result.append("(");
+            result.append(column.getNumericPrecision());
+            result.append(")");
+            appendSpace(result);
+            if ( column.isUnsigned() ) {
+                result.append("UNSIGNED");
+                appendSpace(result);
+            }
+            if ( column.isZeroFill() ) {
+                result.append("ZEROFILL");
+                appendSpace(result);
+            }
+        } else if ( sqlTypeName.equalsIgnoreCase("REAL") || sqlTypeName.equalsIgnoreCase("DOUBLE") || sqlTypeName.equalsIgnoreCase("FLOAT")
+                || sqlTypeName.equalsIgnoreCase("DECIMAL") || sqlTypeName.equalsIgnoreCase("NUMERIC") ) {
+            result.append(sqlTypeName);
+            result.append("(");
+            result.append(column.getNumericPrecision());
+            result.append(",");
+            result.append(column.getNumericScale());
+            result.append(")");
+            if ( column.isUnsigned() ) {
+                result.append("UNSIGNED");
+                appendSpace(result);
+            }
+            if ( column.isZeroFill() ) {
+                result.append("ZEROFILL");
+                appendSpace(result);
+            }
+        } else if ( sqlTypeName.equalsIgnoreCase("CHAR") || sqlTypeName.equalsIgnoreCase("VARCHAR") ) {
+            result.append(sqlTypeName);
+            result.append("(");
+            result.append(column.getCharacterMaximumLength());
+            result.append(")");
+            appendSpace(result);
+            appendCharSet(result, column);
+            if ( column.isCollationWithBin() ) {
+                result.append(" BINARY ");
+            }
+            appendCollation(result, column);
+        } else if ( sqlTypeName.equalsIgnoreCase("TINYTEXT") || sqlTypeName.equalsIgnoreCase("TEXT") || sqlTypeName.equalsIgnoreCase("MEDIUMTEXT")
+                || sqlTypeName.equalsIgnoreCase("LONGTEXT") ) {
+            result.append(sqlTypeName);
+            if ( column.isCollationWithBin() ) {
+                appendSpace(result);
+                result.append("BINARY");
+                appendSpace(result);
+            }
+            appendCharSet(result, column);
+            appendCollation(result, column);
+        } else if ( sqlTypeName.toUpperCase().contains("ENUM") || sqlTypeName.toUpperCase().contains("SET") ) {
+            result.append(sqlTypeName);
+            result.append("(");
+            for ( String value : column.getTypeValues() ) {
+                result.append(value);
+                result.append(",");
+            }
+            result.deleteCharAt(result.length() - 1);
+            result.append(")");
+            appendSpace(result);
+            appendCharSet(result, column);
+            appendCollation(result, column);
+        } else {
+            result.append(sqlTypeName);
+        }
+        return result.toString();
     }
 
     private void GenerateForeignKeys(MySQLSchemaMetaData metaData, Connection conn, String targetDatabaseName) throws SQLException {

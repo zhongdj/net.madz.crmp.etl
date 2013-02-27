@@ -13,7 +13,8 @@ public interface MySQLColumnMetaDataBuilder
         MySQLColumnMetaData,
         ColumnMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
 
-    public abstract MySQLColumnMetaDataBuilder appendForeignKeyEntry(ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry);
+    public abstract MySQLColumnMetaDataBuilder appendForeignKeyEntry(
+            ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry);
 
     public abstract void setExtra(String extra);
 
@@ -31,4 +32,11 @@ public interface MySQLColumnMetaDataBuilder
 
     public abstract void setCharacterSet(String characterSet);
 
+    void setUnsigned(Boolean isUnsigned);
+
+    void setZeroFill(Boolean isZeroFill);
+
+    void setCollationWithBin(Boolean isCollationWithBin);
+
+    void addTypeValue(String typeValue);
 }

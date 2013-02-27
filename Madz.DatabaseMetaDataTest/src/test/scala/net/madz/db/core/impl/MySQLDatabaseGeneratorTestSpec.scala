@@ -90,10 +90,11 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       atLeastOneColumn.setCharacterMaximumLength(20)
       atLeastOneColumn.setCharacterSet(null)
       atLeastOneColumn.setColumnKey("")
+      atLeastOneColumn.setSqlTypeName("bigint");
       atLeastOneColumn.setColumnType("bigint(20)")
       atLeastOneColumn.setExtra("")
       atLeastOneColumn.setNumericPrecision(20)
-      atLeastOneColumn.setNumericScale(20)
+      atLeastOneColumn.setNumericScale(null)
       atLeastOneColumn.setAutoIncremented(false)
       atLeastOneColumn.setCharacterOctetLength(20)
       atLeastOneColumn.setDefaultValue(null)
@@ -632,8 +633,8 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
                 CONSTRAINT_NAME=? 
         """).list("FK_fk_COLUMN_pk_table_pk_COLUMN")
         Assertions.expectResult(1)(fks.size)
-        Assertions.expectResult(MySQLKeyColumnUsage("def", databaseName, "FK_fk_COLUMN_pk_table_pk_COLUMN", "def", databaseName, fkTableName, 
-            fkColumn.getColumnName, 1, 1, databaseName, pkTableName, pkColumn.getColumnName))(fks(0))
+        Assertions.expectResult(MySQLKeyColumnUsage("def", databaseName, "FK_fk_COLUMN_pk_table_pk_COLUMN", "def", databaseName, fkTableName,
+          fkColumn.getColumnName, 1, 1, databaseName, pkTableName, pkColumn.getColumnName))(fks(0))
       }
     }
 
@@ -671,10 +672,10 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
                 CONSTRAINT_NAME=? 
         """).list("FK_composite")
         Assertions.expectResult(2)(fks.size)
-        Assertions.expectResult(MySQLKeyColumnUsage("def", databaseName, "FK_composite", "def", databaseName, fkTableName, 
-            fkColumn1.getColumnName, 1, 1, databaseName, pkTableName, pkColumn1.getColumnName))(fks(0))
-            Assertions.expectResult(MySQLKeyColumnUsage("def", databaseName, "FK_composite", "def", databaseName, fkTableName, 
-            		fkColumn2.getColumnName, 2, 2, databaseName, pkTableName, pkColumn2.getColumnName))(fks(1))
+        Assertions.expectResult(MySQLKeyColumnUsage("def", databaseName, "FK_composite", "def", databaseName, fkTableName,
+          fkColumn1.getColumnName, 1, 1, databaseName, pkTableName, pkColumn1.getColumnName))(fks(0))
+        Assertions.expectResult(MySQLKeyColumnUsage("def", databaseName, "FK_composite", "def", databaseName, fkTableName,
+          fkColumn2.getColumnName, 2, 2, databaseName, pkTableName, pkColumn2.getColumnName))(fks(1))
       }
 
     }
@@ -716,7 +717,22 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     result.setCharacterSet(rawColumn.characterSetName)
     result.setCollationName(rawColumn.collationName)
     result.setDefaultValue(rawColumn.columnDefault)
-    result.setColumnType(rawColumn.columnType)
+    //    result.setColumnType(rawColumn.columnType)
+    result.setSqlTypeName(rawColumn.dataType)
+    if (null != rawColumn.columnType) {
+      if (rawColumn.columnType.toUpperCase().contains("UNSIGNED")) {
+        result.setUnsigned(true);
+      }
+      if (rawColumn.columnType.toUpperCase().contains("ZEROFILL")) {
+        result.setZeroFill(true);
+      }
+
+    }
+    if (rawColumn.dataType.equalsIgnoreCase("SET") || rawColumn.dataType.equalsIgnoreCase("ENUM")) {
+      var typeValues = rawColumn.columnType.substring(rawColumn.columnType.indexOf("(") + 1, rawColumn.columnType.indexOf(")")).split(",");
+      typeValues.foreach(value => result.addTypeValue(value));
+    }
+
     result.setNumericPrecision(rawColumn.numberPrecision.intValue)
     result.setNumericScale(rawColumn.numberScale.intValue)
     result.setAutoIncremented(increment)
@@ -745,7 +761,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     pkTableBuilder.appendIndexMetaDataBuilder(pkIndex)
     pkIndex
   }
-  
+
   def makePk(pkTableBuilder: MySQLTableMetaDataBuilder, pkColumn: MySQLColumnMetaDataBuilder): MySQLIndexMetaDataBuilder = {
     //    val pkRawColumn = MySQLColumn(pkTableBuilder.getTableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
     //    val pkColumn = makeColumn(pkTableBuilder, pkRawColumn, true)
