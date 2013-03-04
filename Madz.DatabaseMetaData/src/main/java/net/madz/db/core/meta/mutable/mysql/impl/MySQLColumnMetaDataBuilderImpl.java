@@ -13,6 +13,7 @@ import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
+import net.madz.db.core.meta.immutable.mysql.datatype.DataType;
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLDataTypeEnum;
 import net.madz.db.core.meta.immutable.mysql.impl.MySQLColumnMetaDataImpl;
 import net.madz.db.core.meta.mutable.impl.BaseColumnMetaDataBuilder;
@@ -229,5 +230,10 @@ public final class MySQLColumnMetaDataBuilderImpl
     @Override
     public void addTypeValue(String typeValue) {
         this.typeValues.add(typeValue);
+    }
+
+    @Override
+    public void setDataType(DataType dataType) {
+        dataType.setColumnBuilder(this);
     }
 }
