@@ -8,15 +8,17 @@ import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
  *         BIT(M) enables storage of M-bit values. M can range from 1 to 64.
  * 
  */
-public class MySQL_Bit implements DataType {
+public class MySQLBit implements DataType {
 
+    public static final String name = "BIT";
     /** length is equal to number_precision */
-    private short length = 1;
+    private final short length;
 
-    public MySQL_Bit() {
+    public MySQLBit() {
+        length = 1;
     }
 
-    public MySQL_Bit(short length) {
+    public MySQLBit(short length) {
         super();
         this.length = length;
     }
@@ -25,19 +27,19 @@ public class MySQL_Bit implements DataType {
         return length;
     }
 
-    public void setLength(short length) {
-        this.length = length;
-    }
-
     @Override
-    public void setColumnBuilder(MySQLColumnMetaDataBuilder builder) {
-        builder.setSqlTypeName("BIT");
+    public void build(MySQLColumnMetaDataBuilder builder) {
+        builder.setSqlTypeName(name);
         builder.setNumericPrecision((int) this.length);
         final StringBuilder result = new StringBuilder();
-        result.append("BIT");
+        result.append(name);
         result.append("(");
         result.append(length);
         result.append(")");
         builder.setColumnType(result.toString());
+    }
+
+    public String getName() {
+        return name;
     }
 }

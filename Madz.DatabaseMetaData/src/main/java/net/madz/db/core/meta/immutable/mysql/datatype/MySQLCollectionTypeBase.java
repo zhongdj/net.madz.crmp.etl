@@ -4,10 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
+import net.madz.db.utils.MessageConsts;
 
-public enum MySQL_CollectionTypeEnum implements DataType {
-    ENUM,
-    SET;
+public abstract class MySQLCollectionTypeBase implements DataType {
 
     private List<String> values;
     private String charsetName;
@@ -44,10 +43,13 @@ public enum MySQL_CollectionTypeEnum implements DataType {
     }
 
     @Override
-    public void setColumnBuilder(MySQLColumnMetaDataBuilder builder) {
-        builder.setSqlTypeName(this.name());
+    public void build(MySQLColumnMetaDataBuilder builder) {
+        builder.setSqlTypeName(getName());
         final StringBuilder result = new StringBuilder();
-        result.append(this.name());
+        result.append(getName());
+        if ( 0 >= values.size() ) {
+            throw new IllegalArgumentException(MessageConsts.COLLECTION_DATA_TYPE_SHOULD_NOT_BE_NULL);
+        }
         result.append("(");
         for ( String value : values ) {
             builder.addTypeValue(value);

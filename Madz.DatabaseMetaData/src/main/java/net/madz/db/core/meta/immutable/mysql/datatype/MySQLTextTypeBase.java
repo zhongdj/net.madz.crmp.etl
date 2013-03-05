@@ -2,11 +2,7 @@ package net.madz.db.core.meta.immutable.mysql.datatype;
 
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 
-public enum MySQL_TextTypeEnum implements DataType {
-    TINYTEXT,
-    TEXT,
-    MEDIUMTEXT,
-    LONGTEXT;
+public abstract class MySQLTextTypeBase implements DataType {
 
     private boolean isBinary;
     private String charsetName;
@@ -37,13 +33,13 @@ public enum MySQL_TextTypeEnum implements DataType {
     }
 
     @Override
-    public void setColumnBuilder(MySQLColumnMetaDataBuilder builder) {
-        builder.setSqlTypeName(this.name());
+    public void build(MySQLColumnMetaDataBuilder builder) {
+        builder.setSqlTypeName(getName());
         builder.setCharacterSet(charsetName);
         builder.setCollationName(collationName);
         builder.setCollationWithBin(isBinary);
         final StringBuilder result = new StringBuilder();
-        result.append(this.name());
+        result.append(getName());
         if ( null != charsetName ) {
             result.append(" CHARACTER SET ");
             result.append(charsetName);

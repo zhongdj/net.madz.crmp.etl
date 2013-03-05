@@ -9,4 +9,6 @@ public class MessageConsts {
     public static final String FK_INDEX_SHOULD_NOT_BE_NULL = "Foreign key index should not be null, please contact developer.";
     public static final String FK_INDEX_SHOULD_CONTAINS_ENTRIES = "Foreign key index should contain at least one entry, please check.";
     public static final String SQL_TYPE_NAME_IS_NULL = "SQL type name should not be null, please check.";
+    public static final String LENGTH_MUST_BE_GREATER_THAN_ZERO = "For data type, length must be greater than 0.";
+    public static final String COLLECTION_DATA_TYPE_SHOULD_NOT_BE_NULL = "For set or enum, data type values should not be null.";
 }

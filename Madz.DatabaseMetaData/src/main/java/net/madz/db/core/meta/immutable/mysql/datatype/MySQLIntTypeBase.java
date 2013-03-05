@@ -2,13 +2,7 @@ package net.madz.db.core.meta.immutable.mysql.datatype;
 
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 
-public enum MySQL_IntTypeEnum implements DataType {
-    TINYINT,
-    SMALLINT,
-    MEDIUMINT,
-    INT,
-    INTEGER,
-    BIGINT;
+public abstract class MySQLIntTypeBase implements DataType {
 
     private Short displayLength;
     private boolean isUnsigned;
@@ -38,13 +32,15 @@ public enum MySQL_IntTypeEnum implements DataType {
         this.isZeroFill = zerofill;
     }
 
+    public abstract String getName();
+
     @Override
-    public void setColumnBuilder(MySQLColumnMetaDataBuilder builder) {
-        builder.setSqlTypeName(this.name());
+    public void build(MySQLColumnMetaDataBuilder builder) {
+        builder.setSqlTypeName(getName());
         builder.setUnsigned(isUnsigned);
         builder.setZeroFill(isZeroFill);
         final StringBuilder result = new StringBuilder();
-        result.append(this.name());
+        result.append(getName());
         if ( 0 < displayLength ) {
             result.append("(");
             result.append(displayLength);

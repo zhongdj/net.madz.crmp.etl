@@ -4,5 +4,7 @@ import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 
 public interface DataType {
 
-    void setColumnBuilder(MySQLColumnMetaDataBuilder builder);
+    void build(MySQLColumnMetaDataBuilder builder);
+
+    String getName();
 }

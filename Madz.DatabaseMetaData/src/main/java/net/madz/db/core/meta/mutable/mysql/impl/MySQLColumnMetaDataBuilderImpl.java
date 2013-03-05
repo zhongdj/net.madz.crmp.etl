@@ -234,6 +234,6 @@ public final class MySQLColumnMetaDataBuilderImpl
 
     @Override
     public void setDataType(DataType dataType) {
-        dataType.setColumnBuilder(this);
+        dataType.build(this);
     }
 }

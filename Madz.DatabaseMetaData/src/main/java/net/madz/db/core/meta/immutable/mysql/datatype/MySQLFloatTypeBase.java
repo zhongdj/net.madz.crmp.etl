@@ -2,12 +2,7 @@ package net.madz.db.core.meta.immutable.mysql.datatype;
 
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 
-public enum MySQL_FloatTypeEnum implements DataType {
-    REAL,
-    DOUBLE,
-    FLOAT,
-    DECIMAL,
-    NUMERIC;
+public abstract class MySQLFloatTypeBase implements DataType {
 
     /** same to numeric_precision in columns table of information_schema */
     private int length;
@@ -48,15 +43,17 @@ public enum MySQL_FloatTypeEnum implements DataType {
         this.isZeroFill = isZeroFill;
     }
 
+    public abstract String getName();
+
     @Override
-    public void setColumnBuilder(MySQLColumnMetaDataBuilder builder) {
-        builder.setSqlTypeName(this.name());
+    public void build(MySQLColumnMetaDataBuilder builder) {
+        builder.setSqlTypeName(getName());
         builder.setNumericPrecision(this.length);
         builder.setNumericScale(this.decimals);
         builder.setUnsigned(isUnsigned);
         builder.setZeroFill(isZeroFill);
         final StringBuilder result = new StringBuilder();
-        result.append(this.name());
+        result.append(getName());
         result.append("(");
         result.append(length);
         result.append(",");

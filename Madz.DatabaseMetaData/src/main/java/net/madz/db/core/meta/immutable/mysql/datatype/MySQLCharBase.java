@@ -2,21 +2,12 @@ package net.madz.db.core.meta.immutable.mysql.datatype;
 
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 
-public enum MySQL_CharTypeEnum implements DataType {
-    CHAR,
-    VARCHAR;
+public abstract class MySQLCharBase implements DataType {
 
-    private long length;
     private String charsetName;
     private String collationName;
 
-    public long getLength() {
-        return length;
-    }
-
-    public void setLength(long length) {
-        this.length = length;
-    }
+    public abstract long getLength();
 
     public String getCharsetName() {
         return charsetName;
@@ -35,16 +26,18 @@ public enum MySQL_CharTypeEnum implements DataType {
     }
 
     @Override
-    public void setColumnBuilder(MySQLColumnMetaDataBuilder builder) {
-        builder.setSqlTypeName(this.name());
-        builder.setCharacterMaximumLength(length);
+    public void build(MySQLColumnMetaDataBuilder builder) {
+        builder.setSqlTypeName(getName());
+        builder.setCharacterMaximumLength(getLength());
         builder.setCharacterSet(this.charsetName);
         builder.setCollationName(this.collationName);
         final StringBuilder result = new StringBuilder();
-        result.append(this.name());
-        result.append("(");
-        result.append(length);
-        result.append(")");
+        result.append(getName());
+        if ( 0 < getLength() ) {
+            result.append("(");
+            result.append(getLength());
+            result.append(")");
+        }
         result.append(" CHARACTER SET ");
         result.append(charsetName);
         result.append(" COLLATE ");
