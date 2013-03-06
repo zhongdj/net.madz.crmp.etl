@@ -107,7 +107,7 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                         break;
                     }
                 }
-                if ( matched ) {
+                if ( matched && !index.getIndexName().equalsIgnoreCase("PRIMARY")) {
                     this.fkIndex = this.fkTable.getIndexBuilder(index.getIndexName());
                     break;
                 }
