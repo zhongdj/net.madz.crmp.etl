@@ -14,6 +14,9 @@ public class MySQLSchemaMetaDataComparatorImpl implements
 
     @Override
     public boolean compare(MySQLSchemaMetaData one, MySQLSchemaMetaData other) {
+        if ( null == one || null == other ) {
+            return false;
+        }
         if ( !compareBaseInfo(one, other) ) {
             return false;
         }
@@ -24,26 +27,22 @@ public class MySQLSchemaMetaDataComparatorImpl implements
     }
 
     private boolean compareBaseInfo(MySQLSchemaMetaData one, MySQLSchemaMetaData other) {
-        if ( null == one || null == other ) {
-            return false;
-        }
         if ( null == one.getCharSet() || null == other.getCharSet() ) {
             return false;
         }
-        if ( one.getCharSet() != other.getCharSet() ) {
+        if ( !one.getCharSet().equalsIgnoreCase(other.getCharSet()) ) {
             return false;
         }
         if ( null == one.getCollation() || null == other.getCollation() ) {
             return false;
         }
-        if ( one.getCollation() != other.getCollation() ) {
+        if ( !one.getCollation().equalsIgnoreCase(other.getCollation()) ) {
             return false;
         }
         return true;
     }
 
     private boolean compareTables(Collection<MySQLTableMetaData> one, Collection<MySQLTableMetaData> other) {
-        
         return false;
     }
 }
