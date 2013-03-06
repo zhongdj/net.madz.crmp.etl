@@ -11,4 +11,5 @@ public class MessageConsts {
     public static final String SQL_TYPE_NAME_IS_NULL = "SQL type name should not be null, please check.";
     public static final String LENGTH_MUST_BE_GREATER_THAN_ZERO = "For data type, length must be greater than 0.";
     public static final String COLLECTION_DATA_TYPE_SHOULD_NOT_BE_NULL = "For set or enum, data type values should not be null.";
+    public static final String LOWER_CASE_TABLE_NAMES_MUST_BE_SAME = "System variable 'lower_case_table_names' of source server and target server must be the same, please configure correctly.";
 }

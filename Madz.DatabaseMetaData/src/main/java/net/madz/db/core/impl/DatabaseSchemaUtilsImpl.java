@@ -9,9 +9,9 @@ import javax.xml.bind.JAXBException;
 
 import net.madz.db.core.AbsDatabaseGenerator;
 import net.madz.db.core.AbsSchemaMetaDataParser;
-import net.madz.db.core.SchemaMetaDataComparator;
 import net.madz.db.core.DatabaseSchemaUtils;
 import net.madz.db.core.IllegalOperationException;
+import net.madz.db.core.SchemaMetaDataComparator;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
@@ -104,6 +104,7 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
             // distributed everywhere?
             throw new IllegalOperationException(MessageConsts.CONFIGURE_DATABASE_INFO);
         }
+        validateServerConfigurations(sourceDatabaseName);
         if ( databaseExists(targetDatabaseName, true) ) {
             dropDatabase(targetDatabaseName);
         }
@@ -146,6 +147,38 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
     public void validateDatabaseName(String databaseName) {
         if ( null == databaseName || 0 >= databaseName.trim().length() ) {
             throw new IllegalArgumentException(MessageConsts.DATABASE_NAME_SHOULD_NOT_BE_NULL);
+        }
+    }
+
+    private void validateServerConfigurations(String databaseName) throws SQLException {
+        Connection conn = null, conn2 = null;
+        conn = DbConfigurationManagement.createConnection(databaseName, false);
+        conn2 = DbConfigurationManagement.createConnection("", true);
+        Statement stmt = null, stmt2 = null;
+        ResultSet rs = null, rs2 = null;
+        int one = 0, other = 0;
+        try {
+            stmt = conn.createStatement();
+            stmt2 = conn2.createStatement();
+            try {
+                rs = stmt.executeQuery("SHOW VARIABLES LIKE 'lower_case_table_names';");
+                rs2 = stmt2.executeQuery("SHOW VARIABLES LIKE 'lower_case_table_names';");
+                while ( rs.next() ) {
+                    one = rs.getInt("Value");
+                }
+                while ( rs2.next() ) {
+                    other = rs2.getInt("Value");
+                }
+            } finally {
+                rs.close();
+                rs2.close();
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        }
+        if ( one != other ) {
+            throw new IllegalStateException(MessageConsts.LOWER_CASE_TABLE_NAMES_MUST_BE_SAME + "The value of source server is: " + one
+                    + ", the value of target server is:" + other);
         }
     }
 
