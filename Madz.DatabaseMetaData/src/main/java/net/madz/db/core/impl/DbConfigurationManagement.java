@@ -1,6 +1,8 @@
 package net.madz.db.core.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -23,14 +25,14 @@ import net.madz.db.configuration.*;
 public class DbConfigurationManagement {
 
     private static final String NET_MADZ_DB_CONFIGURATION = "net.madz.db.configuration";
-    private static final String CONFIGURATION_DATA_SOURCES = "/Databases.xml";
+    private static final String CONFIGURATION_DATA_SOURCES = "./conf/Databases.xml";
     private static final Map<String, Database> sourceDatabaseCache = new HashMap<String, Database>();
     private static final Map<String, Database> databaseCopiesCache = new HashMap<String, Database>();
     private static final Map<Sku, SkuConf> skuConfs = new HashMap<Sku, SkuConf>();
     private static DatabaseCopiesServer databaseCopiesServer = null;
     private static DatabaseConfig databaseconfig;
     // TODO [Jan 22, 2013][barry][Done] is it immutable?
-    private static final String configurationFile = System.getProperty(DbConfigurationManagement.NET_MADZ_DB_CONFIGURATION, CONFIGURATION_DATA_SOURCES);
+    private static final String configurationFilePath = System.getProperty(DbConfigurationManagement.NET_MADZ_DB_CONFIGURATION, CONFIGURATION_DATA_SOURCES);
     static {
         loadDatabaseConfiguration();
     }
@@ -40,7 +42,7 @@ public class DbConfigurationManagement {
         try {
             final JAXBContext context = JAXBContext.newInstance(DatabaseConfig.class);
             final Unmarshaller shaller = context.createUnmarshaller();
-            resource = DbConfigurationManagement.class.getResourceAsStream(configurationFile);
+            resource = new FileInputStream(configurationFilePath);
             databaseconfig = (DatabaseConfig) shaller.unmarshal(resource);
             final List<Database> sourceDatabases = databaseconfig.getSourceDatabases().getDatabase();
             final List<Database> databaseCopies = databaseconfig.getDatabaseCopies().getDatabase();
@@ -56,6 +58,8 @@ public class DbConfigurationManagement {
                 skuConfs.put(item.getSku(), item);
             }
         } catch (JAXBException e) {
+            throw new IllegalStateException(e);
+        } catch (FileNotFoundException e) {
             throw new IllegalStateException(e);
         } finally {
             if ( null != resource ) {
@@ -123,12 +127,15 @@ public class DbConfigurationManagement {
         // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
         final Database database = databaseCopiesCache.get(databaseName);
+        if ( null == database ) {
+            return false;
+        }
         databaseconfig.getDatabaseCopies().getDatabase().remove(database);
         databaseCopiesCache.remove(database);
         try {
             final JAXBContext context = JAXBContext.newInstance(DatabaseConfig.class);
             Marshaller marshaller = context.createMarshaller();
-            final File file = new File("./src/main/resources/" + configurationFile);
+            final File file = new File(configurationFilePath);
             marshaller.marshal(databaseconfig, file);
             return true;
         } catch (JAXBException e) {
@@ -167,7 +174,7 @@ public class DbConfigurationManagement {
         try {
             context = JAXBContext.newInstance(DatabaseConfig.class);
             final Marshaller marshaller = context.createMarshaller();
-            final File file = new File("./src/main/resources/" + configurationFile);
+            final File file = new File(configurationFilePath);
             marshaller.marshal(databaseconfig, file);
         } catch (JAXBException e) {
             // TODO [Jan 22, 2013][barry][Done] How to handle this exception
@@ -176,7 +183,7 @@ public class DbConfigurationManagement {
     }
 
     public static String getDatabaseComparatorClass(final String databaseName) {
-        if (null == databaseName || 0 >= databaseName.trim().length()) {
+        if ( null == databaseName || 0 >= databaseName.trim().length() ) {
             throw new IllegalArgumentException(MessageConsts.DATABASE_NAME_SHOULD_NOT_BE_NULL);
         }
         final Database database = sourceDatabaseCache.get(databaseName);
