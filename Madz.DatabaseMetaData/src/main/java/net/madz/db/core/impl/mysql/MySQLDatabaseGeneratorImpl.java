@@ -104,8 +104,9 @@ public class MySQLDatabaseGeneratorImpl extends
                     result.append(" AUTO_INCREMENT ");
                 }
                 if ( null != column.getRemarks() && 0 < column.getRemarks().length() ) {
-                    result.append(" COMMENT ");
+                    result.append(" COMMENT '");
                     result.append(column.getRemarks());
+                    result.append("'");
                     appendSpace(result);
                 }
                 result.append(",");
