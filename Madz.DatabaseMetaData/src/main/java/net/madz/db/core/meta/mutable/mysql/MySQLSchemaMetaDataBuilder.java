@@ -35,6 +35,8 @@ public interface MySQLSchemaMetaDataBuilder
     void setCharSet(String charSet);
 
     void setCollation(String collation);
+    
+    Integer getLowerCaseTableNames();
 
 }
 /*

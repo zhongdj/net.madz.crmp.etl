@@ -1,10 +1,8 @@
 package net.madz.db.core.meta.immutable.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.TreeMap;
 
 import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
@@ -17,13 +15,12 @@ public class SchemaMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
         implements SchemaMetaData<SMD, TMD, CMD, FMD, IMD> {
 
     protected final DottedPath name;
-    protected final Collection<TMD> orderedTables = new ArrayList<TMD>();
-    protected final Map<String, TMD> tablesMap = new HashMap<String, TMD>();
+    protected TreeMap<String, TMD> tablesMap = new TreeMap<String, TMD>();
 
     public SchemaMetaDataImpl(SMD metaData) {
         this.name = metaData.getSchemaPath();
     }
-    
+
     public SchemaMetaDataImpl(DottedPath name) {
         super();
         this.name = name;
@@ -36,7 +33,7 @@ public class SchemaMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
 
     @Override
     public Collection<TMD> getTables() {
-        return Collections.unmodifiableCollection(this.orderedTables);
+        return Collections.unmodifiableCollection(this.tablesMap.values());
     }
 
     @Override
@@ -46,11 +43,10 @@ public class SchemaMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
 
     public void appendTable(TMD table) {
         this.tablesMap.put(table.getTableName(), table);
-        this.orderedTables.add(table);
     }
 
     @Override
     public String toString() {
-        return "SchemaMetaDataImpl [name=" + name + ", tables=" + orderedTables + "]";
+        return "SchemaMetaDataImpl [name=" + name + ", tables=" + tablesMap.values() + "]";
     }
 }

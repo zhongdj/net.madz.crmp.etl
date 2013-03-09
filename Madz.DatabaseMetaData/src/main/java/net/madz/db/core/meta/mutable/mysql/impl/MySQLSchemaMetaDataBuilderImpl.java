@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
-import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -31,9 +31,10 @@ public class MySQLSchemaMetaDataBuilderImpl
         extends
         BasedSchemaMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
         implements MySQLSchemaMetaDataBuilder {
-    
+
     private String charSet;
     private String collation;
+    private Integer lowerCaseTableNames = 2; //default value is 2 under mac
 
     public MySQLSchemaMetaDataBuilderImpl(final String databaseName) throws SQLException {
         super(databaseName);
@@ -41,6 +42,15 @@ public class MySQLSchemaMetaDataBuilderImpl
 
     public MySQLSchemaMetaDataBuilder build(Connection conn) throws SQLException {
         final Statement stmt = conn.createStatement();
+        final ResultSet rs = stmt.executeQuery("SHOW VARIABLES LIKE 'LOWER_CASE_TABLE_NAMES';");
+        while ( rs.next() ) {
+            lowerCaseTableNames = rs.getInt("Value");
+            if ( lowerCaseTableNames == 0 ) {
+                this.tableBuilderMap = new TreeMap<String, MySQLTableMetaDataBuilder>();
+            } else {
+                this.tableBuilderMap = new TreeMap<String, MySQLTableMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
+            }
+        }
         // We should keep the context of querying in information_schema
         // database.
         stmt.executeQuery("USE information_schema;");
@@ -172,5 +182,10 @@ public class MySQLSchemaMetaDataBuilderImpl
         } finally {
             ResourceManagementUtils.closeResultSet(rs);
         }
+    }
+
+    @Override
+    public Integer getLowerCaseTableNames() {
+        return this.lowerCaseTableNames;
     }
 }
