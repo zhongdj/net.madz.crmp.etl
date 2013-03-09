@@ -131,7 +131,7 @@ public class DbConfigurationManagement {
             return false;
         }
         databaseconfig.getDatabaseCopies().getDatabase().remove(database);
-        databaseCopiesCache.remove(database);
+        databaseCopiesCache.remove(databaseName);
         try {
             final JAXBContext context = JAXBContext.newInstance(DatabaseConfig.class);
             Marshaller marshaller = context.createMarshaller();
