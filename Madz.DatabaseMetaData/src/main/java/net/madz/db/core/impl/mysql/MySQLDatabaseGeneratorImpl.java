@@ -103,7 +103,7 @@ public class MySQLDatabaseGeneratorImpl extends
                 if ( column.isAutoIncremented() ) {
                     result.append(" AUTO_INCREMENT ");
                 }
-                if ( null != column.getRemarks() && 0 > column.getRemarks().length() ) {
+                if ( null != column.getRemarks() && 0 < column.getRemarks().length() ) {
                     result.append(" COMMENT ");
                     result.append(column.getRemarks());
                     appendSpace(result);
@@ -172,7 +172,7 @@ public class MySQLDatabaseGeneratorImpl extends
                 result.append(table.getCollation());
                 appendSpace(result);
             }
-            if ( null != table.getRemarks() ) {
+            if ( null != table.getRemarks() && 0 < table.getRemarks().length() ) {
                 result.append("COMMENT '");
                 result.append(table.getRemarks());
                 result.append("'");
