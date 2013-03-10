@@ -59,4 +59,32 @@ public final class MySQLSchemaMetaDataImpl extends
     public Integer getLowerCaseTableNames() {
         return this.lowerCaseTableNames;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ( ( charSet == null ) ? 0 : charSet.hashCode() );
+        result = prime * result + ( ( collation == null ) ? 0 : collation.hashCode() );
+        result = prime * result + ( ( lowerCaseTableNames == null ) ? 0 : lowerCaseTableNames.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) return true;
+        if ( !super.equals(obj) ) return false;
+        if ( getClass() != obj.getClass() ) return false;
+        MySQLSchemaMetaDataImpl other = (MySQLSchemaMetaDataImpl) obj;
+        if ( charSet == null ) {
+            if ( other.charSet != null ) return false;
+        } else if ( !charSet.equals(other.charSet) ) return false;
+        if ( collation == null ) {
+            if ( other.collation != null ) return false;
+        } else if ( !collation.equals(other.collation) ) return false;
+        if ( lowerCaseTableNames == null ) {
+            if ( other.lowerCaseTableNames != null ) return false;
+        } else if ( !lowerCaseTableNames.equals(other.lowerCaseTableNames) ) return false;
+        return true;
+    }
 }

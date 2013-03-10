@@ -52,33 +52,6 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         }
 
         @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + getOuterType().hashCode();
-            result = prime * result + ( ( column == null ) ? 0 : column.hashCode() );
-            result = prime * result + ( ( position == null ) ? 0 : position.hashCode() );
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if ( this == obj ) return true;
-            if ( obj == null ) return false;
-            if ( getClass() != obj.getClass() ) return false;
-            @SuppressWarnings("unchecked")
-            Entry other = (Entry) obj;
-            if ( !getOuterType().equals(other.getOuterType()) ) return false;
-            if ( column == null ) {
-                if ( other.column != null ) return false;
-            } else if ( !column.equals(other.column) ) return false;
-            if ( position == null ) {
-                if ( other.position != null ) return false;
-            } else if ( !position.equals(other.position) ) return false;
-            return true;
-        }
-
-        @Override
         public String toString() {
             return indexName + "." + position;
         }
@@ -88,7 +61,37 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
             return subPart;
         }
 
-        private IndexMetaDataImpl<SMD, TMD, CMD, FMD, IMD> getOuterType() {
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + ( ( position == null ) ? 0 : position.hashCode() );
+            result = prime * result + ( ( subPart == null ) ? 0 : subPart.hashCode() );
+            result = prime * result + ( ( column == null ) ? 0 : column.hashCode() );
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if ( this == obj ) return true;
+            if ( obj == null ) return false;
+            if ( getClass() != obj.getClass() ) return false;
+            Entry other = (Entry) obj;
+            if ( !getOuterType().equals(other.getOuterType()) ) return false;
+            if ( position == null ) {
+                if ( other.position != null ) return false;
+            } else if ( !position.equals(other.position) ) return false;
+            if ( subPart == null ) {
+                if ( other.subPart != null ) return false;
+            } else if ( !subPart.equals(other.subPart) ) return false;
+            if ( column == null ) {
+                if ( other.column != null ) return false;
+            } else if ( !column.equals(other.column) ) return false;
+            return true;
+        }
+
+        private IndexMetaDataImpl getOuterType() {
             return IndexMetaDataImpl.this;
         }
     }
@@ -101,7 +104,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         this.pages = metaData.getPageCount();
         this.sortDirection = metaData.getSortDirection();
         this.keyType = metaData.getKeyType();
-        for (IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry: metaData.getEntrySet()) {
+        for ( IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry : metaData.getEntrySet() ) {
             CMD column = parent.getColumn(entry.getColumn().getColumnName());
             Short position = entry.getPosition();
             Integer subPart = entry.getSubPart();
@@ -174,12 +177,12 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ( ( table.getTableName() == null ) ? 0 : table.getTableName().hashCode() );
+        result = prime * result + ( ( indexName == null ) ? 0 : indexName.hashCode() );
+        result = prime * result + ( ( keyType == null ) ? 0 : keyType.hashCode() );
+        result = prime * result + ( ( indexType == null ) ? 0 : indexType.hashCode() );
         result = prime * result + ( ( sortDirection == null ) ? 0 : sortDirection.hashCode() );
         result = prime * result + ( ( entryList == null ) ? 0 : entryList.hashCode() );
-        result = prime * result + ( ( indexName == null ) ? 0 : indexName.hashCode() );
-        result = prime * result + ( ( indexType == null ) ? 0 : indexType.hashCode() );
-        result = prime * result + ( ( keyType == null ) ? 0 : keyType.hashCode() );
-        result = prime * result + ( ( table == null ) ? 0 : table.hashCode() );
         return result;
     }
 
@@ -189,18 +192,18 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         if ( obj == null ) return false;
         if ( getClass() != obj.getClass() ) return false;
         IndexMetaDataImpl other = (IndexMetaDataImpl) obj;
+        if ( table.getTableName() == null ) {
+            if ( other.table.getTableName() != null ) return false;
+        } else if ( !table.getTableName().equals(other.table.getTableName()) ) return false;
+        if ( indexName == null ) {
+            if ( other.indexName != null ) return false;
+        } else if ( !indexName.equals(other.indexName) ) return false;
+        if ( keyType != other.keyType ) return false;
+        if ( indexType != other.indexType ) return false;
         if ( sortDirection != other.sortDirection ) return false;
         if ( entryList == null ) {
             if ( other.entryList != null ) return false;
         } else if ( !entryList.equals(other.entryList) ) return false;
-        if ( indexName == null ) {
-            if ( other.indexName != null ) return false;
-        } else if ( !indexName.equals(other.indexName) ) return false;
-        if ( indexType != other.indexType ) return false;
-        if ( keyType != other.keyType ) return false;
-        if ( table == null ) {
-            if ( other.table != null ) return false;
-        } else if ( !table.equals(other.table) ) return false;
         return true;
     }
 }

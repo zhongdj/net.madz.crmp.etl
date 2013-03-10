@@ -159,4 +159,58 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
     public String getDefaultValue() {
         return this.defaultValue;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
+        result = prime * result + ( ( defaultValue == null ) ? 0 : defaultValue.hashCode() );
+        result = prime * result + (int) ( charOctetLength ^ ( charOctetLength >>> 32 ) );
+        result = prime * result + ( isAutoIncremented ? 1231 : 1237 );
+        result = prime * result + ( isNullable ? 1231 : 1237 );
+        result = prime * result + ( ( ordinalPosition == null ) ? 0 : ordinalPosition.hashCode() );
+        result = prime * result + ( ( radix == null ) ? 0 : radix.hashCode() );
+        result = prime * result + ( ( remarks == null ) ? 0 : remarks.hashCode() );
+        result = prime * result + ( ( size == null ) ? 0 : size.hashCode() );
+        result = prime * result + ( ( typeName == null ) ? 0 : typeName.hashCode() );
+        result = prime * result + ( ( table.getTableName() == null ) ? 0 : table.getTableName().hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) return true;
+        if ( obj == null ) return false;
+        if ( getClass() != obj.getClass() ) return false;
+        ColumnMetaDataImpl other = (ColumnMetaDataImpl) obj;
+        if ( name == null ) {
+            if ( other.name != null ) return false;
+        } else if ( !name.equals(other.name) ) return false;
+        if ( defaultValue == null ) {
+            if ( other.defaultValue != null ) return false;
+        } else if ( !defaultValue.equals(other.defaultValue) ) return false;
+        if ( charOctetLength != other.charOctetLength ) return false;
+        if ( isAutoIncremented != other.isAutoIncremented ) return false;
+        if ( isNullable != other.isNullable ) return false;
+        if ( ordinalPosition == null ) {
+            if ( other.ordinalPosition != null ) return false;
+        } else if ( !ordinalPosition.equals(other.ordinalPosition) ) return false;
+        if ( radix == null ) {
+            if ( other.radix != null ) return false;
+        } else if ( !radix.equals(other.radix) ) return false;
+        if ( remarks == null ) {
+            if ( other.remarks != null ) return false;
+        } else if ( !remarks.equals(other.remarks) ) return false;
+        if ( size == null ) {
+            if ( other.size != null ) return false;
+        } else if ( !size.equals(other.size) ) return false;
+        if ( typeName == null ) {
+            if ( other.typeName != null ) return false;
+        } else if ( !typeName.equals(other.typeName) ) return false;
+        if ( table.getTableName() == null ) {
+            if ( other.table.getTableName() != null ) return false;
+        } else if ( !table.getTableName().equals(other.table.getTableName()) ) return false;
+        return true;
+    }
 }

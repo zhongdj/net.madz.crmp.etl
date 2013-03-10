@@ -131,4 +131,58 @@ public class TableMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
                 + ", columnMap=" + columnMap + ", orderedColumns=" + orderedColumns + ", indexMap=" + indexMap + ", fkList=" + fkList + ", primaryKey="
                 + primaryKey + "]";
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( schema.getSchemaPath() == null ) ? 0 : schema.getSchemaPath().hashCode() );
+        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
+        result = prime * result + ( ( idCol == null ) ? 0 : idCol.hashCode() );
+        result = prime * result + ( ( idGeneration == null ) ? 0 : idGeneration.hashCode() );
+        result = prime * result + ( ( remarks == null ) ? 0 : remarks.hashCode() );
+        result = prime * result + ( ( type == null ) ? 0 : type.hashCode() );
+        result = prime * result + ( ( primaryKey == null ) ? 0 : primaryKey.hashCode() );
+        result = prime * result + ( ( orderedColumns == null ) ? 0 : orderedColumns.hashCode() );
+        result = prime * result + ( ( indexMap == null ) ? 0 : indexMap.hashCode() );
+        result = prime * result + ( ( fkList == null ) ? 0 : fkList.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) return true;
+        if ( obj == null ) return false;
+        if ( getClass() != obj.getClass() ) return false;
+        TableMetaDataImpl other = (TableMetaDataImpl) obj;
+        if ( schema.getSchemaPath() == null ) {
+            if ( other.schema.getSchemaPath() != null ) return false;
+        } else if ( !schema.getSchemaPath().equals(other.schema.getSchemaPath()) ) return false;
+        if ( name == null ) {
+            if ( other.name != null ) return false;
+        } else if ( !name.equals(other.name) ) return false;
+        if ( idCol == null ) {
+            if ( other.idCol != null ) return false;
+        } else if ( !idCol.equals(other.idCol) ) return false;
+        if ( idGeneration == null ) {
+            if ( other.idGeneration != null ) return false;
+        } else if ( !idGeneration.equals(other.idGeneration) ) return false;
+        if ( remarks == null ) {
+            if ( other.remarks != null ) return false;
+        } else if ( !remarks.equals(other.remarks) ) return false;
+        if ( type != other.type ) return false;
+        if ( primaryKey == null ) {
+            if ( other.primaryKey != null ) return false;
+        } else if ( !primaryKey.equals(other.primaryKey) ) return false;
+        if ( orderedColumns == null ) {
+            if ( other.orderedColumns != null ) return false;
+        } else if ( !orderedColumns.equals(other.orderedColumns) ) return false;
+        if ( indexMap == null ) {
+            if ( other.indexMap != null ) return false;
+        } else if ( !indexMap.equals(other.indexMap) ) return false;
+        if ( fkList == null ) {
+            if ( other.fkList != null ) return false;
+        } else if ( !fkList.equals(other.fkList) ) return false;
+        return true;
+    }
 }

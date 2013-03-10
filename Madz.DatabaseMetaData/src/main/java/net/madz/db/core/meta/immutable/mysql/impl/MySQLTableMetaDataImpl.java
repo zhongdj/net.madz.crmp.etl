@@ -63,4 +63,30 @@ public final class MySQLTableMetaDataImpl extends
     public void setPrimaryKey(MySQLIndexMetaData pk) {
         this.primaryKey = pk;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ( ( characterSet == null ) ? 0 : characterSet.hashCode() );
+        result = prime * result + ( ( collation == null ) ? 0 : collation.hashCode() );
+        result = prime * result + ( ( engine == null ) ? 0 : engine.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) return true;
+        if ( !super.equals(obj) ) return false;
+        if ( getClass() != obj.getClass() ) return false;
+        MySQLTableMetaDataImpl other = (MySQLTableMetaDataImpl) obj;
+        if ( characterSet == null ) {
+            if ( other.characterSet != null ) return false;
+        } else if ( !characterSet.equals(other.characterSet) ) return false;
+        if ( collation == null ) {
+            if ( other.collation != null ) return false;
+        } else if ( !collation.equals(other.collation) ) return false;
+        if ( engine != other.engine ) return false;
+        return true;
+    }
 }

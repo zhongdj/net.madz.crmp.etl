@@ -122,4 +122,60 @@ public final class MySQLColumnMetaDataImpl extends
     public List<String> getTypeValues() {
         return this.typeValues;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + (int) ( characterMaximumLength ^ ( characterMaximumLength >>> 32 ) );
+        result = prime * result + ( ( characterSet == null ) ? 0 : characterSet.hashCode() );
+        result = prime * result + ( ( collationName == null ) ? 0 : collationName.hashCode() );
+        result = prime * result + ( ( columnKey == null ) ? 0 : columnKey.hashCode() );
+        result = prime * result + ( ( columnType == null ) ? 0 : columnType.hashCode() );
+        result = prime * result + ( ( extra == null ) ? 0 : extra.hashCode() );
+        result = prime * result + ( isCollationWithBin ? 1231 : 1237 );
+        result = prime * result + ( isUnsigned ? 1231 : 1237 );
+        result = prime * result + ( isZeroFill ? 1231 : 1237 );
+        result = prime * result + ( ( numericPrecision == null ) ? 0 : numericPrecision.hashCode() );
+        result = prime * result + ( ( numericScale == null ) ? 0 : numericScale.hashCode() );
+        result = prime * result + ( ( typeValues == null ) ? 0 : typeValues.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) return true;
+        if ( !super.equals(obj) ) return false;
+        if ( getClass() != obj.getClass() ) return false;
+        MySQLColumnMetaDataImpl other = (MySQLColumnMetaDataImpl) obj;
+        if ( characterMaximumLength != other.characterMaximumLength ) return false;
+        if ( characterSet == null ) {
+            if ( other.characterSet != null ) return false;
+        } else if ( !characterSet.equals(other.characterSet) ) return false;
+        if ( collationName == null ) {
+            if ( other.collationName != null ) return false;
+        } else if ( !collationName.equals(other.collationName) ) return false;
+        if ( columnKey == null ) {
+            if ( other.columnKey != null ) return false;
+        } else if ( !columnKey.equals(other.columnKey) ) return false;
+        if ( columnType == null ) {
+            if ( other.columnType != null ) return false;
+        } else if ( !columnType.equals(other.columnType) ) return false;
+        if ( extra == null ) {
+            if ( other.extra != null ) return false;
+        } else if ( !extra.equals(other.extra) ) return false;
+        if ( isCollationWithBin != other.isCollationWithBin ) return false;
+        if ( isUnsigned != other.isUnsigned ) return false;
+        if ( isZeroFill != other.isZeroFill ) return false;
+        if ( numericPrecision == null ) {
+            if ( other.numericPrecision != null ) return false;
+        } else if ( !numericPrecision.equals(other.numericPrecision) ) return false;
+        if ( numericScale == null ) {
+            if ( other.numericScale != null ) return false;
+        } else if ( !numericScale.equals(other.numericScale) ) return false;
+        if ( typeValues == null ) {
+            if ( other.typeValues != null ) return false;
+        } else if ( !typeValues.equals(other.typeValues) ) return false;
+        return true;
+    }
 }
