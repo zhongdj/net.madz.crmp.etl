@@ -22,7 +22,12 @@ public class DatabaseSchemaUtilsImplTest {
 
     @Test
     public void testCompareDatabaseSchema() {
-        fail("Not yet implemented");
+        DatabaseSchemaUtilsImpl dbSchemaUtils = new DatabaseSchemaUtilsImpl();
+        try {
+            Assert.assertTrue(dbSchemaUtils.compareDatabaseSchema("fortest", "fortest"));
+        } catch (SQLException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
