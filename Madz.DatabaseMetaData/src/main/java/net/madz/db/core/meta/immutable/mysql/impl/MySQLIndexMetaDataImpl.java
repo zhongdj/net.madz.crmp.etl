@@ -37,4 +37,28 @@ public final class MySQLIndexMetaDataImpl extends
     public String getIndexComment() {
         return this.indexComment;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ( ( indexComment == null ) ? 0 : indexComment.hashCode() );
+        result = prime * result + ( ( indexMethod == null ) ? 0 : indexMethod.hashCode() );
+        result = prime * result + ( isNull ? 1231 : 1237 );
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) return true;
+        if ( !super.equals(obj) ) return false;
+        if ( getClass() != obj.getClass() ) return false;
+        MySQLIndexMetaDataImpl other = (MySQLIndexMetaDataImpl) obj;
+        if ( indexComment == null ) {
+            if ( other.indexComment != null ) return false;
+        } else if ( !indexComment.equals(other.indexComment) ) return false;
+        if ( indexMethod != other.indexMethod ) return false;
+        if ( isNull != other.isNull ) return false;
+        return true;
+    }
 }
