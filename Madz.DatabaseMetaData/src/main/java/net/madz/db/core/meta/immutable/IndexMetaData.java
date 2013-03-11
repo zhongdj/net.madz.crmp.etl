@@ -50,5 +50,7 @@ extends MetaData {
 
         /** Column position in index */
         public Short getPosition();
+        
+        public boolean isNull();
     }
 }

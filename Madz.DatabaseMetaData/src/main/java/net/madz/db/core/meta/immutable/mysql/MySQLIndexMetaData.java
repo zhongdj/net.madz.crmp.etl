@@ -6,8 +6,6 @@ import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod;
 public interface MySQLIndexMetaData extends
         IndexMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
 
-    boolean isNull();
-
     MySQLIndexMethod getIndexMethod();
 
     String getIndexComment();

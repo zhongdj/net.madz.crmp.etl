@@ -12,20 +12,13 @@ public final class MySQLIndexMetaDataImpl extends
         IndexMetaDataImpl<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> implements
         MySQLIndexMetaData {
 
-    private final boolean isNull;
     private final MySQLIndexMethod indexMethod;
     private final String indexComment;
 
     public MySQLIndexMetaDataImpl(MySQLTableMetaData parent, MySQLIndexMetaData metaData) {
         super(parent, metaData);
-        this.isNull = metaData.isNull();
         this.indexMethod = metaData.getIndexMethod();
         this.indexComment = metaData.getIndexComment();
-    }
-
-    @Override
-    public boolean isNull() {
-        return this.isNull;
     }
 
     @Override
@@ -44,7 +37,6 @@ public final class MySQLIndexMetaDataImpl extends
         int result = super.hashCode();
         result = prime * result + ( ( indexComment == null ) ? 0 : indexComment.hashCode() );
         result = prime * result + ( ( indexMethod == null ) ? 0 : indexMethod.hashCode() );
-        result = prime * result + ( isNull ? 1231 : 1237 );
         return result;
     }
 
@@ -58,7 +50,6 @@ public final class MySQLIndexMetaDataImpl extends
             if ( other.indexComment != null ) return false;
         } else if ( !indexComment.equals(other.indexComment) ) return false;
         if ( indexMethod != other.indexMethod ) return false;
-        if ( isNull != other.isNull ) return false;
         return true;
     }
 }

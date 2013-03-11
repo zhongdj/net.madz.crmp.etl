@@ -27,7 +27,6 @@ public class MySQLIndexMetaDataBuilderImpl
         BaseIndexMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>
         implements MySQLIndexMetaDataBuilder {
 
-    private boolean isNull;
     private MySQLIndexMethod indexMethod;
     private String indexComment;
 
@@ -58,7 +57,6 @@ public class MySQLIndexMetaDataBuilderImpl
                     this.sortDirection = SortDirectionEnum.getSortDirection(rs.getString("collation"));
                     this.cardinatlity = rs.getInt("cardinality");
                     // TODO pages ?? moved to jdbc level
-                    this.isNull = rs.getBoolean("nullable");
                     this.indexMethod = MySQLIndexMethod.getIndexMethod(rs.getString("index_type"));
                     this.indexComment = rs.getString("INDEX_COMMENT");
                 }
@@ -83,18 +81,8 @@ public class MySQLIndexMetaDataBuilderImpl
     }
 
     @Override
-    public boolean isNull() {
-        return this.isNull;
-    }
-
-    @Override
     public MySQLIndexMethod getIndexMethod() {
         return this.indexMethod;
-    }
-
-    @Override
-    public void setNull(boolean isNull) {
-        this.isNull = isNull;
     }
 
     @Override

@@ -32,12 +32,9 @@ public interface MySQLIndexMetaDataBuilder
      * MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData,
      * MySQLIndexMetaData>> {
      */
-
     void setKeyType(KeyTypeEnum keyType);
 
     public abstract void setIndexComment(String indexComment);
 
     public abstract void setIndexMethod(MySQLIndexMethod indexMethod);
-
-    public abstract void setNull(boolean isNull);
 }

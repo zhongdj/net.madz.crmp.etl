@@ -229,7 +229,6 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       //      Assertions.expectResult(0 /*"unknown"*/ )(pk getPageCount)
       Assertions.expectResult(SortDirectionEnum.ascending)(pk getSortDirection)
       Assertions.expectResult("table_with_single_column_pk")(pk.getTable getTableName)
-      Assertions.expectResult(false)(pk isNull)
       Assertions.expectResult(true)(pk containsColumn column)
       Assertions.expectResult(true)(column isMemberOfPrimaryKey)
       val pkEntry = collectionAsScalaIterable(pk getEntrySet).toList.get(0)
@@ -288,7 +287,6 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult("PRIMARY")(pk getIndexName)
       Assertions.expectResult(SortDirectionEnum.ascending)(pk getSortDirection)
       Assertions.expectResult(true)(pk isUnique)
-      Assertions.expectResult(false)(pk isNull)
       Assertions.expectResult(0)(pk getCardinality)
       //      Assertions.expectResult(IndexTypeEnum.clustered)(pk getIndexType)
       Assertions.expectResult(KeyTypeEnum.primaryKey)(pk getKeyType)
@@ -413,7 +411,6 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(index)(non_unique_index_entry getKey)
       Assertions.expectResult(1)(non_unique_index_entry getPosition)
       Assertions.expectResult(false)(index isUnique)
-      Assertions.expectResult(true)(index isNull)
     }
 
     it("should parse composite PK with multiple columns") {
@@ -454,7 +451,6 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
 
       Assertions.expectResult(MySQLIndexMethod.btree)(pk getIndexMethod)
       //??
-      Assertions.expectResult(false)(pk.isNull)
       Assertions.expectResult(true)(pk.containsColumn(pk_column_part_1))
       Assertions.expectResult(true)(pk.containsColumn(pk_column_part_2))
       Assertions.expectResult(true)(pk.containsColumn(pk_column_part_3))
@@ -505,8 +501,6 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       val nickname_index = table.getIndex("nickname_index");
       Assertions.expectResult(true)(email_index.isUnique)
       Assertions.expectResult(false)(nickname_index.isUnique)
-      Assertions.expectResult(false)(email_index.isNull)
-      Assertions.expectResult(true)(nickname_index.isNull)
 
     }
     it("should parse single column with both unique key and primary key options") {
@@ -681,7 +675,6 @@ mysql> select * from key_column_usage where constraint_schema='test' and (table_
 
       Assertions.expectResult("" /*For string, If it is null, result set returns "".*/ )(fk_index_1.getIndexComment)
       Assertions.expectResult(MySQLIndexMethod.btree)(fk_index_1.getIndexMethod)
-      Assertions.expectResult(true)(fk_index_1.isNull)
       Assertions.expectResult(true)(fk_index_1.containsColumn(fk_column_1))
       Assertions.expectResult(false)(fk_index_1.containsColumn(fk_column_2))
       Assertions.expectResult(false)(fk_index_1.containsColumn(table_2 getColumn "id"))
@@ -696,7 +689,6 @@ mysql> select * from key_column_usage where constraint_schema='test' and (table_
 
       Assertions.expectResult("")(fk_index_2.getIndexComment)
       Assertions.expectResult(MySQLIndexMethod.btree)(fk_index_2.getIndexMethod)
-      Assertions.expectResult(true)(fk_index_2.isNull)
       Assertions.expectResult(false)(fk_index_2.containsColumn(fk_column_1))
       Assertions.expectResult(true)(fk_index_2.containsColumn(fk_column_2))
       Assertions.expectResult(false)(fk_index_2.containsColumn(table_2 getColumn "id"))
@@ -801,7 +793,6 @@ mysql> select * from key_column_usage where constraint_schema='madz_database_par
 
       Assertions.expectResult("")(fk_index.getIndexComment)
       Assertions.expectResult(MySQLIndexMethod.btree)(fk_index.getIndexMethod)
-      Assertions.expectResult(false)(fk_index.isNull)
       Assertions.expectResult(true)(fk_index.containsColumn(fk_column_1))
       Assertions.expectResult(true)(fk_index.containsColumn(fk_column_2))
       Assertions.expectResult(false)(fk_index.containsColumn(table_2 getColumn "id"))
@@ -839,7 +830,6 @@ mysql> select * from key_column_usage where constraint_schema='madz_database_par
       Assertions.expectResult(0)(index_entry getSubPart)
       Assertions.expectResult("")(index.getIndexComment)
       Assertions.expectResult(MySQLIndexMethod.btree)(index.getIndexMethod)
-      Assertions.expectResult(false)(index.isNull)
       Assertions.expectResult(true)(index.containsColumn(index_column))
       Assertions.expectResult(false)(index.containsColumn(t1 getColumn "data"))
       Assertions.expectResult(0)(index.getCardinality)
@@ -904,7 +894,6 @@ mysql> select * from columns where table_name= 'table_composite_index_test';
       Assertions.expectResult(0)(index_entry_2 getSubPart)
       Assertions.expectResult("")(index.getIndexComment)
       Assertions.expectResult(MySQLIndexMethod.btree)(index.getIndexMethod)
-      Assertions.expectResult(false)(index.isNull)
       Assertions.expectResult(true)(index.containsColumn(index_column_1))
       Assertions.expectResult(true)(index.containsColumn(index_column_2))
       Assertions.expectResult(false)(index.containsColumn(t1 getColumn "data"))

@@ -73,6 +73,11 @@ public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
         public Short getPosition() {
             return this.position;
         }
+        
+        @Override
+        public boolean isNull() {
+            return column.isNullable();
+        }
     }
 
     @Override

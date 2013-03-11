@@ -422,7 +422,6 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val column = makeColumn(tableBuilder, rawColumn)
       val pkIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "PRIMARY")
       pkIndex.setKeyType(KeyTypeEnum.primaryKey)
-      pkIndex.setNull(true)
       //More attributes?
 
       val entry = new pkIndex.Entry(pkIndex, 0, column, 1.shortValue)
