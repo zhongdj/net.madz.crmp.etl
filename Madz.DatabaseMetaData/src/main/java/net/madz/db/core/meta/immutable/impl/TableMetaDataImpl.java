@@ -26,7 +26,7 @@ public class TableMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     protected final String idCol, idGeneration;
     protected final Map<String, CMD> columnMap = new TreeMap<String, CMD>(String.CASE_INSENSITIVE_ORDER);
     protected final List<CMD> orderedColumns = new LinkedList<CMD>();
-    protected final Map<String, IMD> indexMap = new TreeMap<String, IMD>();
+    protected final Map<String, IMD> indexMap = new TreeMap<String, IMD>(String.CASE_INSENSITIVE_ORDER);
     protected final List<FMD> fkList = new LinkedList<FMD>();
     protected IMD primaryKey;
 
