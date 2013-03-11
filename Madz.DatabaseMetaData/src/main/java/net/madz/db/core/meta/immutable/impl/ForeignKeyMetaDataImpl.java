@@ -198,7 +198,7 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         result = prime * result + ( ( deleteRule == null ) ? 0 : deleteRule.hashCode() );
         result = prime * result + ( ( updateRule == null ) ? 0 : updateRule.hashCode() );
         result = prime * result + ( ( fkIndex == null ) ? 0 : fkIndex.hashCode() );
-        result = prime * result + ( ( fkTable.getTableName() == null ) ? 0 : fkTable.getTableName().hashCode() );
+        result = prime * result + ( ( fkTable.getTablePath() == null ) ? 0 : fkTable.getTablePath().hashCode() );
         result = prime * result + ( ( pkIndex == null ) ? 0 : pkIndex.hashCode() );
         result = prime * result + ( ( pkTable == null ) ? 0 : pkTable.hashCode() );
         result = prime * result + ( ( entryList == null ) ? 0 : entryList.hashCode() );
@@ -220,9 +220,9 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         if ( fkIndex == null ) {
             if ( other.fkIndex != null ) return false;
         } else if ( !fkIndex.equals(other.fkIndex) ) return false;
-        if ( fkTable.getTableName() == null ) {
-            if ( other.fkTable.getTableName() != null ) return false;
-        } else if ( !fkTable.getTableName().equals(other.fkTable.getTableName()) ) return false;
+        if ( fkTable.getTablePath() == null ) {
+            if ( other.fkTable.getTablePath() != null ) return false;
+        } else if ( !fkTable.getTablePath().equals(other.fkTable.getTablePath()) ) return false;
         if ( pkIndex == null ) {
             if ( other.pkIndex != null ) return false;
         } else if ( !pkIndex.equals(other.pkIndex) ) return false;
