@@ -174,7 +174,7 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
         result = prime * result + ( ( remarks == null ) ? 0 : remarks.hashCode() );
         result = prime * result + ( ( size == null ) ? 0 : size.hashCode() );
         result = prime * result + ( ( typeName == null ) ? 0 : typeName.hashCode() );
-        result = prime * result + ( ( table.getTableName() == null ) ? 0 : table.getTableName().hashCode() );
+        result = prime * result + ( ( table.getTablePath() == null ) ? 0 : table.getTablePath().hashCode() );
         return result;
     }
 
@@ -208,9 +208,9 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
         if ( typeName == null ) {
             if ( other.typeName != null ) return false;
         } else if ( !typeName.equals(other.typeName) ) return false;
-        if ( table.getTableName() == null ) {
-            if ( other.table.getTableName() != null ) return false;
-        } else if ( !table.getTableName().equals(other.table.getTableName()) ) return false;
+        if ( table.getTablePath() == null ) {
+            if ( other.table.getTablePath() != null ) return false;
+        } else if ( !table.getTablePath().equals(other.table.getTablePath()) ) return false;
         return true;
     }
 }

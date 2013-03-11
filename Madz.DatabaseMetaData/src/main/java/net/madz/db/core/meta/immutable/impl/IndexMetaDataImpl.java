@@ -177,7 +177,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( table.getTableName() == null ) ? 0 : table.getTableName().hashCode() );
+        result = prime * result + ( ( table.getTablePath() == null ) ? 0 : table.getTablePath().hashCode() );
         result = prime * result + ( ( indexName == null ) ? 0 : indexName.hashCode() );
         result = prime * result + ( ( keyType == null ) ? 0 : keyType.hashCode() );
         result = prime * result + ( ( indexType == null ) ? 0 : indexType.hashCode() );
@@ -192,9 +192,9 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         if ( obj == null ) return false;
         if ( getClass() != obj.getClass() ) return false;
         IndexMetaDataImpl other = (IndexMetaDataImpl) obj;
-        if ( table.getTableName() == null ) {
-            if ( other.table.getTableName() != null ) return false;
-        } else if ( !table.getTableName().equals(other.table.getTableName()) ) return false;
+        if ( table.getTablePath() == null ) {
+            if ( other.table.getTablePath() != null ) return false;
+        } else if ( !table.getTablePath().equals(other.table.getTablePath()) ) return false;
         if ( indexName == null ) {
             if ( other.indexName != null ) return false;
         } else if ( !indexName.equals(other.indexName) ) return false;
