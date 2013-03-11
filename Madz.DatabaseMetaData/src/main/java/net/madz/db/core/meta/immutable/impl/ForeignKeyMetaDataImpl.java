@@ -155,7 +155,7 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
             final int prime = 31;
             int result = 1;
             result = prime * result + getOuterType().hashCode();
-            result = prime * result + ( ( key == null ) ? 0 : key.hashCode() );
+            result = prime * result + ( ( key.getForeignKeyName() == null ) ? 0 : key.getForeignKeyName().hashCode() );
             result = prime * result + ( ( seq == null ) ? 0 : seq.hashCode() );
             result = prime * result + ( ( fkColumn == null ) ? 0 : fkColumn.hashCode() );
             result = prime * result + ( ( pkColumn == null ) ? 0 : pkColumn.hashCode() );
@@ -169,9 +169,9 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
             if ( getClass() != obj.getClass() ) return false;
             Entry other = (Entry) obj;
             if ( !getOuterType().equals(other.getOuterType()) ) return false;
-            if ( key == null ) {
-                if ( other.key != null ) return false;
-            } else if ( !key.equals(other.key) ) return false;
+            if ( key.getForeignKeyName() == null ) {
+                if ( other.key.getForeignKeyName() != null ) return false;
+            } else if ( !key.getForeignKeyName().equals(other.key.getForeignKeyName()) ) return false;
             if ( seq == null ) {
                 if ( other.seq != null ) return false;
             } else if ( !seq.equals(other.seq) ) return false;
@@ -200,7 +200,7 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         result = prime * result + ( ( fkIndex == null ) ? 0 : fkIndex.hashCode() );
         result = prime * result + ( ( fkTable.getTablePath() == null ) ? 0 : fkTable.getTablePath().hashCode() );
         result = prime * result + ( ( pkIndex == null ) ? 0 : pkIndex.hashCode() );
-        result = prime * result + ( ( pkTable == null ) ? 0 : pkTable.hashCode() );
+        result = prime * result + ( ( pkTable.getTablePath() == null ) ? 0 : pkTable.getTablePath().hashCode() );
         result = prime * result + ( ( entryList == null ) ? 0 : entryList.hashCode() );
         return result;
     }
@@ -226,9 +226,9 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         if ( pkIndex == null ) {
             if ( other.pkIndex != null ) return false;
         } else if ( !pkIndex.equals(other.pkIndex) ) return false;
-        if ( pkTable == null ) {
-            if ( other.pkTable != null ) return false;
-        } else if ( !pkTable.equals(other.pkTable) ) return false;
+        if ( pkTable.getTablePath() == null ) {
+            if ( other.pkTable.getTablePath() != null ) return false;
+        } else if ( !pkTable.getTablePath().equals(other.pkTable.getTablePath()) ) return false;
         if ( entryList == null ) {
             if ( other.entryList != null ) return false;
         } else if ( !entryList.equals(other.entryList) ) return false;
