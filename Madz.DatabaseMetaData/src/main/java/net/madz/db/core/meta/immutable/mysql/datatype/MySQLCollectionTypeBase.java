@@ -54,7 +54,7 @@ public abstract class MySQLCollectionTypeBase implements DataType {
         result.append("(");
         for ( String value : values ) {
             builder.addTypeValue(value);
-            result.append(value);
+            result.append("'").append(value).append("'");
             result.append(",");
         }
         result.deleteCharAt(result.length() - 1);
