@@ -718,29 +718,6 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     val result = new MySQLColumnMetaDataBuilderImpl(tableBuilder, rawColumn.columnName)
     result.setDefaultValue(rawColumn.columnDefault)
     result.setDataType(rawColumn.mysqlDataType)
-    //result.setCharacterMaximumLength(rawColumn.characterMaximumLengh)
-    //result.setCharacterSet(rawColumn.characterSetName)
-    //result.setCollationName(rawColumn.collationName)
-    //    result.setColumnType(rawColumn.columnType)
-    //result.setSqlTypeName(rawColumn.dataType)
-    //    if (null != rawColumn.columnType) {
-    //      if (rawColumn.columnType.toUpperCase().contains("UNSIGNED")) {
-    //        result.setUnsigned(true);
-    //      }
-    //      if (rawColumn.columnType.toUpperCase().contains("ZEROFILL")) {
-    //        result.setZeroFill(true);
-    //      }
-    //
-    //    }
-    //    if (rawColumn.dataType.equalsIgnoreCase("SET") || rawColumn.dataType.equalsIgnoreCase("ENUM")) {
-    //      var typeValues = rawColumn.columnType.substring(rawColumn.columnType.indexOf("(") + 1, rawColumn.columnType.indexOf(")")).split(",");
-    //      typeValues.foreach(value => result.addTypeValue(value));
-    //    }
-
-    //    result.setNumericPrecision(rawColumn.numberPrecision.intValue)
-    //    result.setNumericScale(rawColumn.numberScale.intValue)
-    //result.setSize(rawColumn.)
-    //result.setSqlTypeName(x$1)
     result.setAutoIncremented(increment)
     result.setNullable(rawColumn.isNullable)
     result.setOrdinalPosition(rawColumn.ordinalPosition)
