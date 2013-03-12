@@ -2,7 +2,7 @@ package net.madz.db.core.impl
 
 import java.sql.Connection
 
-import scala.slick.jdbc.{StaticQuery => Q}
+import scala.slick.jdbc.{ StaticQuery => Q }
 import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
 
@@ -716,34 +716,35 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
   def makeColumn(tableBuilder: MySQLTableMetaDataBuilder, rawColumn: MySQLColumn, increment: Boolean = false): MySQLColumnMetaDataBuilder = {
     val result = new MySQLColumnMetaDataBuilderImpl(tableBuilder, rawColumn.columnName)
-    result.setCharacterMaximumLength(rawColumn.characterMaximumLengh)
-    result.setCharacterSet(rawColumn.characterSetName)
-    result.setCollationName(rawColumn.collationName)
     result.setDefaultValue(rawColumn.columnDefault)
+    result.setDataType(rawColumn.mysqlDataType)
+    //result.setCharacterMaximumLength(rawColumn.characterMaximumLengh)
+    //result.setCharacterSet(rawColumn.characterSetName)
+    //result.setCollationName(rawColumn.collationName)
     //    result.setColumnType(rawColumn.columnType)
-    result.setSqlTypeName(rawColumn.dataType)
-    if (null != rawColumn.columnType) {
-      if (rawColumn.columnType.toUpperCase().contains("UNSIGNED")) {
-        result.setUnsigned(true);
-      }
-      if (rawColumn.columnType.toUpperCase().contains("ZEROFILL")) {
-        result.setZeroFill(true);
-      }
+    //result.setSqlTypeName(rawColumn.dataType)
+    //    if (null != rawColumn.columnType) {
+    //      if (rawColumn.columnType.toUpperCase().contains("UNSIGNED")) {
+    //        result.setUnsigned(true);
+    //      }
+    //      if (rawColumn.columnType.toUpperCase().contains("ZEROFILL")) {
+    //        result.setZeroFill(true);
+    //      }
+    //
+    //    }
+    //    if (rawColumn.dataType.equalsIgnoreCase("SET") || rawColumn.dataType.equalsIgnoreCase("ENUM")) {
+    //      var typeValues = rawColumn.columnType.substring(rawColumn.columnType.indexOf("(") + 1, rawColumn.columnType.indexOf(")")).split(",");
+    //      typeValues.foreach(value => result.addTypeValue(value));
+    //    }
 
-    }
-    if (rawColumn.dataType.equalsIgnoreCase("SET") || rawColumn.dataType.equalsIgnoreCase("ENUM")) {
-      var typeValues = rawColumn.columnType.substring(rawColumn.columnType.indexOf("(") + 1, rawColumn.columnType.indexOf(")")).split(",");
-      typeValues.foreach(value => result.addTypeValue(value));
-    }
-
-    result.setNumericPrecision(rawColumn.numberPrecision.intValue)
-    result.setNumericScale(rawColumn.numberScale.intValue)
+    //    result.setNumericPrecision(rawColumn.numberPrecision.intValue)
+    //    result.setNumericScale(rawColumn.numberScale.intValue)
+    //result.setSize(rawColumn.)
+    //result.setSqlTypeName(x$1)
     result.setAutoIncremented(increment)
     result.setNullable(rawColumn.isNullable)
     result.setOrdinalPosition(rawColumn.ordinalPosition)
     result.setRemarks(rawColumn.columnComment)
-    //result.setSize(rawColumn.)
-    //result.setSqlTypeName(x$1)
     tableBuilder.appendColumnMetaDataBuilder(result)
     result
   }
