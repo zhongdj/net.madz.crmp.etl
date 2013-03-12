@@ -115,7 +115,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     }
 
     @Override
-    public void setSize(Integer size) {
+    public void setSize(int size) {
         this.size = size;
     }
 
@@ -130,7 +130,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     }
 
     @Override
-    public void setRadix(Integer radix) {
+    public void setRadix(int radix) {
         this.radix = radix;
     }
 

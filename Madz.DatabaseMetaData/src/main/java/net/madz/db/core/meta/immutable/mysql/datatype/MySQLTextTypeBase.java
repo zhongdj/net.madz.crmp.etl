@@ -8,7 +8,33 @@ public abstract class MySQLTextTypeBase implements DataType {
     private String charsetName;
     private String collationName;
 
-    public boolean isBinary() {
+    public MySQLTextTypeBase() {
+		super();
+	}
+
+	public MySQLTextTypeBase(boolean isBinary) {
+		super();
+		this.isBinary = isBinary;
+	}
+
+	public MySQLTextTypeBase(String collationName) {
+		super();
+		this.collationName = collationName;
+	}
+
+	public MySQLTextTypeBase(String charsetName, String collationName) {
+		super();
+		this.charsetName = charsetName;
+		this.collationName = collationName;
+	}
+
+	public MySQLTextTypeBase(boolean isBinary, String charsetName) {
+		super();
+		this.isBinary = isBinary;
+		this.charsetName = charsetName;
+	}
+
+	public boolean isBinary() {
         return isBinary;
     }
 

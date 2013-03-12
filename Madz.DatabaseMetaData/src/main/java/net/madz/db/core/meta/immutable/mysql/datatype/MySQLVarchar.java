@@ -1,25 +1,20 @@
 package net.madz.db.core.meta.immutable.mysql.datatype;
 
-import net.madz.db.utils.Utilities;
-
 public class MySQLVarchar extends MySQLCharBase {
 
-    public static final String name = "VARCHAR";
-    private final long length;
+	public static final String name = "VARCHAR";
 
-    public MySQLVarchar(long length) {
-        super();
-        Utilities.validateLength(length);
-        this.length = length;
-    }
+	public MySQLVarchar(long length) {
+		super(length);
+	}
 
-    @Override
-    public String getName() {
-        return name;
-    }
+	public MySQLVarchar(long length, String charsetName, String collationName) {
+		super(length, charsetName, collationName);
+	}
 
-    @Override
-    public long getLength() {
-        return length;
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
+
 }

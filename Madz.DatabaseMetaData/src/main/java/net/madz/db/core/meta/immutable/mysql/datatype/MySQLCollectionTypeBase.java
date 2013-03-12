@@ -16,14 +16,15 @@ public abstract class MySQLCollectionTypeBase implements DataType {
         return values;
     }
 
-    public void addValue(String value) {
+    public MySQLCollectionTypeBase addValue(String value) {
         if ( null == value ) {
-            return;
+            return this;
         }
         if ( null == values ) {
             values = new LinkedList<String>();
         }
         values.add(value);
+        return this;
     }
 
     public String getCharsetName() {

@@ -2,7 +2,7 @@ package net.madz.db.core.impl
 
 import java.sql.Connection
 
-import scala.slick.jdbc.{ StaticQuery => Q }
+import scala.slick.jdbc.{StaticQuery => Q}
 import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
 
@@ -11,8 +11,12 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
 
 import net.madz.db.core.impl.mysql.MySQLDatabaseGeneratorImpl
-import net.madz.db.core.meta.DottedPath
 import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData
+import net.madz.db.core.meta.immutable.mysql.datatype.MySQLBigInt
+import net.madz.db.core.meta.immutable.mysql.datatype.MySQLBit
+import net.madz.db.core.meta.immutable.mysql.datatype.MySQLChar
+import net.madz.db.core.meta.immutable.mysql.datatype.MySQLInteger
+import net.madz.db.core.meta.immutable.mysql.datatype.MySQLVarchar
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum
 import net.madz.db.core.meta.immutable.mysql.enums.MySQLIndexMethod
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum
@@ -93,8 +97,8 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       atLeastOneColumn.setSqlTypeName("bigint");
       atLeastOneColumn.setColumnType("bigint(20)")
       atLeastOneColumn.setExtra("")
-      atLeastOneColumn.setNumericPrecision(20)
-      atLeastOneColumn.setNumericScale(null)
+      atLeastOneColumn.setDataType(new MySQLBigInt(20))
+      //      atLeastOneColumn.setNumericScale(null)
       atLeastOneColumn.setAutoIncremented(false)
       atLeastOneColumn.setCharacterOctetLength(20)
       atLeastOneColumn.setDefaultValue(null)
@@ -187,8 +191,8 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     it("should generate columns with modifier as NULLABLE(true or false)") {
       val tableName = "nullable_column_test_table"
       val columns: List[MySQLColumn] =
-        MySQLColumn(tableName, "nullable_COLUMN", 1, null, true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") ::
-          MySQLColumn(tableName, "not_nullable_COLUMN", 2, null, false, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") :: Nil
+        MySQLColumn(tableName, "nullable_COLUMN", 1, null, true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "", new MySQLBit) ::
+          MySQLColumn(tableName, "not_nullable_COLUMN", 2, null, false, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "", new MySQLBit) :: Nil
 
       verifyColumnFeature(tableName, columns)
     }
@@ -196,8 +200,8 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     it("should generate columns with modifier as DEFAULT value") {
       val tableName = "default_value_test_table"
       val columns: List[MySQLColumn] =
-        MySQLColumn(tableName, "default_value_COLUMN", 1, "b'1'", true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") ::
-          MySQLColumn(tableName, "no_default_value_COLUMN", 2, null, false, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "") :: Nil
+        MySQLColumn(tableName, "default_value_COLUMN", 1, "b'1'", true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "", new MySQLBit) ::
+          MySQLColumn(tableName, "no_default_value_COLUMN", 2, null, false, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "", new MySQLBit) :: Nil
 
       verifyColumnFeature(tableName, columns)
     }
@@ -205,8 +209,8 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     it("should generate columns with specific collation") {
       val tableName = "collation_test_table"
       val columns: List[MySQLColumn] =
-        MySQLColumn(tableName, "VARCHAR_COLUMN", 1, null, false, "varchar", 255, 510, 0, 0, "gbk", "gbk_bin", "varchar(255)", "", "", "") ::
-          MySQLColumn(tableName, "CHAR_COLUMN", 2, null, false, "char", 255, 510, 0, 0, "gbk", "gbk_chinese_ci", "char(255)", "", "", "") :: Nil
+        MySQLColumn(tableName, "VARCHAR_COLUMN", 1, null, false, "varchar", 255, 510, 0, 0, "gbk", "gbk_bin", "varchar(255)", "", "", "", new MySQLVarchar(255, "gbk", "gbk_bin")) ::
+          MySQLColumn(tableName, "CHAR_COLUMN", 2, null, false, "char", 255, 510, 0, 0, "gbk", "gbk_chinese_ci", "char(255)", "", "", "", new MySQLChar(255, "gbk", "gbk_bin")) :: Nil
 
       verifyColumnFeature(tableName, columns)
     }
@@ -230,14 +234,14 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "single_column_pk_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
-      val rawColumn = MySQLColumn(tableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val rawColumn = MySQLColumn(tableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
       val column = makeColumn(tableBuilder, rawColumn)
       val pkIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "PRIMARY")
       pkIndex.setKeyType(KeyTypeEnum.primaryKey)
 
       //More attributes?
 
-      val entry = new pkIndex.Entry(pkIndex, 0, column, 1.shortValue)
+      val entry = new pkIndex.Entry(pkIndex, 0, column, 1)
       //Do I need to bind them?
       column.appendUniqueIndexEntry(entry)
       pkIndex.addEntry(entry)
@@ -271,7 +275,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "single_column_pk_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
-      val rawColumn = MySQLColumn(tableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val rawColumn = MySQLColumn(tableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
       //difference
       val column = makeColumn(tableBuilder, rawColumn, true)
 
@@ -280,7 +284,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
       //More attributes?
 
-      val entry = new pkIndex.Entry(pkIndex, 0, column, 1.shortValue)
+      val entry = new pkIndex.Entry(pkIndex, 0, column, 1)
       //Do I need to bind them?
       column.appendUniqueIndexEntry(entry)
       pkIndex.addEntry(entry)
@@ -319,8 +323,8 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "single_column_pk_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
-      val rawColumn1 = MySQLColumn(tableName, "VARCHAR_COLUMN", 1, null, false, "varchar", 255, 510, 0, 0, "gbk", "gbk_bin", "varchar(255)", "", "", "")
-      val rawColumn2 = MySQLColumn(tableName, "CHAR_COLUMN", 2, null, false, "char", 255, 510, 0, 0, "gbk", "gbk_chinese_ci", "char(255)", "", "", "")
+      val rawColumn1 = MySQLColumn(tableName, "VARCHAR_COLUMN", 1, null, false, "varchar", 255, 510, 0, 0, "gbk", "gbk_bin", "varchar(255)", "", "", "", new MySQLVarchar(255, "gbk", "gbk_bin"))
+      val rawColumn2 = MySQLColumn(tableName, "CHAR_COLUMN", 2, null, false, "char", 255, 510, 0, 0, "gbk", "gbk_chinese_ci", "char(255)", "", "", "", new MySQLChar(255, "gbk", "gbk_bin"))
 
       val column1 = makeColumn(tableBuilder, rawColumn1)
       val column2 = makeColumn(tableBuilder, rawColumn2)
@@ -330,8 +334,8 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
       //More attributes?
 
-      val entry1 = new pkIndex.Entry(pkIndex, 0, column1, 1.shortValue)
-      val entry2 = new pkIndex.Entry(pkIndex, 0, column2, 2.shortValue)
+      val entry1 = new pkIndex.Entry(pkIndex, 0, column1, 1)
+      val entry2 = new pkIndex.Entry(pkIndex, 0, column2, 2)
       //Do I need to bind them?
       column1.appendUniqueIndexEntry(entry1)
       column2.appendUniqueIndexEntry(entry2)
@@ -375,14 +379,14 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val tableName: String = "single_column_pk_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
       tableBuilder.setEngine(MySQLEngineEnum.MEMORY)
-      val rawColumn = MySQLColumn(tableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val rawColumn = MySQLColumn(tableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
       val column = makeColumn(tableBuilder, rawColumn)
       val pkIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "PRIMARY")
       pkIndex.setKeyType(KeyTypeEnum.primaryKey)
       pkIndex.setIndexMethod(MySQLIndexMethod.hash)
       //More attributes?
 
-      val entry = new pkIndex.Entry(pkIndex, 0, column, 1.shortValue)
+      val entry = new pkIndex.Entry(pkIndex, 0, column, 1)
       //Do I need to bind them?
       column.appendUniqueIndexEntry(entry)
       pkIndex.addEntry(entry)
@@ -418,13 +422,13 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "single_column_pk_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
-      val rawColumn = MySQLColumn(tableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val rawColumn = MySQLColumn(tableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
       val column = makeColumn(tableBuilder, rawColumn)
       val pkIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "PRIMARY")
       pkIndex.setKeyType(KeyTypeEnum.primaryKey)
       //More attributes?
 
-      val entry = new pkIndex.Entry(pkIndex, 0, column, 1.shortValue)
+      val entry = new pkIndex.Entry(pkIndex, 0, column, 1)
       //Do I need to bind them?
       column.appendUniqueIndexEntry(entry)
       pkIndex.addEntry(entry)
@@ -460,13 +464,13 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "single_column_unique_key_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
-      val rawColumn = MySQLColumn(tableName, "unique_key_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val rawColumn = MySQLColumn(tableName, "unique_key_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
       val column = makeColumn(tableBuilder, rawColumn)
       val uniqueIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "TEST UNIQUE INDEX")
       uniqueIndex.setKeyType(KeyTypeEnum.uniqueKey)
       //More attributes?
 
-      val entry = new uniqueIndex.Entry(uniqueIndex, 0, column, 1.shortValue)
+      val entry = new uniqueIndex.Entry(uniqueIndex, 0, column, 1)
       //Do I need to bind them?
       column.appendUniqueIndexEntry(entry)
       uniqueIndex.addEntry(entry)
@@ -502,16 +506,16 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "composite_unique_key_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
-      val rawColumn1 = MySQLColumn(tableName, "unique_key_1_COLUMN", 1, null, true, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
-      val rawColumn2 = MySQLColumn(tableName, "unique_key_2_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val rawColumn1 = MySQLColumn(tableName, "unique_key_1_COLUMN", 1, null, true, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
+      val rawColumn2 = MySQLColumn(tableName, "unique_key_2_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
       val column1 = makeColumn(tableBuilder, rawColumn1)
       val column2 = makeColumn(tableBuilder, rawColumn2)
       val uniqueIndex = new MySQLIndexMetaDataBuilderImpl(tableBuilder, "TEST UNIQUE INDEX")
       uniqueIndex.setKeyType(KeyTypeEnum.uniqueKey)
       //More attributes?
 
-      val entry1 = new uniqueIndex.Entry(uniqueIndex, 0, column1, 1.shortValue)
-      val entry2 = new uniqueIndex.Entry(uniqueIndex, 0, column2, 2.shortValue)
+      val entry1 = new uniqueIndex.Entry(uniqueIndex, 0, column1, 1)
+      val entry2 = new uniqueIndex.Entry(uniqueIndex, 0, column2, 2)
       //Do I need to bind them?
       column1.appendUniqueIndexEntry(entry1)
       column2.appendUniqueIndexEntry(entry2)
@@ -551,7 +555,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val tableName: String = "npk_incremental_table"
       val tableBuilder: MySQLTableMetaDataBuilder = makeTable(schemaMetaDataBuilder, tableName)
-      val rawColumn = MySQLColumn(tableName, "npk_incremental_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val rawColumn = MySQLColumn(tableName, "npk_incremental_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
       //difference
       val column = makeColumn(tableBuilder, rawColumn, true)
 
@@ -560,7 +564,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
       //More attributes?
 
-      val entry = new npkIncrementalIndex.Entry(npkIncrementalIndex, 0, column, 1.shortValue)
+      val entry = new npkIncrementalIndex.Entry(npkIncrementalIndex, 0, column, 1)
       //Do I need to bind them?
       column.appendUniqueIndexEntry(entry)
       npkIncrementalIndex.addEntry(entry)
@@ -606,13 +610,13 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val pkTableName = "pk_table"
       val pkTableBuilder = makeTable(schemaMetaDataBuilder, pkTableName)
-      val pkRawColumn = MySQLColumn(pkTableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val pkRawColumn = MySQLColumn(pkTableName, "pk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
       val pkColumn = makeColumn(pkTableBuilder, pkRawColumn, true)
       val pkIndex = makePk(pkTableBuilder, pkColumn)
 
       val fkTableName = "fk_table"
       val fkTableBuilder = makeTable(schemaMetaDataBuilder, fkTableName)
-      val fkRawColumn = MySQLColumn(fkTableName, "fk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val fkRawColumn = MySQLColumn(fkTableName, "fk_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
       val fkColumn = makeColumn(fkTableBuilder, fkRawColumn, false)
       val fkIndex = makeFk(pkTableBuilder, fkTableBuilder, pkColumn, fkColumn)
 
@@ -641,16 +645,16 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
       val schemaMetaDataBuilder: MySQLSchemaMetaDataBuilder = makeSchema("utf8", "utf8_bin")
       val pkTableName = "pk_table"
       val pkTableBuilder = makeTable(schemaMetaDataBuilder, pkTableName)
-      val pkRawColumn1 = MySQLColumn(pkTableName, "pk_1_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
-      val pkRawColumn2 = MySQLColumn(pkTableName, "pk_2_COLUMN", 2, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val pkRawColumn1 = MySQLColumn(pkTableName, "pk_1_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
+      val pkRawColumn2 = MySQLColumn(pkTableName, "pk_2_COLUMN", 2, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
       val pkColumn1 = makeColumn(pkTableBuilder, pkRawColumn1, false)
       val pkColumn2 = makeColumn(pkTableBuilder, pkRawColumn2, false)
       val pkIndex = makePk(pkTableBuilder, pkColumn1 :: pkColumn2 :: Nil)
 
       val fkTableName = "fk_table"
       val fkTableBuilder = makeTable(schemaMetaDataBuilder, fkTableName)
-      val fkRawColumn1 = MySQLColumn(fkTableName, "fk_1_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
-      val fkRawColumn2 = MySQLColumn(fkTableName, "fk_2_COLUMN", 2, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "")
+      val fkRawColumn1 = MySQLColumn(fkTableName, "fk_1_COLUMN", 1, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
+      val fkRawColumn2 = MySQLColumn(fkTableName, "fk_2_COLUMN", 2, null, false, "INTEGER", 0, 0, 32, 0, null, null, "INTEGER(32)", "", "", "", new MySQLInteger(32))
       val fkColumn1 = makeColumn(fkTableBuilder, fkRawColumn1, false)
       val fkColumn2 = makeColumn(fkTableBuilder, fkRawColumn2, false)
       val fkIndex = makeFk(pkTableBuilder, fkTableBuilder, pkColumn1 :: pkColumn2 :: Nil, fkColumn1 :: fkColumn2 :: Nil)
@@ -736,7 +740,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     result.setNumericScale(rawColumn.numberScale.intValue)
     result.setAutoIncremented(increment)
     result.setNullable(rawColumn.isNullable)
-    result.setOrdinalPosition(rawColumn.ordinalPosition.shortValue)
+    result.setOrdinalPosition(rawColumn.ordinalPosition)
     result.setRemarks(rawColumn.columnComment)
     //result.setSize(rawColumn.)
     //result.setSqlTypeName(x$1)
@@ -766,7 +770,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
     //    val pkColumn = makeColumn(pkTableBuilder, pkRawColumn, true)
     val pkIndex = new MySQLIndexMetaDataBuilderImpl(pkTableBuilder, "PRIMARY")
     pkIndex.setKeyType(KeyTypeEnum.primaryKey)
-    val pkEntry = new pkIndex.Entry(pkIndex, 0, pkColumn, 1.shortValue)
+    val pkEntry = new pkIndex.Entry(pkIndex, 0, pkColumn, 1)
     pkColumn.appendUniqueIndexEntry(pkEntry)
     pkIndex.addEntry(pkEntry)
     pkTableBuilder.appendIndexMetaDataBuilder(pkIndex)
@@ -786,7 +790,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
   }
   def makeFk(pkTableBuilder: MySQLTableMetaDataBuilder, fkTableBuilder: MySQLTableMetaDataBuilder, pkColumn: MySQLColumnMetaDataBuilder, fkColumn: MySQLColumnMetaDataBuilder): MySQLForeignKeyMetaDataBuilder = {
     val result = new MySQLForeignKeyMetaDataBuilderImpl(fkTableBuilder, "FK_" + fkColumn.getColumnName + "_" + pkTableBuilder.getTableName + "_" + pkColumn.getColumnName)
-    val entry = new result.Entry(fkColumn, pkColumn, result, 1.shortValue)
+    val entry = new result.Entry(fkColumn, pkColumn, result, 1)
     result.setPkTable(pkTableBuilder)
     val fkIndex = makeIndex("TEST_FK_INDEX", fkTableBuilder, fkColumn, KeyTypeEnum.index)
     //    result.setFkIndex(fkIndex)
@@ -801,7 +805,7 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
     //More attributes?
 
-    val entry = new result.Entry(result, 0, column, 1.shortValue)
+    val entry = new result.Entry(result, 0, column, 1)
     if (keyType == KeyTypeEnum.index) {
       column.appendNonUniqueIndexEntry(entry)
     } else {

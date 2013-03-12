@@ -4,7 +4,20 @@ public class MySQLInteger extends MySQLIntTypeBase {
 
     public static final String name = "INTEGER";
 
-    @Override
+    public MySQLInteger(Short displayLength, boolean isUnsigned,
+			boolean isZeroFill) {
+		super(displayLength, isUnsigned, isZeroFill);
+	}
+
+	public MySQLInteger(Short displayLength) {
+		super(displayLength);
+	}
+
+	public MySQLInteger(Short displayLength, boolean isUnsigned) {
+		super(displayLength, isUnsigned);
+	}
+
+	@Override
     public String getName() {
         return name;
     }

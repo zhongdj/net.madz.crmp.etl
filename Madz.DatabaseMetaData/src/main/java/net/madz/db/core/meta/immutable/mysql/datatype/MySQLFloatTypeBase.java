@@ -11,7 +11,21 @@ public abstract class MySQLFloatTypeBase implements DataType {
     private boolean isUnsigned;
     private boolean isZeroFill;
 
-    public long getLength() {
+    
+    public MySQLFloatTypeBase(int length, int decimals) {
+        this(length, decimals, false, false);
+	}
+
+	public MySQLFloatTypeBase(int length, int decimals, boolean isUnsigned,
+			boolean isZeroFill) {
+		super();
+		this.length = length;
+		this.decimals = decimals;
+		this.isUnsigned = isUnsigned;
+		this.isZeroFill = isZeroFill;
+	}
+
+	public long getLength() {
         return length;
     }
 

@@ -23,9 +23,9 @@ public interface MySQLColumnMetaDataBuilder
 
     public abstract void setCollationName(String collationName);
 
-    public abstract void setNumericScale(Integer numericScale);
+    public abstract void setNumericScale(int numericScale);
 
-    public abstract void setNumericPrecision(Integer numericPrecision);
+    public abstract void setNumericPrecision(int numericPrecision);
 
     public abstract void setCharacterMaximumLength(long characterMaximumLength);
 

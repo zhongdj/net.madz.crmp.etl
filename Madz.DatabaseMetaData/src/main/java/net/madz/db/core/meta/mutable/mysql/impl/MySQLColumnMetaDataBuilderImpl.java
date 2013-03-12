@@ -155,12 +155,12 @@ public final class MySQLColumnMetaDataBuilderImpl
     }
 
     @Override
-    public void setNumericPrecision(Integer numericPrecision) {
+    public void setNumericPrecision(int numericPrecision) {
         this.numericPrecision = numericPrecision;
     }
 
     @Override
-    public void setNumericScale(Integer numericScale) {
+    public void setNumericScale(int numericScale) {
         this.numericScale = numericScale;
     }
 

@@ -23,13 +23,13 @@ public interface ColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, 
 
     void setSqlTypeName(String sqlTypeName);
 
-    void setSize(Integer size);
+    void setSize(int size);
 
     void setNullable(boolean isNullable);
 
     void setAutoIncremented(boolean isAutoIncremented);
 
-    void setRadix(Integer radix);
+    void setRadix(int radix);
 
     void setCharacterOctetLength(long characterOctetLength);
 

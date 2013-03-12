@@ -46,7 +46,7 @@ public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
         private CMD column;
         private Short position;
 
-        public Entry(IMD key, int subPart, CMD column, Short position) {
+        public Entry(IMD key, int subPart, CMD column, short position) {
             super();
             this.key = key;
             this.subPart = subPart;
