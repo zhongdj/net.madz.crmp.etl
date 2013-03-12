@@ -80,8 +80,6 @@ public class MySQLDatabaseGeneratorImpl extends
                 appendSpace(result);
                 if ( null != column.getColumnType() ) {
                     result.append(column.getColumnType());
-                    appendCharSet(result, column);
-                    appendCollation(result, column);
                 } else {
                     result.append(assembleColumnType(column));
                 }
