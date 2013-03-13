@@ -9,22 +9,21 @@ public abstract class MySQLIntTypeBase implements DataType {
     private boolean isZeroFill;
 
     public MySQLIntTypeBase(Short displayLength) {
-		this(displayLength, false, false);
-	}
+        this(displayLength, false, false);
+    }
 
-	public MySQLIntTypeBase(Short displayLength, boolean isUnsigned) {
-		this(displayLength, isUnsigned, false);
-	}
+    public MySQLIntTypeBase(Short displayLength, boolean isUnsigned) {
+        this(displayLength, isUnsigned, false);
+    }
 
-	public MySQLIntTypeBase(Short displayLength, boolean isUnsigned,
-			boolean isZeroFill) {
-		super();
-		this.displayLength = displayLength;
-		this.isUnsigned = isUnsigned;
-		this.isZeroFill = isZeroFill;
-	}
+    public MySQLIntTypeBase(Short displayLength, boolean isUnsigned, boolean isZeroFill) {
+        super();
+        this.displayLength = displayLength;
+        this.isUnsigned = isUnsigned;
+        this.isZeroFill = isZeroFill;
+    }
 
-	public Short getLength() {
+    public Short getLength() {
         return displayLength;
     }
 

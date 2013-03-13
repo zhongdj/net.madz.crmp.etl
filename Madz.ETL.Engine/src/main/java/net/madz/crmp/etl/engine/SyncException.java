@@ -19,6 +19,4 @@ public class SyncException extends Exception {
     public SyncException(Throwable arg0) {
         super(arg0);
     }
-    
-    
 }

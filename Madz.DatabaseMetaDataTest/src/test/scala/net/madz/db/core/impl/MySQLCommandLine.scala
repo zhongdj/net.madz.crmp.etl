@@ -74,7 +74,7 @@ trait MySQLCommandLine extends MySQLConnector {
     val characterSetName: String, val collationName: String, val columnType: String, val columnKey: String, val extra: String,
     val columnComment: String, val mysqlDataType: DataType) {
 
-     override def equals(other: Any): Boolean = {
+    override def equals(other: Any): Boolean = {
       if (null == other) false
 
       if (!other.isInstanceOf[MySQLColumn]) false
@@ -100,7 +100,7 @@ trait MySQLCommandLine extends MySQLConnector {
       if (characterOctetLength != oth.characterOctetLength) false
       if (numberPrecision != oth.numberPrecision) false
       if (numberScale != oth.numberScale) false
-      
+
       if ((null == characterSetName || null == oth.characterSetName) && characterSetName != oth.characterSetName) false
       else if (null != characterSetName && !characterSetName.equals(oth.characterSetName)) false
 
@@ -118,7 +118,7 @@ trait MySQLCommandLine extends MySQLConnector {
 
       if ((null == columnComment || null == oth.columnComment) && columnComment != oth.columnComment) false
       else if (null != columnComment && !columnComment.equals(oth.columnComment)) false
-      
+
       true
     }
   }
@@ -130,9 +130,9 @@ trait MySQLCommandLine extends MySQLConnector {
   implicit val getKeyColumnUsageResult = GetResult(r => MySQLKeyColumnUsage(r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<))
   implicit val getTableResult = GetResult(r => MySQLTable(r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<))
   implicit val getColumnResult = GetResult(r => MySQLColumn(r.<<, r.<<, r.<<, r.<<, r.nextString.equalsIgnoreCase("YES"), r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, null))
-//  implicit def scalaIntToJavaInt(sintValue: Int) = new java.lang.Integer(sintValue)
+  //  implicit def scalaIntToJavaInt(sintValue: Int) = new java.lang.Integer(sintValue)
   implicit def scalaIntToJavaShort(sintValue: Int) = new java.lang.Short(sintValue toString)
-//  implicit def scalaShortToJavaShort(shortValue: Short) = new java.lang.Short(shortValue)
+  //  implicit def scalaShortToJavaShort(shortValue: Short) = new java.lang.Short(shortValue)
 
   val columns_in_table1 =
     MySQLColumn("table_with_all_data_types_p1", "BIT_COLUMN", 1, null, true, "bit", 0, 0, 1, 0, null, null, "bit(1)", "", "", "", new MySQLBit()) ::

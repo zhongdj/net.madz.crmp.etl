@@ -6,8 +6,8 @@ import net.madz.db.core.meta.immutable.types.IndexTypeEnum;
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum;
 import net.madz.db.core.meta.immutable.types.SortDirectionEnum;
 
-public interface IndexMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> 
-extends MetaData {
+public interface IndexMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
+        extends MetaData {
 
     /** Name of the index */
     String getIndexName();
@@ -43,14 +43,14 @@ extends MetaData {
         /** Index this entry belongs to */
         public IMD getKey();
 
-        public Integer getSubPart ();
-        
+        public Integer getSubPart();
+
         /** Column definition */
         public CMD getColumn();
 
         /** Column position in index */
         public Short getPosition();
-        
+
         public boolean isNull();
     }
 }

@@ -4,20 +4,19 @@ public class MySQLBigInt extends MySQLIntTypeBase {
 
     public static final String name = "BIGINT";
 
-    public MySQLBigInt(Short displayLength, boolean isUnsigned,
-			boolean isZeroFill) {
-		super(displayLength, isUnsigned, isZeroFill);
-	}
+    public MySQLBigInt(Short displayLength, boolean isUnsigned, boolean isZeroFill) {
+        super(displayLength, isUnsigned, isZeroFill);
+    }
 
-	public MySQLBigInt(Short displayLength, boolean isUnsigned) {
-		super(displayLength, isUnsigned);
-	}
+    public MySQLBigInt(Short displayLength, boolean isUnsigned) {
+        super(displayLength, isUnsigned);
+    }
 
-	public MySQLBigInt(Short displayLength) {
-		super(displayLength);
-	}
+    public MySQLBigInt(Short displayLength) {
+        super(displayLength);
+    }
 
-	@Override
+    @Override
     public String getName() {
         return name;
     }

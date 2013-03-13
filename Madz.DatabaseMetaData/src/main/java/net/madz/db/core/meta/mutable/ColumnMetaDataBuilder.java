@@ -12,13 +12,13 @@ public interface ColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, 
         MetaDataBuilder<CMD>, SQLBasedMetaDataBuilder<CMDB> {
 
     String getColumnName();
-    
+
     void setPrimaryKey(IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
 
     CMDB appendNonUniqueIndexEntry(IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
 
     CMDB appendUniqueIndexEntry(IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
-    
+
     CMDB appendForeignKeyEntry(ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
 
     void setSqlTypeName(String sqlTypeName);

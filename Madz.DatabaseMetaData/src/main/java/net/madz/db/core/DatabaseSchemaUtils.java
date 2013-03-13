@@ -22,7 +22,7 @@ public interface DatabaseSchemaUtils {
      * @param databaseName
      * @param isCopy
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     boolean databaseExists(String databaseName, boolean isCopy) throws SQLException;
 
@@ -57,7 +57,7 @@ public interface DatabaseSchemaUtils {
      * @param databaseName
      * @return
      * @throws JAXBException
-     * @throws SQLException 
+     * @throws SQLException
      */
     boolean dropDatabase(String databaseName) throws JAXBException, SQLException;
 }

@@ -60,7 +60,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         public Integer getSubPart() {
             return subPart;
         }
-        
+
         @Override
         public boolean isNull() {
             return column.isNullable();

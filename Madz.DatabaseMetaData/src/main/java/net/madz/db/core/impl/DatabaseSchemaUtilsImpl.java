@@ -181,5 +181,4 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
                     + ", the value of target server is:" + other);
         }
     }
-
 }

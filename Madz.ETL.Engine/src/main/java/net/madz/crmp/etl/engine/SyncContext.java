@@ -19,5 +19,4 @@ public final class SyncContext {
         copy.timeCost = timeCost;
         return copy;
     }
-    
 }

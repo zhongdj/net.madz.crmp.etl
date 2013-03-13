@@ -11,7 +11,8 @@ import net.madz.db.core.meta.immutable.mysql.enums.MySQLEngineEnum;
 import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
 
 public interface MySQLTableMetaDataBuilder
-        extends MySQLTableMetaData,
+        extends
+        MySQLTableMetaData,
         TableMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
 
     MySQLIndexMetaDataBuilder getIndexBuilder(String string);
@@ -27,14 +28,22 @@ public interface MySQLTableMetaDataBuilder
     void setCharacterSet(String characterSet);
 
     void setCollation(String collation);
-        
-        /*
-        MySQLTableMetaData<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder>,
-        TableMetaDataBuilder <MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, 
-        MySQLSchemaMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>, 
-        MySQLTableMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>, 
-        MySQLColumnMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>, 
-        MySQLForeignKeyMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>, 
-        MySQLIndexMetaData<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> {
-        */
+    /*
+     * MySQLTableMetaData<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder,
+     * MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder,
+     * MySQLIndexMetaDataBuilder>, TableMetaDataBuilder
+     * <MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder,
+     * MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder,
+     * MySQLIndexMetaDataBuilder, MySQLSchemaMetaData<MySQLSchemaMetaData,
+     * MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData,
+     * MySQLIndexMetaData>, MySQLTableMetaData<MySQLSchemaMetaData,
+     * MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData,
+     * MySQLIndexMetaData>, MySQLColumnMetaData<MySQLSchemaMetaData,
+     * MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData,
+     * MySQLIndexMetaData>, MySQLForeignKeyMetaData<MySQLSchemaMetaData,
+     * MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData,
+     * MySQLIndexMetaData>, MySQLIndexMetaData<MySQLSchemaMetaData,
+     * MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData,
+     * MySQLIndexMetaData>> {
+     */
 }

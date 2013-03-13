@@ -40,6 +40,6 @@ public interface MySQLColumnMetaDataBuilder
     void setCollationWithBin(Boolean isCollationWithBin);
 
     void addTypeValue(String typeValue);
-    
+
     void setDataType(DataType dataType);
 }

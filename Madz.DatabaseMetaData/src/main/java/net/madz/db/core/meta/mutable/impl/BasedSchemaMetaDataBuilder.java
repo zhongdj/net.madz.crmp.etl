@@ -24,7 +24,7 @@ public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuil
 
     // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable fields
     protected final DottedPath schemaPath;
-    protected Map<String, TMDB> tableBuilderMap = new TreeMap<String,TMDB>(String.CASE_INSENSITIVE_ORDER);
+    protected Map<String, TMDB> tableBuilderMap = new TreeMap<String, TMDB>(String.CASE_INSENSITIVE_ORDER);
     protected final Collection<TMDB> tableList = new LinkedList<TMDB>();
 
     public BasedSchemaMetaDataBuilder(final String databaseName) throws SQLException {

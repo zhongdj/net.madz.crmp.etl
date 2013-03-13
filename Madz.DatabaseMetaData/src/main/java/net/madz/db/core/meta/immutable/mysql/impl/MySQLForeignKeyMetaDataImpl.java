@@ -12,6 +12,6 @@ public final class MySQLForeignKeyMetaDataImpl extends
         MySQLForeignKeyMetaData {
 
     public MySQLForeignKeyMetaDataImpl(MySQLTableMetaData parent, MySQLForeignKeyMetaData metaData) {
-        super(parent,metaData);
+        super(parent, metaData);
     }
 }

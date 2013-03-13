@@ -1,6 +1,5 @@
 package net.madz.db.core.meta.immutable.mysql.datatype;
 
-
 public class MySQLChar extends MySQLCharBase {
 
     public static final String name = "CHAR";
@@ -14,12 +13,11 @@ public class MySQLChar extends MySQLCharBase {
     }
 
     public MySQLChar(long length, String charsetName, String collationName) {
-		super(length, charsetName, collationName);
-	}
+        super(length, charsetName, collationName);
+    }
 
-	@Override
+    @Override
     public String getName() {
         return name;
     }
-
 }

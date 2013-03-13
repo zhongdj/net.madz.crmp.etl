@@ -34,7 +34,7 @@ public class MySQLSchemaMetaDataBuilderImpl
 
     private String charSet;
     private String collation;
-    private Integer lowerCaseTableNames = 2; //default value is 2 under mac
+    private Integer lowerCaseTableNames = 2; // default value is 2 under mac
 
     public MySQLSchemaMetaDataBuilderImpl(final String databaseName) throws SQLException {
         super(databaseName);

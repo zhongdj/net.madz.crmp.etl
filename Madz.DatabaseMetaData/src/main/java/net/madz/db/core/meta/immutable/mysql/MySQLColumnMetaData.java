@@ -31,12 +31,12 @@ public interface MySQLColumnMetaData extends
     Integer getNumericPrecision();
 
     long getCharacterMaximumLength();
-    
+
     boolean isUnsigned();
-    
+
     boolean isZeroFill();
-    
+
     boolean isCollationWithBin();
-    
+
     List<String> getTypeValues();
 }

@@ -156,6 +156,4 @@ public abstract class BaseTableMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
     public void setIdGeneration(String idGeneration) {
         this.idGeneration = idGeneration;
     }
-    
-    
 }

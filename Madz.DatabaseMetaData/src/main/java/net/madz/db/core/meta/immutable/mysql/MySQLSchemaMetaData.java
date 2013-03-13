@@ -8,6 +8,6 @@ public interface MySQLSchemaMetaData extends
     String getCharSet();
 
     String getCollation();
-    
+
     Integer getLowerCaseTableNames();
 }

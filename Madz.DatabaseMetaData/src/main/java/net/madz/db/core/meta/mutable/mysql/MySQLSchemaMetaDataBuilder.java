@@ -35,9 +35,8 @@ public interface MySQLSchemaMetaDataBuilder
     void setCharSet(String charSet);
 
     void setCollation(String collation);
-    
-    Integer getLowerCaseTableNames();
 
+    Integer getLowerCaseTableNames();
 }
 /*
  * The interface SchemaMetaData cannot be implemented more than once with

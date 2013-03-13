@@ -108,7 +108,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     public boolean isAutoIncremented() {
         return this.isAutoIncremented;
     }
-    
+
     @Override
     public void setSqlTypeName(String sqlTypeName) {
         this.sqlTypeName = sqlTypeName;

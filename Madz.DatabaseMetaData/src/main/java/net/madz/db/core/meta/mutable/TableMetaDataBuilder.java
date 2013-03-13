@@ -12,13 +12,22 @@ public interface TableMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, T
         extends
         // TableMetaData<SMDB, TMDB, CMDB, FMDB, IMDB> ,
         MetaDataBuilder<TMD>, SQLBasedMetaDataBuilder<TMDB> {
+
     DottedPath getTablePath();
+
     SMDB getSchema();
+
     TMDB appendColumnMetaDataBuilder(CMDB columnMetaData);
+
     TMDB appendIndexMetaDataBuilder(IMDB indexMetaData);
+
     TMDB appendForeignKeyMetaDataBuilder(FMDB fkMetaData);
+
     void setType(TableType type);
+
     void setRemarks(String remarks);
+
     void setIdCol(String idCol);
+
     void setIdGeneration(String idGeneration);
 }

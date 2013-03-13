@@ -23,7 +23,6 @@ public class SyncEngineImpl implements ISyncEngine {
             notifier.notifyImportFailed(context, localCopyStart, ex);
             throw ex;
         }
-        
         final long remoteSyncStart = notifier.notifySyncStarted(context, plantId);
         try { // Start to Sync
             doRemoteSync(context, sourceDatabaseMetaData);

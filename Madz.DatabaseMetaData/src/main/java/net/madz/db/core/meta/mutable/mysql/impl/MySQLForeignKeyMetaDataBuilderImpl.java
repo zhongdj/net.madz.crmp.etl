@@ -69,7 +69,8 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                 final MySQLColumnMetaData fkColumn = this.fkTable.getColumnBuilder(columnName);
                 final MySQLColumnMetaData pkColumn = this.pkTable.getColumnBuilder(referencedColumnName);
                 final Short seq = rs.getShort("ordinal_position");
-                final BaseForeignKeyMetaDataBuilder<MySQLSchemaMetaDataBuilder,MySQLTableMetaDataBuilder,MySQLColumnMetaDataBuilder,MySQLForeignKeyMetaDataBuilder,MySQLIndexMetaDataBuilder,MySQLSchemaMetaData,MySQLTableMetaData,MySQLColumnMetaData,MySQLForeignKeyMetaData,MySQLIndexMetaData>.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(fkColumn, pkColumn, this, seq);
+                final BaseForeignKeyMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(
+                        fkColumn, pkColumn, this, seq);
                 final MySQLColumnMetaDataBuilder columnBuilder = this.fkTable.getColumnBuilder(columnName);
                 columnBuilder.appendForeignKeyEntry(entry);
                 this.addEntry(entry);
@@ -95,9 +96,9 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                 for ( IndexMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
                     indexColumns.put(entry.getPosition(), entry.getColumn());
                 }
-//                if ( fkColumns.size() != indexColumns.size() ) {
-//                    continue;
-//                }
+                // if ( fkColumns.size() != indexColumns.size() ) {
+                // continue;
+                // }
                 boolean matched = true;
                 for ( Short key : fkColumns.keySet() ) {
                     MySQLColumnMetaData pkColumn = fkColumns.get(key);
@@ -107,14 +108,15 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                         break;
                     }
                 }
-                if ( matched && !index.getIndexName().equalsIgnoreCase("PRIMARY")) {
+                if ( matched && !index.getIndexName().equalsIgnoreCase("PRIMARY") ) {
                     this.fkIndex = this.fkTable.getIndexBuilder(index.getIndexName());
                     break;
                 }
             }
-//            if (null == this.fkIndex) {
-//                throw new IllegalStateException(MessageConsts.FK_INDEX_SHOULD_NOT_BE_NULL);
-//            }
+            // if (null == this.fkIndex) {
+            // throw new
+            // IllegalStateException(MessageConsts.FK_INDEX_SHOULD_NOT_BE_NULL);
+            // }
         }
         return this;
     }

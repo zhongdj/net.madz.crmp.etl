@@ -24,6 +24,6 @@ public interface DbOperatorFactory {
      * @return
      */
     AbsDatabaseGenerator createDatabaseGenerator(String databaseName);
-    
+
     SchemaMetaDataComparator createDatabaseComparator(String databaseName);
 }

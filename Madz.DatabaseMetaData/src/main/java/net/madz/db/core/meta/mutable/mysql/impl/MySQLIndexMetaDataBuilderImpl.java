@@ -65,7 +65,7 @@ public class MySQLIndexMetaDataBuilderImpl
                 short position = rs.getShort("seq_in_index");
                 MySQLColumnMetaDataBuilder column = this.table.getColumnBuilder(rs.getString("column_name"));
                 BaseIndexMetaDataBuilder.Entry entry = new BaseIndexMetaDataBuilder.Entry(this, subPart, column, position);
-                if (this.isUnique) {
+                if ( this.isUnique ) {
                     column.appendUniqueIndexEntry(entry);
                 } else {
                     column.appendNonUniqueIndexEntry(entry);
@@ -89,7 +89,7 @@ public class MySQLIndexMetaDataBuilderImpl
     public void setIndexMethod(MySQLIndexMethod indexMethod) {
         this.indexMethod = indexMethod;
     }
-    
+
     @Override
     public void setIndexComment(String indexComment) {
         this.indexComment = indexComment;
