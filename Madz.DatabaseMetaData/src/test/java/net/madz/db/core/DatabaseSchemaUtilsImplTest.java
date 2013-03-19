@@ -11,11 +11,13 @@ import net.madz.db.core.impl.DatabaseSchemaUtilsImpl;
 import net.madz.db.core.impl.DbConfigurationManagement;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DatabaseSchemaUtilsImplTest {
 
     @Test
+    @Ignore
     public void testDatabaseExists() {
         fail("Not yet implemented");
     }
@@ -49,6 +51,7 @@ public class DatabaseSchemaUtilsImplTest {
     }
 
     @Test
+    @Ignore
     public void testDropDatabase() {
         fail("Not yet implemented");
     }
