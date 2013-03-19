@@ -12,10 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.validation.SchemaFactory;
+
+import org.xml.sax.SAXException;
 
 import net.madz.db.utils.LogUtils;
 import net.madz.db.utils.MessageConsts;
@@ -41,6 +45,7 @@ public class DbConfigurationManagement {
         try {
             final JAXBContext context = JAXBContext.newInstance(DatabaseConfig.class);
             final Unmarshaller shaller = context.createUnmarshaller();
+            shaller.setSchema(SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File("./conf/Databases.xsd")));
             resource = new FileInputStream(configurationFilePath);
             databaseconfig = (DatabaseConfig) shaller.unmarshal(resource);
             final List<Database> sourceDatabases = databaseconfig.getSourceDatabases().getDatabase();
@@ -59,6 +64,8 @@ public class DbConfigurationManagement {
         } catch (JAXBException e) {
             throw new IllegalStateException(e);
         } catch (FileNotFoundException e) {
+            throw new IllegalStateException(e);
+        } catch (SAXException e) {
             throw new IllegalStateException(e);
         } finally {
             if ( null != resource ) {
@@ -134,12 +141,15 @@ public class DbConfigurationManagement {
         try {
             final JAXBContext context = JAXBContext.newInstance(DatabaseConfig.class);
             Marshaller marshaller = context.createMarshaller();
+            marshaller.setSchema(SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File("./conf/Databases.xsd")));
             final File file = new File(configurationFilePath);
             marshaller.marshal(databaseconfig, file);
             return true;
         } catch (JAXBException e) {
             // TODO [Jan 22, 2013][barry][Done] How to handle this exception?
             throw e;
+        } catch (SAXException e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -173,11 +183,14 @@ public class DbConfigurationManagement {
         try {
             context = JAXBContext.newInstance(DatabaseConfig.class);
             final Marshaller marshaller = context.createMarshaller();
+            marshaller.setSchema(SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File("./conf/Databases.xsd")));
             final File file = new File(configurationFilePath);
             marshaller.marshal(databaseconfig, file);
         } catch (JAXBException e) {
             // TODO [Jan 22, 2013][barry][Done] How to handle this exception
             LogUtils.error(DbConfigurationManagement.class, e);
+        } catch (SAXException e) {
+            throw new IllegalStateException(e);
         }
     }
 
