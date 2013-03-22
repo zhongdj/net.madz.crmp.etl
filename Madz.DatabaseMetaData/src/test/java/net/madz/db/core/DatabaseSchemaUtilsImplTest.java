@@ -40,7 +40,7 @@ public class DatabaseSchemaUtilsImplTest {
             Assert.assertEquals("fortest", dbName);
             final Database testDb = DbConfigurationManagement.findDatabaseInformation("fortest", true);
             Assert.assertEquals("MySQL", testDb.getSku().value());
-            Assert.assertEquals("jdbc:mysql://localhost:3307/fortest", testDb.getUrl());
+            Assert.assertEquals("jdbc:mysql://dbserver:3307/fortest", testDb.getUrl());
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
         } catch (IllegalOperationException e) {
