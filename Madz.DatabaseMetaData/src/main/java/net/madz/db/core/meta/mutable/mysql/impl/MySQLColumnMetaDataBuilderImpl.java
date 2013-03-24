@@ -71,20 +71,29 @@ public final class MySQLColumnMetaDataBuilderImpl
                         this.isCollationWithBin = true;
                     }
                 }
-                this.columnType = rs.getString("column_type");
-                if ( null != this.columnType ) {
-                    if ( this.columnType.toUpperCase().contains("UNSIGNED") ) {
+                final String rawColumnType = rs.getString("column_type");
+                if ( null != rawColumnType ) {
+                    if ( rawColumnType.toUpperCase().contains("UNSIGNED") ) {
                         setUnsigned(true);
                     }
-                    if ( this.columnType.toUpperCase().contains("ZEROFILL") ) {
+                    if ( rawColumnType.toUpperCase().contains("ZEROFILL") ) {
                         setZeroFill(true);
                     }
-                    if ( this.columnType.toUpperCase().contains("ENUM") || this.columnType.toUpperCase().contains("SET") ) {
-                        final String[] result = this.columnType.substring(this.columnType.indexOf("(") + 1, this.columnType.indexOf(")")).split(",");
+                    if ( rawColumnType.toUpperCase().contains("ENUM") || rawColumnType.toUpperCase().contains("SET") ) {
+                        final String[] result = rawColumnType.substring(rawColumnType.indexOf("(") + 1, rawColumnType.indexOf(")")).split(",");
                         for ( String value : result ) {
                             this.addTypeValue(value);
                         }
                     }
+                }
+                if ( null != this.characterSet ) {
+                    this.columnType = rawColumnType + " CHARACTER SET " + this.characterSet + " ";
+                }
+                if ( null != this.collationName ) {
+                    this.columnType = rawColumnType + " COLLATE " + this.collationName + " ";
+                }
+                if ( null == this.columnType ) {
+                    this.columnType = rawColumnType;
                 }
                 this.columnKey = rs.getString("column_key");
                 this.extra = rs.getString("extra");
