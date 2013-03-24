@@ -7,4 +7,11 @@ public class Utilities {
             throw new IllegalArgumentException(MessageConsts.LENGTH_MUST_BE_GREATER_THAN_ZERO);
         }
     }
+    
+    public static String handleSpecialCharacters(String value) {
+        if ( value.contains("'") ) {
+            return value.replace("'", "\\'");
+        }
+        return value;
+    }
 }

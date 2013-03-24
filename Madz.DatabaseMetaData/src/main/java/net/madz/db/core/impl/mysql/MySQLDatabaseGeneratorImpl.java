@@ -16,6 +16,7 @@ import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum;
 import net.madz.db.utils.MessageConsts;
+import net.madz.db.utils.Utilities;
 
 public class MySQLDatabaseGeneratorImpl extends
         AbsDatabaseGenerator<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> {
@@ -90,20 +91,21 @@ public class MySQLDatabaseGeneratorImpl extends
                 }
                 if ( column.hasDefaultValue() ) {
                     result.append(" DEFAULT ");
-                    if ( !column.getSqlTypeName().equalsIgnoreCase("BIT") ) {
-                        result.append("'");
+                    boolean singleQuoteNeeded = checkWhetherSingleQuoteAdded(column);
+                    if ( singleQuoteNeeded ) result.append("'");
+                    if ( singleQuoteNeeded ) {
+                        result.append(Utilities.handleSpecialCharacters(column.getDefaultValue()));
+                    } else {
+                        result.append(column.getDefaultValue());
                     }
-                    result.append(column.getDefaultValue());
-                    if ( !column.getSqlTypeName().equalsIgnoreCase("BIT") ) {
-                        result.append("'");
-                    }
+                    if ( singleQuoteNeeded ) result.append("'");
                 }
                 if ( column.isAutoIncremented() ) {
                     result.append(" AUTO_INCREMENT ");
                 }
                 if ( null != column.getRemarks() && 0 < column.getRemarks().length() ) {
                     result.append(" COMMENT '");
-                    result.append(column.getRemarks());
+                    result.append(Utilities.handleSpecialCharacters(column.getRemarks()));
                     result.append("'");
                     appendSpace(result);
                 }
@@ -173,7 +175,7 @@ public class MySQLDatabaseGeneratorImpl extends
             }
             if ( null != table.getRemarks() && 0 < table.getRemarks().length() ) {
                 result.append("COMMENT '");
-                result.append(table.getRemarks());
+                result.append(Utilities.handleSpecialCharacters(table.getRemarks()));
                 result.append("'");
                 appendSpace(result);
             }
@@ -183,6 +185,18 @@ public class MySQLDatabaseGeneratorImpl extends
         }
         stmt.executeBatch();
         conn.commit();
+    }
+
+    private boolean checkWhetherSingleQuoteAdded(MySQLColumnMetaData column) {
+        if ( column.getSqlTypeName().equalsIgnoreCase("BIT") ) {
+            return false;
+        }
+        if ( column.getSqlTypeName().equalsIgnoreCase("TIMESTAMP") || column.getSqlTypeName().equalsIgnoreCase("DATE")
+                || column.getSqlTypeName().equalsIgnoreCase("DATETIME") || column.getSqlTypeName().equalsIgnoreCase("TIME")
+                || column.getSqlTypeName().equalsIgnoreCase("YEAR") ) {
+            if ( !column.getDefaultValue().matches("[0-9]+.*") ) return false;
+        }
+        return true;
     }
 
     private void appendCollation(final StringBuilder result, final MySQLColumnMetaData column) {
