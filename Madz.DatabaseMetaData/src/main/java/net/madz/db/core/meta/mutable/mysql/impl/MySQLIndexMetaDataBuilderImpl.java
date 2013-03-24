@@ -21,6 +21,7 @@ import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
 import net.madz.db.utils.ResourceManagementUtils;
+import net.madz.db.utils.Utilities;
 
 public class MySQLIndexMetaDataBuilderImpl
         extends
@@ -44,7 +45,7 @@ public class MySQLIndexMetaDataBuilderImpl
         ResultSet rs = null;
         try {
             rs = stmt.executeQuery("SELECT * FROM statistics WHERE table_schema='" + this.indexPath.getParent().getParent().getName() + "' AND table_name='"
-                    + this.indexPath.getParent().getName() + "' AND index_name='" + this.indexPath.getName() + "';");
+                    + this.indexPath.getParent().getName() + "' AND index_name='" + Utilities.handleSpecialCharacters(this.indexPath.getName()) + "';");
             int count = 0;
             while ( rs.next() ) {
                 if ( count == 0 ) {
