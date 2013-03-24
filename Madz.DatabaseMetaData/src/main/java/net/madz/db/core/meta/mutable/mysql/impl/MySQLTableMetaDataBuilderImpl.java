@@ -104,8 +104,8 @@ public class MySQLTableMetaDataBuilderImpl
                     columnBuilder.setPrimaryKey(entry);
                 }
             }
-        } catch (Exception ignored) {
-            LogUtils.debug(ignored.getClass(), ignored.getMessage());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         } finally {
             ResourceManagementUtils.closeResultSet(rs);
         }
