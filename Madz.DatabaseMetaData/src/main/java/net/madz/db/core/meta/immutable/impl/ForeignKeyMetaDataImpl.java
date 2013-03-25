@@ -154,7 +154,7 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + getOuterType().hashCode();
+            result = prime * result + getOuterType().getForeignKeyName().hashCode();
             result = prime * result + ( ( key.getForeignKeyName() == null ) ? 0 : key.getForeignKeyName().hashCode() );
             result = prime * result + ( ( seq == null ) ? 0 : seq.hashCode() );
             result = prime * result + ( ( fkColumn == null ) ? 0 : fkColumn.hashCode() );
@@ -168,7 +168,7 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
             if ( obj == null ) return false;
             if ( getClass() != obj.getClass() ) return false;
             Entry other = (Entry) obj;
-            if ( !getOuterType().equals(other.getOuterType()) ) return false;
+            if ( !getOuterType().getForeignKeyName().equals(other.getOuterType().getForeignKeyName()) ) return false;
             if ( key.getForeignKeyName() == null ) {
                 if ( other.key.getForeignKeyName() != null ) return false;
             } else if ( !key.getForeignKeyName().equals(other.key.getForeignKeyName()) ) return false;

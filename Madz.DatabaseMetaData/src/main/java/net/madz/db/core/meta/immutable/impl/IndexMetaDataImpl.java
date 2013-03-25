@@ -71,7 +71,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + getOuterType().hashCode();
+            result = prime * result + getOuterType().getIndexName().hashCode();
             result = prime * result + ( ( position == null ) ? 0 : position.hashCode() );
             result = prime * result + ( ( subPart == null ) ? 0 : subPart.hashCode() );
             result = prime * result + ( ( column == null ) ? 0 : column.hashCode() );
@@ -84,7 +84,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
             if ( obj == null ) return false;
             if ( getClass() != obj.getClass() ) return false;
             Entry other = (Entry) obj;
-            if ( !getOuterType().equals(other.getOuterType()) ) return false;
+            if ( !getOuterType().getIndexName().equals(other.getOuterType().getIndexName()) ) return false;
             if ( position == null ) {
                 if ( other.position != null ) return false;
             } else if ( !position.equals(other.position) ) return false;
