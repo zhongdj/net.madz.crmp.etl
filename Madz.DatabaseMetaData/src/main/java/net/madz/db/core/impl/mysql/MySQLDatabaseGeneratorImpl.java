@@ -7,8 +7,8 @@ import java.util.Collection;
 import java.util.List;
 
 import net.madz.db.core.AbsDatabaseGenerator;
-import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
-import net.madz.db.core.meta.immutable.IndexMetaData.Entry;
+import net.madz.db.core.meta.immutable.ForeignKeyEntry;
+import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -115,11 +115,11 @@ public class MySQLDatabaseGeneratorImpl extends
             // Append primary keys
             final MySQLIndexMetaData pk = table.getPrimaryKey();
             if ( null != pk ) {
-                Collection<Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = pk
+                Collection<IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = pk
                         .getEntrySet();
                 if ( entrySet.size() > 0 ) {
                     result.append(", PRIMARY KEY(");
-                    for ( Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
+                    for ( IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
                         final MySQLColumnMetaData column = entry.getColumn();
                         appendBackQuotation(result);
                         result.append(column.getColumnName());
@@ -133,7 +133,7 @@ public class MySQLDatabaseGeneratorImpl extends
             final Collection<MySQLIndexMetaData> indexSet = table.getIndexSet();
             for ( MySQLIndexMetaData index : indexSet ) {
                 final KeyTypeEnum keyType = index.getKeyType();
-                final Collection<Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = index
+                final Collection<IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = index
                         .getEntrySet();
                 // Append Unique keys
                 if ( keyType.equals(KeyTypeEnum.uniqueKey) ) {
@@ -322,9 +322,9 @@ public class MySQLDatabaseGeneratorImpl extends
                         result.append(fk.getForeignKeyIndex().getIndexName());
                     }
                     result.append("(");
-                    final List<ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = fk
+                    final List<ForeignKeyEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = fk
                             .getEntrySet();
-                    for ( ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
+                    for ( ForeignKeyEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
                         appendBackQuotation(result);
                         result.append(entry.getForeignKeyColumn().getColumnName());
                         appendBackQuotation(result);
@@ -338,7 +338,7 @@ public class MySQLDatabaseGeneratorImpl extends
                     result.append(fk.getPrimaryKeyTable().getTableName());
                     appendBackQuotation(result);
                     result.append("(");
-                    for ( ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
+                    for ( ForeignKeyEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
                         appendBackQuotation(result);
                         result.append(entry.getPrimaryKeyColumn().getColumnName());
                         appendBackQuotation(result);
@@ -356,8 +356,8 @@ public class MySQLDatabaseGeneratorImpl extends
     }
 
     private void appendIndexEntries(final StringBuilder result,
-            final Collection<Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet) {
-        for ( Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
+            final Collection<IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet) {
+        for ( IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
             appendBackQuotation(result);
             result.append(entry.getColumn().getColumnName());
             appendBackQuotation(result);

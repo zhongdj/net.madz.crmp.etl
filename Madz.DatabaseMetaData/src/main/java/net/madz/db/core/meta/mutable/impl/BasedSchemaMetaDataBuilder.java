@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import net.madz.db.core.meta.DottedPath;
+import net.madz.db.core.meta.DottedPathImpl;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
@@ -29,7 +30,7 @@ public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuil
 
     public BasedSchemaMetaDataBuilder(final String databaseName) throws SQLException {
         super();
-        this.schemaPath = new DottedPath(databaseName);
+        this.schemaPath = new DottedPathImpl(databaseName);
     }
 
     @SuppressWarnings("unchecked")

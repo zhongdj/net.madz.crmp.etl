@@ -49,7 +49,7 @@ public interface ColumnMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
      * @return IndexMetaData.Entry primary key entry utilizing this column, or
      *         null if this column is not part of the primary key
      */
-    IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> getPrimaryKey();
+    IndexEntry<SMD, TMD, CMD, FMD, IMD> getPrimaryKey();
 
     /** Does the table's primary key include this column? */
     boolean isMemberOfPrimaryKey();
@@ -60,13 +60,13 @@ public interface ColumnMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
     boolean isMemberOfForeignKey(FMD fk);
 
     /** All unique indices that include this column */
-    Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> getUniqueIndexSet();
+    Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> getUniqueIndexSet();
 
     /** Is this column a member of a unique index? */
     boolean isMemberOfUniqueIndex();
 
     /** All non-unique indices that include this column */
-    Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> getNonUniqueIndexSet();
+    Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> getNonUniqueIndexSet();
 
     /**
      * Sorts ColumnMetaData values by ordinal position

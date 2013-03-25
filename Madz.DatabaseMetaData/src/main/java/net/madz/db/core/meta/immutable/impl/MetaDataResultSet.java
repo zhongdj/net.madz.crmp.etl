@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 import net.madz.db.core.meta.DottedPath;
+import net.madz.db.core.meta.DottedPathImpl;
 
 public class MetaDataResultSet<O> {
 
@@ -89,11 +90,11 @@ public class MetaDataResultSet<O> {
     }
 
     public DottedPath getDottedPath(O... metaDataParts) throws SQLException {
-        DottedPath path = null;
+        DottedPathImpl path = null;
         for ( O metaData : metaDataParts ) {
             String str = get(metaData);
             if ( null != str ) {
-                path = DottedPath.append(path, str);
+                path = DottedPathImpl.append(path, str);
             }
         }
         return path;

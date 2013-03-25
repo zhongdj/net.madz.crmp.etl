@@ -23,6 +23,10 @@ public interface ForeignKeyMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
 
     TMD getForeignKeyTable();
 
+    String getForeignKeyIndexName();
+
+    String getForeignKeyTableName();
+
     /**
      * primary key index
      * 
@@ -34,6 +38,10 @@ public interface ForeignKeyMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
     IMD getPrimaryKeyIndex();
 
     TMD getPrimaryKeyTable();
+
+    String getPrimaryKeyIndexName();
+
+    String getPrimaryKeyTableName();
 
     /**
      * Defines what is to happen to this record when the referenced record is
@@ -52,21 +60,10 @@ public interface ForeignKeyMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
      */
     KeyDeferrability getKeyDeferrability();
 
-    List<Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet();
+    List<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>> getEntrySet();
 
     /**
      * Number of relationships in the key
      */
     Integer size();
-
-    public interface Entry<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> {
-
-        CMD getForeignKeyColumn();
-
-        CMD getPrimaryKeyColumn();
-
-        FMD getKey();
-
-        Short getSeq();
-    }
 }

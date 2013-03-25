@@ -6,9 +6,10 @@ import java.util.List;
 
 import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
+import net.madz.db.core.meta.immutable.ForeignKeyEntry;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.IndexMetaData;
-import net.madz.db.core.meta.immutable.IndexMetaData.Entry;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
 import net.madz.db.core.meta.mutable.ColumnMetaDataBuilder;
@@ -30,11 +31,11 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     protected Integer radix;
     protected long characterOctetLength;
     protected String remarks, defaultValue;
-    protected IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> primaryKey;
+    protected IndexEntry<SMD, TMD, CMD, FMD, IMD> primaryKey;
     // TODO [Jan 22, 2013][barry][Done] Can this field be re-assign?
-    protected final List<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> uniqueIndexList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
-    protected final List<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> nonUniqueIndexList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
-    protected final List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> fkList = new LinkedList<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
+    protected final List<IndexEntry<SMD, TMD, CMD, FMD, IMD>> uniqueIndexList = new LinkedList<IndexEntry<SMD, TMD, CMD, FMD, IMD>>();
+    protected final List<IndexEntry<SMD, TMD, CMD, FMD, IMD>> nonUniqueIndexList = new LinkedList<IndexEntry<SMD, TMD, CMD, FMD, IMD>>();
+    protected final List<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>> fkList = new LinkedList<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>>();
     protected Short ordinalPosition;
 
     // protected final TMDB jdbcTableMetaDataBuilder;
@@ -155,12 +156,12 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     }
 
     @Override
-    public Entry<SMD, TMD, CMD, FMD, IMD> getPrimaryKey() {
+    public IndexEntry<SMD, TMD, CMD, FMD, IMD> getPrimaryKey() {
         return this.primaryKey;
     }
 
     @Override
-    public void setPrimaryKey(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
+    public void setPrimaryKey(IndexEntry<SMD, TMD, CMD, FMD, IMD> entry) {
         this.primaryKey = entry;
         this.uniqueIndexList.remove(primaryKey);
     }
@@ -191,7 +192,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     }
 
     @Override
-    public Collection<Entry<SMD, TMD, CMD, FMD, IMD>> getUniqueIndexSet() {
+    public Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> getUniqueIndexSet() {
         return this.uniqueIndexList;
     }
 
@@ -201,13 +202,13 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
     }
 
     @Override
-    public Collection<Entry<SMD, TMD, CMD, FMD, IMD>> getNonUniqueIndexSet() {
+    public Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> getNonUniqueIndexSet() {
         return this.nonUniqueIndexList;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public CMDB appendUniqueIndexEntry(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
+    public CMDB appendUniqueIndexEntry(IndexEntry<SMD, TMD, CMD, FMD, IMD> entry) {
         // todo
         this.uniqueIndexList.add(entry);
         return (CMDB) this;
@@ -215,7 +216,7 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
 
     @SuppressWarnings("unchecked")
     @Override
-    public CMDB appendNonUniqueIndexEntry(Entry<SMD, TMD, CMD, FMD, IMD> entry) {
+    public CMDB appendNonUniqueIndexEntry(IndexEntry<SMD, TMD, CMD, FMD, IMD> entry) {
         this.nonUniqueIndexList.add(entry);
         return (CMDB) this;
     }

@@ -6,19 +6,19 @@ import java.util.List;
 
 import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
+import net.madz.db.core.meta.immutable.ForeignKeyEntry;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
 import net.madz.db.core.meta.immutable.impl.enums.ImportKeyDbMetaDataEnum;
-import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 import net.madz.db.core.meta.immutable.types.CascadeRule;
 import net.madz.db.core.meta.immutable.types.KeyDeferrability;
 
 public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
         implements ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD> {
 
-    protected final List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
+    protected final List<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>>();
     protected final CascadeRule updateRule, deleteRule;
     protected final KeyDeferrability deferrability;
     protected TMD pkTable;
@@ -39,8 +39,8 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         if ( null != metaData.getPrimaryKeyIndex() ) {
             this.pkIndex = this.pkTable.getIndex(metaData.getPrimaryKeyIndex().getIndexName());
         }
-        List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entrySet = metaData.getEntrySet();
-        for ( ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry : entrySet ) {
+        List<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>> entrySet = metaData.getEntrySet();
+        for ( ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD> entry : entrySet ) {
             final String fkColName = entry.getForeignKeyColumn().getColumnName();
             final String pkColName = entry.getPrimaryKeyColumn().getColumnName();
             Short seq = entry.getSeq();
@@ -92,7 +92,7 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
     }
 
     @Override
-    public List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
+    public List<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
         return this.entryList;
     }
 
@@ -117,7 +117,7 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         this.entryList.add(entry);
     }
 
-    public class Entry implements ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> {
+    public class Entry implements ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD> {
 
         private CMD fkColumn, pkColumn;
         private FMD key;
@@ -187,6 +187,16 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
         private ForeignKeyMetaDataImpl getOuterType() {
             return ForeignKeyMetaDataImpl.this;
         }
+
+        @Override
+        public String getForeignKeyColumnName() {
+            return fkColumn.getColumnName();
+        }
+
+        @Override
+        public String getPrimaryKeyColumnName() {
+            return pkColumn.getColumnName();
+        }
     }
 
     @Override
@@ -233,5 +243,28 @@ public class ForeignKeyMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FM
             if ( other.entryList != null ) return false;
         } else if ( !entryList.equals(other.entryList) ) return false;
         return true;
+    }
+
+    @Override
+    public String getForeignKeyIndexName() {
+        if (null == fkIndex) {
+            return "NOT_FOUND";
+        }
+        return fkIndex.getIndexName();
+    }
+
+    @Override
+    public String getForeignKeyTableName() {
+        return fkTable.getTableName();
+    }
+
+    @Override
+    public String getPrimaryKeyIndexName() {
+        return pkIndex.getIndexName();
+    }
+
+    @Override
+    public String getPrimaryKeyTableName() {
+        return pkTable.getTableName();
     }
 }

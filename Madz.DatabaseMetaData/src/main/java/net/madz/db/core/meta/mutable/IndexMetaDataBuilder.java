@@ -2,6 +2,7 @@ package net.madz.db.core.meta.mutable;
 
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
@@ -13,5 +14,5 @@ public interface IndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SMDB, T
 
     String getIndexName();
 
-    void addEntry(IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
+    void addEntry(IndexEntry<SMD, TMD, CMD, FMD, IMD> entry);
 }

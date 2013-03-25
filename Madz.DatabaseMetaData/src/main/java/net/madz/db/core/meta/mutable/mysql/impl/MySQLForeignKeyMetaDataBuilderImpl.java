@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
-import net.madz.db.core.meta.immutable.IndexMetaData;
+import net.madz.db.core.meta.immutable.ForeignKeyEntry;
+import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -83,17 +83,17 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         // auto-generated doesn't match the constraint name.
         if ( null == this.fkIndex ) {
             final Map<Short, MySQLColumnMetaData> fkColumns = new HashMap<Short, MySQLColumnMetaData>();
-            List<ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> fkEntrySet = this.entryList;
-            for ( ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : fkEntrySet ) {
+            List<ForeignKeyEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> fkEntrySet = this.entryList;
+            for ( ForeignKeyEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : fkEntrySet ) {
                 fkColumns.put(entry.getSeq(), entry.getForeignKeyColumn());
             }
             Collection<MySQLIndexMetaDataBuilder> indexSet = this.fkTable.getIndexBuilderSet();
             Map<Short, MySQLColumnMetaData> indexColumns = null;
             for ( MySQLIndexMetaDataBuilder index : indexSet ) {
                 indexColumns = new HashMap<Short, MySQLColumnMetaData>();
-                final Collection<IndexMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = index
+                final Collection<IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = index
                         .getEntrySet();
-                for ( IndexMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
+                for ( IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
                     indexColumns.put(entry.getPosition(), entry.getColumn());
                 }
                 // if ( fkColumns.size() != indexColumns.size() ) {
@@ -125,5 +125,25 @@ public class MySQLForeignKeyMetaDataBuilderImpl
     public MySQLForeignKeyMetaData createMetaData() {
         this.constructedMetaData = new MySQLForeignKeyMetaDataImpl(this.fkTable.getMetaData(), this);
         return constructedMetaData;
+    }
+
+    @Override
+    public String getForeignKeyIndexName() {
+        return fkIndex.getIndexName();
+    }
+
+    @Override
+    public String getForeignKeyTableName() {
+        return fkTable.getTableName();
+    }
+
+    @Override
+    public String getPrimaryKeyIndexName() {
+        return pkIndex.getIndexName();
+    }
+
+    @Override
+    public String getPrimaryKeyTableName() {
+        return pkTable.getTableName();
     }
 }
