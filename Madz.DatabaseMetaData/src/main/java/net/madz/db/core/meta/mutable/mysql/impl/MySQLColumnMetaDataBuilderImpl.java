@@ -86,14 +86,12 @@ public final class MySQLColumnMetaDataBuilderImpl
                         }
                     }
                 }
+                this.columnType = rawColumnType;
                 if ( null != this.characterSet ) {
-                    this.columnType = rawColumnType + " CHARACTER SET " + this.characterSet + " ";
+                    this.columnType += " CHARACTER SET " + this.characterSet;
                 }
                 if ( null != this.collationName ) {
-                    this.columnType = rawColumnType + " COLLATE " + this.collationName + " ";
-                }
-                if ( null == this.columnType ) {
-                    this.columnType = rawColumnType;
+                    this.columnType += " COLLATE " + this.collationName;
                 }
                 this.columnKey = rs.getString("column_key");
                 this.extra = rs.getString("extra");
