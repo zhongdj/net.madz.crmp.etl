@@ -62,7 +62,8 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         }
         try {
             rs = stmt.executeQuery("SELECT * FROM key_column_usage WHERE constraint_schema='" + this.fkTable.getSchema().getSchemaPath().getName()
-                    + "' AND constraint_name = '" + this.foreignKeyPath.getName() + "' AND referenced_table_name IS NOT NULL AND referenced_column_name IS NOT NULL;");
+                    + "' AND constraint_name = '" + this.foreignKeyPath.getName()
+                    + "' AND referenced_table_name IS NOT NULL AND referenced_column_name IS NOT NULL;");
             while ( rs.next() ) {
                 final String columnName = rs.getString("column_name");
                 final String referencedColumnName = rs.getString("referenced_column_name");
@@ -108,7 +109,7 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                         break;
                     }
                 }
-                if ( matched && !index.getIndexName().equalsIgnoreCase("PRIMARY") ) {
+                if ( matched ) {
                     this.fkIndex = this.fkTable.getIndexBuilder(index.getIndexName());
                     break;
                 }
