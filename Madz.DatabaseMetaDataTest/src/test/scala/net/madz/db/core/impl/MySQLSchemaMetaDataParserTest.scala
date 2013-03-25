@@ -702,6 +702,64 @@ mysql> select * from key_column_usage where constraint_schema='test' and (table_
       Assertions.expectResult(false)(fk_index_2.isUnique)
     }
 
+   it("should parse single column FOREIGN KEY same as Primary KEY, scenario found by NPE defect") {
+      exec(
+        """
+          USE `madz_database_parser_test`;
+          """ :: """
+          CREATE TABLE `table_1` (
+            `pk_column` INTEGER(32) AUTO_INCREMENT PRIMARY KEY,
+            `secondary_key_column` VARCHAR(60) UNIQUE KEY
+          ) ENGINE = `InnoDB` DEFAULT CHARACTER SET = 'utf8' DEFAULT COLLATE='utf8_bin';
+          """ :: """
+          CREATE TABLE `table_2` (
+            `fk_column_1` INTEGER(32) PRIMARY KEY,
+            `fk_column_2` VARCHAR(60),
+            CONSTRAINT `FK_table_2_fk_column_1` FOREIGN KEY (`fk_column_1`) REFERENCES `table_1` (`pk_column`),
+                CONSTRAINT `FK_table_2_fk_column_2` FOREIGN KEY (`fk_column_2`) REFERENCES `table_1` (`secondary_key_column`)
+          ) ENGINE = `InnoDB` DEFAULT CHARACTER SET = 'utf8' DEFAULT COLLATE='utf8_bin';
+          """ :: Nil)
+   
+      val schema = parser parseSchemaMetaData
+
+      val table_1 = schema getTable "table_1"
+      val table_2 = schema getTable "table_2"
+      val fk_1 = table_2.getForeignKeySet().toArray()(0)
+      val fk_2 = table_2.getForeignKeySet().toArray()(1)
+      val fk_index_1 = table_2 getIndex "FK_table_2_fk_column_1"
+      val fk_index_2 = table_2 getIndex "FK_table_2_fk_column_2"
+      val fk_column_1 = table_2 getColumn "fk_column_1"
+      val fk_column_2 = table_2 getColumn "fk_column_2"
+
+      Assertions.expectResult("" /*For string, If it is null, result set returns "".*/ )(fk_index_1.getIndexComment)
+      Assertions.expectResult(MySQLIndexMethod.btree)(fk_index_1.getIndexMethod)
+      Assertions.expectResult(true)(fk_index_1.containsColumn(fk_column_1))
+      Assertions.expectResult(false)(fk_index_1.containsColumn(fk_column_2))
+      Assertions.expectResult(false)(fk_index_1.containsColumn(table_2 getColumn "id"))
+      Assertions.expectResult(0)(fk_index_1.getCardinality)
+      Assertions.expectResult("FK_table_2_fk_column_1")(fk_index_1.getIndexName)
+      //      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_1.getIndexType)
+      Assertions.expectResult(KeyTypeEnum.index)(fk_index_1.getKeyType)
+      Assertions.expectResult(null)(fk_index_1.getPageCount)
+      Assertions.expectResult(SortDirectionEnum.ascending)(fk_index_1.getSortDirection)
+      Assertions.expectResult(table_2)(fk_index_1.getTable)
+      Assertions.expectResult(false)(fk_index_1.isUnique)
+
+      Assertions.expectResult("")(fk_index_2.getIndexComment)
+      Assertions.expectResult(MySQLIndexMethod.btree)(fk_index_2.getIndexMethod)
+      Assertions.expectResult(false)(fk_index_2.containsColumn(fk_column_1))
+      Assertions.expectResult(true)(fk_index_2.containsColumn(fk_column_2))
+      Assertions.expectResult(false)(fk_index_2.containsColumn(table_2 getColumn "id"))
+      Assertions.expectResult(0)(fk_index_2.getCardinality)
+      Assertions.expectResult("FK_table_2_fk_column_2")(fk_index_2.getIndexName)
+      //      Assertions.expectResult(IndexTypeEnum.statistic)(fk_index_2.getIndexType)
+      Assertions.expectResult(KeyTypeEnum.index)(fk_index_2.getKeyType)
+      Assertions.expectResult(null)(fk_index_2.getPageCount)
+      Assertions.expectResult(SortDirectionEnum.ascending)(fk_index_2.getSortDirection)
+      Assertions.expectResult(table_2)(fk_index_2.getTable)
+      Assertions.expectResult(false)(fk_index_2.isUnique)
+    }
+    
     it("should parse multiple columns FOREIGN KEY with correct order") {
       exec(
         """
