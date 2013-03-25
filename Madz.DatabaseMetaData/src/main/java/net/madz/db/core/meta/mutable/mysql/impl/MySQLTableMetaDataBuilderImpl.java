@@ -26,7 +26,6 @@ import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
-import net.madz.db.utils.LogUtils;
 import net.madz.db.utils.ResourceManagementUtils;
 
 public class MySQLTableMetaDataBuilderImpl
@@ -47,7 +46,7 @@ public class MySQLTableMetaDataBuilderImpl
         ResultSet rs = null;
         try {
             final String schemaName = super.schema.getSchemaPath().getName();
-            stmt.executeQuery("use information_schema;");
+            //            stmt.executeQuery("use information_schema;");
             try {
                 rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN collations ON  table_collation = collation_name WHERE table_schema = '" + schemaName
                         + "' AND table_name='" + getTableName() + "';");
