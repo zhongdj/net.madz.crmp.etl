@@ -1,16 +1,13 @@
 package net.madz.db.core.impl
 
 import java.sql.Connection
-
 import scala.collection.JavaConversions.collectionAsScalaIterable
 import scala.collection.JavaConversions.seqAsJavaList
 import scala.collection.immutable.List
 import scala.slick.session.Database
-
 import org.scalatest.Assertions
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSpec
-
 import net.madz.db.core.impl.mysql.MySQLSchemaMetaDataParserImpl
 import net.madz.db.core.meta.DottedPath
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData
@@ -26,6 +23,9 @@ import net.madz.db.core.meta.immutable.types.IndexTypeEnum
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum
 import net.madz.db.core.meta.immutable.types.SortDirectionEnum
 import net.madz.db.core.meta.immutable.types.TableType
+import net.madz.db.core.meta.DottedPathImpl
+import net.madz.db.core.meta.immutable.IndexEntry
+import net.madz.db.core.meta.immutable.ForeignKeyEntry
 
 class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with MySQLCommandLine {
 
@@ -47,7 +47,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
     it("should parse an empty database") {
 
       val result = parser.parseSchemaMetaData()
-      Assertions.expectResult(new DottedPath(database_name))(result getSchemaPath)
+      Assertions.expectResult(new DottedPathImpl(database_name))(result getSchemaPath)
       Assertions.expectResult(0)(result.getTables size)
     }
 
@@ -62,7 +62,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
 
       val result = parser.parseSchemaMetaData()
 
-      Assertions.expectResult(new DottedPath(database_name))(result getSchemaPath)
+      Assertions.expectResult(new DottedPathImpl(database_name))(result getSchemaPath)
       Assertions.expectResult(0)(result.getTables size)
       Assertions.expectResult("gbk")(result getCharSet)
       Assertions.expectResult("gbk_chinese_ci")(result getCollation)
@@ -405,7 +405,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(1)(nullable_column.getNonUniqueIndexSet size)
       Assertions.expectResult(0)(nullable_column.getUniqueIndexSet size)
 
-      val non_unique_index_entry = collectionAsScalaIterable[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]](nullable_column getNonUniqueIndexSet).toList(0)
+      val non_unique_index_entry = collectionAsScalaIterable[IndexEntry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]](nullable_column getNonUniqueIndexSet).toList(0)
 
       Assertions.expectResult(nullable_column)(non_unique_index_entry getColumn)
       Assertions.expectResult(index)(non_unique_index_entry getKey)
@@ -463,7 +463,7 @@ class MySQLSchemaMetaDataParserTest extends FunSpec with BeforeAndAfterEach with
       Assertions.expectResult(table)(pk.getTable)
       Assertions.expectResult(table.getTableName)(pk.getTable.getTableName)
       Assertions.expectResult(true)(pk.isUnique)
-      val indexEntryList: List[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]] = collectionAsScalaIterable[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]](pk.getEntrySet) toList
+      val indexEntryList: List[IndexEntry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]] = collectionAsScalaIterable[IndexEntry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]](pk.getEntrySet) toList
 
       Assertions.expectResult(3)(indexEntryList.length)
       val column_vs_entry = List(pk_column_part_1, pk_column_part_2, pk_column_part_3) zip indexEntryList
@@ -549,7 +549,7 @@ mysql> select * from statistics where table_name = 'table_with_composite_unique_
       val table = schema.getTable("table_with_composite_unique_key")
       val composite_unique_key = table.getIndex("composite_unique_key");
       Assertions.expectResult(true)(composite_unique_key isUnique)
-      val entries = composite_unique_key.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())
+      val entries = composite_unique_key.getEntrySet.toArray(Array[IndexEntry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())
       Assertions.expectResult(table.getColumn("unique_key_part_1"))(entries(0).getColumn())
       Assertions.expectResult(table.getColumn("unique_key_part_2"))(entries(1).getColumn())
       Assertions.expectResult(composite_unique_key)(entries(0).getKey)
@@ -780,8 +780,8 @@ mysql> select * from key_column_usage where constraint_schema='madz_database_par
       val table_2 = schema getTable "t2"
       val fk_index = table_2.getIndex("FK_t1_composite_column_1_column_2")
       val fk = table_2.getForeignKeySet().iterator().next();
-      val fkEntry_1 = fk.getEntrySet().toArray(Array[ForeignKeyMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
-      val fkEntry_2 = fk.getEntrySet().toArray(Array[ForeignKeyMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
+      val fkEntry_1 = fk.getEntrySet().toArray(Array[ForeignKeyEntry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
+      val fkEntry_2 = fk.getEntrySet().toArray(Array[ForeignKeyEntry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
       val fk_column_1 = table_2.getColumn("fk_column_1")
       val fk_column_2 = table_2.getColumn("fk_column_2")
       Assertions.expectResult(fk_column_1)(fkEntry_1 getForeignKeyColumn ())
@@ -823,7 +823,7 @@ mysql> select * from key_column_usage where constraint_schema='madz_database_par
       val t1 = schema getTable "t1"
       val index_column = t1 getColumn "index_column"
       val index = t1 getIndex "single_column_index"
-      val index_entry = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
+      val index_entry = index.getEntrySet.toArray(Array[IndexEntry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
       Assertions.expectResult(index)(index_entry getKey)
       Assertions.expectResult(index_column)(index_entry getColumn)
       Assertions.expectResult(1)(index_entry getPosition)
@@ -882,8 +882,8 @@ mysql> select * from columns where table_name= 'table_composite_index_test';
       val index_column_1 = t1 getColumn "index_column_1"
       val index_column_2 = t1 getColumn "index_column_2"
       val index = t1 getIndex "composite_column_index"
-      val index_entry_1 = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
-      val index_entry_2 = index.getEntrySet.toArray(Array[IndexMetaData.Entry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
+      val index_entry_1 = index.getEntrySet.toArray(Array[IndexEntry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(0)
+      val index_entry_2 = index.getEntrySet.toArray(Array[IndexEntry[MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData]]())(1)
       Assertions.expectResult(index)(index_entry_1 getKey)
       Assertions.expectResult(index)(index_entry_2 getKey)
       Assertions.expectResult(index_column_1)(index_entry_1 getColumn)
