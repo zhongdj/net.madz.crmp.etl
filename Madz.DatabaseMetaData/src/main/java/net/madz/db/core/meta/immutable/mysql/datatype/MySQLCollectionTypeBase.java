@@ -5,12 +5,27 @@ import java.util.List;
 
 import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 import net.madz.db.utils.MessageConsts;
+import net.madz.db.utils.Utilities;
 
 public abstract class MySQLCollectionTypeBase implements DataType {
 
     private List<String> values;
     private String charsetName;
     private String collationName;
+
+    public MySQLCollectionTypeBase(List<String> values) {
+        super();
+        Utilities.validateInputValueNotNull(values);
+        Utilities.validateLength(values.size());
+        this.values = new LinkedList<String>(values);
+    }
+
+    public MySQLCollectionTypeBase(List<String> values, String charsetName, String collationName) {
+        super();
+        this.values = values;
+        this.charsetName = charsetName;
+        this.collationName = collationName;
+    }
 
     public List<String> getValues() {
         return values;
