@@ -683,6 +683,10 @@ class MySQLDatabaseGeneratorTestSpec extends FunSpec with BeforeAndAfterEach wit
 
     }
 
+    it("should generate with single column FOREIGN KEY on PK") {
+      fail("not yet implemented.");
+    }
+
   }
   val databaseName = "madz_database_generator_test"
   val drop_database_query = "DROP DATABASE IF EXISTS " + databaseName + ";"
