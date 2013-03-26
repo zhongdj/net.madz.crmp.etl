@@ -319,7 +319,11 @@ public class MySQLDatabaseGeneratorImpl extends
                     }
                     result.append("FOREIGN KEY ");
                     if ( null != fk.getForeignKeyIndex() && 0 < fk.getForeignKeyIndex().getIndexName().length() ) {
-                        result.append(fk.getForeignKeyIndex().getIndexName());
+                        if ( !"PRIMARY".equalsIgnoreCase(fk.getForeignKeyIndex().getIndexName()) ) {
+                            appendBackQuotation(result);
+                            result.append(fk.getForeignKeyIndex().getIndexName());
+                            appendBackQuotation(result);
+                        }
                     }
                     result.append("(");
                     final List<ForeignKeyEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = fk
