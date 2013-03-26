@@ -14,21 +14,29 @@ import net.madz.db.core.meta.immutable.TableMetaData;
 public class SchemaMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
         implements SchemaMetaData<SMD, TMD, CMD, FMD, IMD> {
 
-    protected final DottedPath name;
+    protected final String schemaName;
+    protected final DottedPath schemaPath;
     protected TreeMap<String, TMD> tablesMap = new TreeMap<String, TMD>();
 
     public SchemaMetaDataImpl(SMD metaData) {
-        this.name = metaData.getSchemaPath();
+        this.schemaName = metaData.getSchemaName();
+        this.schemaPath = metaData.getSchemaPath();
     }
 
-    public SchemaMetaDataImpl(DottedPath name) {
+    public SchemaMetaDataImpl(DottedPath schemaPath) {
         super();
-        this.name = name;
+        this.schemaName = schemaPath.getName();
+        this.schemaPath = schemaPath;
+    }
+
+    @Override
+    public String getSchemaName() {
+        return this.schemaName;
     }
 
     @Override
     public DottedPath getSchemaPath() {
-        return name;
+        return schemaPath;
     }
 
     @Override
@@ -47,14 +55,14 @@ public class SchemaMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
 
     @Override
     public String toString() {
-        return "SchemaMetaDataImpl [name=" + name + ", tables=" + tablesMap.values() + "]";
+        return "SchemaMetaDataImpl [name=" + schemaPath + ", tables=" + tablesMap.values() + "]";
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
+        result = prime * result + ( ( schemaPath == null ) ? 0 : schemaPath.hashCode() );
         result = prime * result + ( ( tablesMap == null ) ? 0 : tablesMap.hashCode() );
         return result;
     }
@@ -65,12 +73,13 @@ public class SchemaMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, I
         if ( obj == null ) return false;
         if ( getClass() != obj.getClass() ) return false;
         SchemaMetaDataImpl other = (SchemaMetaDataImpl) obj;
-        if ( name == null ) {
-            if ( other.name != null ) return false;
-        } else if ( !name.equals(other.name) ) return false;
+        if ( schemaPath == null ) {
+            if ( other.schemaPath != null ) return false;
+        } else if ( !schemaPath.equals(other.schemaPath) ) return false;
         if ( tablesMap == null ) {
             if ( other.tablesMap != null ) return false;
         } else if ( !tablesMap.equals(other.tablesMap) ) return false;
         return true;
     }
+
 }

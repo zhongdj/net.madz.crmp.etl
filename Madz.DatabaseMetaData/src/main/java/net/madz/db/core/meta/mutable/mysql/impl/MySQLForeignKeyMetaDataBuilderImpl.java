@@ -61,7 +61,7 @@ public class MySQLForeignKeyMetaDataBuilderImpl
             ResourceManagementUtils.closeResultSet(rs);
         }
         try {
-            rs = stmt.executeQuery("SELECT * FROM key_column_usage WHERE constraint_schema='" + this.fkTable.getSchema().getSchemaPath().getName()
+            rs = stmt.executeQuery("SELECT * FROM key_column_usage WHERE constraint_schema='" + this.fkTable.getSchema().getSchemaName()
                     + "' AND constraint_name = '" + this.foreignKeyPath.getName()
                     + "' AND referenced_table_name IS NOT NULL AND referenced_column_name IS NOT NULL;");
             while ( rs.next() ) {
