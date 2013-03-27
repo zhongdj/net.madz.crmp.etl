@@ -63,8 +63,8 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
                 // represents the database exists.
                 conn = DbConfigurationManagement.createConnection(databaseName, false);
                 result = true;
+                return result;
             }
-            return result;
         } finally {
             try {
                 if ( null != conn && !conn.isClosed() ) {
@@ -79,8 +79,12 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
     @Override
     @SuppressWarnings("unchecked")
     public boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException {
-        validateDatabaseName(sourceDatabaseName);
-        validateDatabaseName(targetDatabaseName);
+        if ( !databaseExists(sourceDatabaseName, false) ) {
+            return false;
+        }
+        if ( !databaseExists(targetDatabaseName, true) ) {
+            return false;
+        }
         // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
         final AbsSchemaMetaDataParser<SMD, TMD, CMD, FMD, IMD> sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName,
