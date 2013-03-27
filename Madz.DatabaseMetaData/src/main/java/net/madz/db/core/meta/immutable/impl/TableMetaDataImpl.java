@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import net.madz.db.core.meta.DottedPath;
-import net.madz.db.core.meta.DottedPathImpl;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
@@ -182,7 +181,19 @@ public class TableMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         } else if ( !indexMap.equals(other.indexMap) ) return false;
         if ( fkList == null ) {
             if ( other.fkList != null ) return false;
-        } else if ( !fkList.equals(other.fkList) ) return false;
+        } else {
+            final TreeMap<String, FMD> fkMap = createOrderedForeignKeyMap(fkList);
+            final TreeMap<String, FMD> otherFkMap = createOrderedForeignKeyMap(other.fkList);
+            if ( !fkMap.equals(otherFkMap) ) return false;
+        }
         return true;
+    }
+
+    private TreeMap<String, FMD> createOrderedForeignKeyMap(List<FMD> freignKeyList) {
+        final TreeMap<String, FMD> fkTreeMap = new TreeMap<String, FMD>(String.CASE_INSENSITIVE_ORDER);
+        for (FMD fk : freignKeyList) {
+            fkTreeMap.put(fk.getForeignKeyName(), fk);
+        }
+        return fkTreeMap;
     }
 }
