@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.core.meta.immutable.IndexEntry;
+import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -27,6 +28,7 @@ import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
 import net.madz.db.utils.ResourceManagementUtils;
+import net.madz.db.utils.Utilities;
 
 public class MySQLTableMetaDataBuilderImpl
         extends
@@ -41,55 +43,41 @@ public class MySQLTableMetaDataBuilderImpl
         super(schema, tableName);
     }
 
+    public MySQLTableMetaDataBuilderImpl(MySQLSchemaMetaDataBuilderImpl schema, MetaDataResultSet<MySQLTableDbMetaDataEnum> mysqlRs) throws SQLException {
+        super(schema, mysqlRs.get(MySQLTableDbMetaDataEnum.TABLE_NAME));
+        this.remarks = mysqlRs.get(MySQLTableDbMetaDataEnum.TABLE_COMMENT);
+        this.type = TableType.convertTableType(MySQLTableTypeEnum.getType(mysqlRs.get(MySQLTableDbMetaDataEnum.TABLE_TYPE)));
+        this.idCol = null;
+        this.idGeneration = null;
+        setCollation(mysqlRs.get(MySQLTableDbMetaDataEnum.TABLE_COLLATION));
+        setEngine(MySQLEngineEnum.valueOf(mysqlRs.get(MySQLTableDbMetaDataEnum.ENGINE)));
+        setCharacterSet(mysqlRs.get(MySQLTableDbMetaDataEnum.CHARACTER_SET_NAME));
+    }
+
     public MySQLTableMetaDataBuilder build(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
         ResultSet rs = null;
         try {
-            final String schemaName = super.schema.getSchemaPath().getName();
-            //            stmt.executeQuery("use information_schema;");
-            try {
-                rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN collations ON  table_collation = collation_name WHERE table_schema = '" + schemaName
-                        + "' AND table_name='" + getTableName() + "';");
-                while ( rs.next() ) {
-                    this.remarks = rs.getString(MySQLTableDbMetaDataEnum.TABLE_COMMENT.name());
-                    this.type = TableType.convertTableType(MySQLTableTypeEnum.getType(rs.getString(MySQLTableDbMetaDataEnum.TABLE_TYPE.name())));
-                    this.idCol = null;
-                    this.idGeneration = null;
-                    setCollation(rs.getString(MySQLTableDbMetaDataEnum.TABLE_COLLATION.name()));
-                    setEngine(MySQLEngineEnum.valueOf(rs.getString(MySQLTableDbMetaDataEnum.ENGINE.name())));
-                    setCharacterSet(rs.getString(MySQLTableDbMetaDataEnum.CHARACTER_SET_NAME.name()));
-                }
-            } finally {
-                ResourceManagementUtils.closeResultSet(rs);
-            }
+            final String schemaName = super.schema.getSchemaName();
             // Parse Columns
-            final List<String> colNames = new LinkedList<String>();
-            try {
-                rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + schemaName + "' AND table_name='" + getTableName()
-                        + "' ORDER BY ordinal_position ASC;");
-                while ( rs.next() ) {
-                    colNames.add(rs.getString("column_name"));
-                }
-            } finally {
-                ResourceManagementUtils.closeResultSet(rs);
-            }
-            for ( String colName : colNames ) {
-                MySQLColumnMetaDataBuilder columnBuilder = new MySQLColumnMetaDataBuilderImpl(this, colName).build(conn);
+            rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + schemaName + "' AND table_name='" + getTableName()
+                    + "' ORDER BY ordinal_position ASC;");
+            MetaDataResultSet<MySQLColumnDbMetaDataEnum> colRs = new MetaDataResultSet<MySQLColumnDbMetaDataEnum>(rs, MySQLColumnDbMetaDataEnum.values());
+            while ( colRs.next() ) {
+                MySQLColumnMetaDataBuilder columnBuilder = new MySQLColumnMetaDataBuilderImpl(this, colRs).build(conn);
                 appendColumnMetaDataBuilder(columnBuilder);
             }
             // Parse Index
-            final List<String> indexNames = new LinkedList<String>();
-            try {
-                rs = stmt.executeQuery("SELECT * FROM statistics WHERE table_schema='" + schemaName + "' AND table_name='" + getTableName() + "';");
-                while ( rs.next() ) {
-                    indexNames.add(rs.getString("index_name"));
+            rs = stmt.executeQuery("SELECT * FROM statistics WHERE table_schema='" + schemaName + "' AND table_name='" + getTableName() + "';");
+            MetaDataResultSet<MySQLIndexDbMetaDataEnum> indexRs = new MetaDataResultSet<MySQLIndexDbMetaDataEnum>(rs, MySQLIndexDbMetaDataEnum.values());
+            while ( indexRs.next() ) {
+                final String name = indexRs.get(MySQLIndexDbMetaDataEnum.INDEX_NAME);
+                MySQLIndexMetaDataBuilder indexBuilder = this.getIndexBuilder(name);
+                if ( null == indexBuilder ) {
+                    indexBuilder = new MySQLIndexMetaDataBuilderImpl(this, indexRs);
+                    appendIndexMetaDataBuilder(indexBuilder);
                 }
-            } finally {
-                ResourceManagementUtils.closeResultSet(rs);
-            }
-            for ( String indexName : indexNames ) {
-                MySQLIndexMetaDataBuilder indexBuilder = new MySQLIndexMetaDataBuilderImpl(this, indexName).build(conn);
-                appendIndexMetaDataBuilder(indexBuilder);
+                indexBuilder.addEntry(indexRs);
             }
             // Parse Primary Key
             MySQLIndexMetaDataBuilder pk = this.indexMap.get("PRIMARY");
@@ -203,5 +191,15 @@ public class MySQLTableMetaDataBuilderImpl
     @Override
     public Collection<MySQLIndexMetaDataBuilder> getIndexBuilderSet() {
         return this.indexMap.values();
+    }
+
+    @Override
+    public MySQLForeignKeyMetaDataBuilder getForeignKeyBuilder(String constraintName) {
+        for ( MySQLForeignKeyMetaDataBuilder builder : this.fkList ) {
+            if ( constraintName.equalsIgnoreCase(builder.getForeignKeyName()) ) {
+                return builder;
+            }
+        }
+        return null;
     }
 }

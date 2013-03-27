@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -35,49 +36,23 @@ public class MySQLIndexMetaDataBuilderImpl
         super(table, indexName);
     }
 
+    public MySQLIndexMetaDataBuilderImpl(MySQLTableMetaDataBuilder table, MetaDataResultSet<MySQLIndexDbMetaDataEnum> rs) throws SQLException {
+        super(table, rs.get(MySQLIndexDbMetaDataEnum.INDEX_NAME));
+        this.isUnique = !rs.getBoolean(MySQLIndexDbMetaDataEnum.NON_UNIQUE);
+        if ( this.isUnique )
+            this.keyType = KeyTypeEnum.uniqueKey;
+        else
+            this.keyType = KeyTypeEnum.index;
+        // TODO index type??? moved to jdbc level
+        this.sortDirection = SortDirectionEnum.getSortDirection(rs.get(MySQLIndexDbMetaDataEnum.COLLATION));
+        this.cardinatlity = rs.getInt(MySQLIndexDbMetaDataEnum.CARDINALITY);
+        // TODO pages ?? moved to jdbc level
+        this.indexMethod = MySQLIndexMethod.getIndexMethod(rs.get(MySQLIndexDbMetaDataEnum.INDEX_TYPE));
+        this.indexComment = rs.get(MySQLIndexDbMetaDataEnum.INDEX_COMMENT);
+    }
+
     @Override
     public MySQLIndexMetaDataBuilder build(Connection conn) throws SQLException {
-        Statement stmt = conn.createStatement();
-        // TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | NON_UNIQUE | INDEX_SCHEMA
-        // | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME | COLLATION | CARDINALITY |
-        // SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
-        stmt.executeQuery("use information_schema;");
-        ResultSet rs = null;
-        try {
-            rs = stmt.executeQuery("SELECT * FROM statistics WHERE table_schema='" + this.indexPath.getParent().getParent().getName() + "' AND table_name='"
-                    + this.indexPath.getParent().getName() + "' AND index_name='" + Utilities.handleSpecialCharacters(this.indexPath.getName()) + "';");
-            int count = 0;
-            while ( rs.next() ) {
-                if ( count == 0 ) {
-                    this.isUnique = !rs.getBoolean("non_unique");
-                    if ( this.isUnique )
-                        this.keyType = KeyTypeEnum.uniqueKey;
-                    else
-                        this.keyType = KeyTypeEnum.index;
-                    // TODO index type??? moved to jdbc level
-                    this.sortDirection = SortDirectionEnum.getSortDirection(rs.getString("collation"));
-                    this.cardinatlity = rs.getInt("cardinality");
-                    // TODO pages ?? moved to jdbc level
-                    this.indexMethod = MySQLIndexMethod.getIndexMethod(rs.getString("index_type"));
-                    this.indexComment = rs.getString("INDEX_COMMENT");
-                }
-                count++;
-                short subPart = rs.getShort("sub_part");
-                short position = rs.getShort("seq_in_index");
-                MySQLColumnMetaDataBuilder column = this.table.getColumnBuilder(rs.getString("column_name"));
-                BaseIndexMetaDataBuilder.Entry entry = new BaseIndexMetaDataBuilder.Entry(this, subPart, column, position);
-                if ( this.isUnique ) {
-                    column.appendUniqueIndexEntry(entry);
-                } else {
-                    column.appendNonUniqueIndexEntry(entry);
-                }
-                this.addEntry(entry);
-            }
-        } finally {
-            ResourceManagementUtils.closeResultSet(rs);
-        }
-        // TODO is packed, nullable belonged to entry
-        // What is the difference of comment and index_comment?
         return this;
     }
 
@@ -110,5 +85,20 @@ public class MySQLIndexMetaDataBuilderImpl
     @Override
     public void setKeyType(KeyTypeEnum keyType) {
         this.keyType = keyType;
+    }
+
+    @Override
+    public void addEntry(MetaDataResultSet<MySQLIndexDbMetaDataEnum> rs) throws SQLException {
+        short subPart = rs.getShort(MySQLIndexDbMetaDataEnum.SUB_PART);
+        short position = rs.getShort(MySQLIndexDbMetaDataEnum.SEQ_IN_INDEX);
+        MySQLColumnMetaDataBuilder column = this.table.getColumnBuilder(rs.get(MySQLIndexDbMetaDataEnum.COLUMN_NAME));
+        BaseIndexMetaDataBuilder.Entry entry = new BaseIndexMetaDataBuilder.Entry(this, subPart, column, position);
+        if ( this.isUnique ) {
+            column.appendUniqueIndexEntry(entry);
+        } else {
+            column.appendNonUniqueIndexEntry(entry);
+        }
+        this.addEntry(entry);
+        
     }
 }

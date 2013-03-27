@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.core.meta.immutable.ForeignKeyEntry;
+import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -30,7 +31,6 @@ public final class MySQLColumnMetaDataBuilderImpl
         implements MySQLColumnMetaDataBuilder {
 
     private String characterSet;
-    // private MySQLDataTypeEnum
     private String columnType;
     private long characterMaximumLength;
     private Integer numericPrecision;
@@ -47,62 +47,56 @@ public final class MySQLColumnMetaDataBuilderImpl
         super(tableBuilder, columnName);
     }
 
+    public MySQLColumnMetaDataBuilderImpl(MySQLTableMetaDataBuilder tableBuilder, MetaDataResultSet<MySQLColumnDbMetaDataEnum> rs) throws SQLException {
+        super(tableBuilder, rs.get(MySQLColumnDbMetaDataEnum.COLUMN_NAME));
+        this.ordinalPosition = rs.getShort(MySQLColumnDbMetaDataEnum.ORDINAL_POSITION);
+        this.defaultValue = rs.get(MySQLColumnDbMetaDataEnum.COLUMN_DEFAULT);
+        this.isNullable = rs.getBoolean(MySQLColumnDbMetaDataEnum.IS_NULLABLE);
+        this.sqlTypeName = MySQLDataTypeEnum.valueOf(rs.get(MySQLColumnDbMetaDataEnum.DATA_TYPE).toUpperCase()).name();
+        this.characterMaximumLength = rs.getLong(MySQLColumnDbMetaDataEnum.CHARACTER_MAXIMUM_LENGTH);
+        this.characterOctetLength = rs.getLong(MySQLColumnDbMetaDataEnum.CHARACTER_OCTET_LENGTH);
+        this.numericPrecision = rs.getInt(MySQLColumnDbMetaDataEnum.NUMERIC_PRECISION);
+        this.numericScale = rs.getInt(MySQLColumnDbMetaDataEnum.NUMERIC_SCALE);
+        this.characterSet = rs.get(MySQLColumnDbMetaDataEnum.CHARACTER_SET_NAME);
+        this.collationName = rs.get(MySQLColumnDbMetaDataEnum.COLLATION_NAME);
+        if ( null != this.collationName ) {
+            if ( this.collationName.toUpperCase().endsWith("_BIN") ) {
+                this.isCollationWithBin = true;
+            }
+        }
+        final String rawColumnType = rs.get(MySQLColumnDbMetaDataEnum.COLUMN_TYPE);
+        if ( null != rawColumnType ) {
+            if ( rawColumnType.toUpperCase().contains("UNSIGNED") ) {
+                setUnsigned(true);
+            }
+            if ( rawColumnType.toUpperCase().contains("ZEROFILL") ) {
+                setZeroFill(true);
+            }
+            if ( rawColumnType.toUpperCase().contains("ENUM") || rawColumnType.toUpperCase().contains("SET") ) {
+                final String[] result = rawColumnType.substring(rawColumnType.indexOf("(") + 1, rawColumnType.indexOf(")")).split(",");
+                for ( String value : result ) {
+                    this.addTypeValue(value);
+                }
+            }
+        }
+        this.columnType = rawColumnType;
+        if ( null != this.characterSet ) {
+            this.columnType += " CHARACTER SET " + this.characterSet;
+        }
+        if ( null != this.collationName ) {
+            this.columnType += " COLLATE " + this.collationName;
+        }
+        this.columnKey = rs.get(MySQLColumnDbMetaDataEnum.COLUMN_KEY);
+        this.extra = rs.get(MySQLColumnDbMetaDataEnum.EXTRA);
+        if ( null != this.extra && this.extra.equalsIgnoreCase("auto_increment") ) {
+            this.isAutoIncremented = true;
+        }
+        this.remarks = rs.get(MySQLColumnDbMetaDataEnum.COLUMN_COMMENT);
+    }
+
     @Override
     public MySQLColumnMetaDataBuilder build(Connection conn) throws SQLException {
-        Statement stmt = conn.createStatement();
-        ResultSet rs = null;
-        stmt.executeQuery("USE information_schema;");
-        try {
-            rs = stmt.executeQuery("SELECT * FROM columns WHERE table_schema='" + this.tableBuilder.getTablePath().getParent().getName() + "' AND table_name='"
-                    + this.tableBuilder.getTableName() + "' AND column_name='" + this.columnPath.getName() + "';");
-            while ( rs.next() ) {
-                this.ordinalPosition = rs.getShort("ordinal_position");
-                this.defaultValue = rs.getString("column_default");
-                this.isNullable = rs.getBoolean("is_nullable");
-                this.sqlTypeName = MySQLDataTypeEnum.valueOf(rs.getString("data_type").toUpperCase()).name();
-                this.characterMaximumLength = rs.getLong("character_maximum_length");
-                this.characterOctetLength = rs.getLong("character_octet_length");
-                this.numericPrecision = rs.getInt("numeric_precision");
-                this.numericScale = rs.getInt("numeric_scale");
-                this.characterSet = rs.getString("character_set_name");
-                this.collationName = rs.getString("collation_name");
-                if ( null != this.collationName ) {
-                    if ( this.collationName.toUpperCase().endsWith("_BIN") ) {
-                        this.isCollationWithBin = true;
-                    }
-                }
-                final String rawColumnType = rs.getString("column_type");
-                if ( null != rawColumnType ) {
-                    if ( rawColumnType.toUpperCase().contains("UNSIGNED") ) {
-                        setUnsigned(true);
-                    }
-                    if ( rawColumnType.toUpperCase().contains("ZEROFILL") ) {
-                        setZeroFill(true);
-                    }
-                    if ( rawColumnType.toUpperCase().contains("ENUM") || rawColumnType.toUpperCase().contains("SET") ) {
-                        final String[] result = rawColumnType.substring(rawColumnType.indexOf("(") + 1, rawColumnType.indexOf(")")).split(",");
-                        for ( String value : result ) {
-                            this.addTypeValue(value);
-                        }
-                    }
-                }
-                this.columnType = rawColumnType;
-                if ( null != this.characterSet ) {
-                    this.columnType += " CHARACTER SET " + this.characterSet;
-                }
-                if ( null != this.collationName ) {
-                    this.columnType += " COLLATE " + this.collationName;
-                }
-                this.columnKey = rs.getString("column_key");
-                this.extra = rs.getString("extra");
-                if ( this.extra.equalsIgnoreCase("auto_increment") ) {
-                    this.isAutoIncremented = true;
-                }
-                this.remarks = rs.getString("column_comment");
-            }
-        } finally {
-            ResourceManagementUtils.closeResultSet(rs);
-        }
+        // There is nothing to be done here for the moment.
         return this;
     }
 

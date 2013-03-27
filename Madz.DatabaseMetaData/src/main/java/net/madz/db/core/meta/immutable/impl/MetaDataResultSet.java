@@ -46,9 +46,7 @@ public class MetaDataResultSet<O> {
         Integer colId = columnMap.get(metaData);
         if ( null != colId ) {
             Short value = rs.getShort(colId.intValue());
-            if ( !rs.wasNull() ) {
-                return value;
-            }
+            return value;
         }
         return null;
     }
@@ -59,9 +57,16 @@ public class MetaDataResultSet<O> {
         final Integer colId = columnMap.get(metaData);
         if ( null != colId ) {
             final Integer value = rs.getInt(colId.intValue());
-            if ( !rs.wasNull() ) {
-                return value;
-            }
+            return value;
+        }
+        return null;
+    }
+
+    public Long getLong(O metaData) throws SQLException {
+        final Integer colId = columnMap.get(metaData);
+        if ( null != colId ) {
+            final Long value = rs.getLong(colId.intValue());
+            return value;
         }
         return null;
     }
@@ -70,9 +75,7 @@ public class MetaDataResultSet<O> {
         Integer colId = columnMap.get(metaData);
         if ( null != colId ) {
             Boolean value = rs.getBoolean(colId.intValue());
-            if ( !rs.wasNull() ) {
-                return value;
-            }
+            return value;
         }
         return null;
     }
@@ -80,11 +83,7 @@ public class MetaDataResultSet<O> {
     public String get(O metaData) throws SQLException {
         Integer colId = columnMap.get(metaData);
         if ( null != colId ) {
-            String result = rs.getString(colId.intValue());
-            if ( result == null || 0 >= result.trim().length() ) {
-                return null;
-            }
-            return result.trim();
+            return rs.getString(colId.intValue());
         }
         return null;
     }
