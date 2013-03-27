@@ -312,12 +312,12 @@ public class MySQLDatabaseGeneratorImpl extends
                     appendSpace(result);
                     result.append("ADD ");
                     if ( null != fk.getForeignKeyName() && 0 < fk.getForeignKeyName().length() ) {
-                        result.append("CONSTRAINT ");
+                        result.append(" CONSTRAINT ");
                         appendBackQuotation(result);
                         result.append(fk.getForeignKeyName());
                         appendBackQuotation(result);
                     }
-                    result.append("FOREIGN KEY ");
+                    result.append(" FOREIGN KEY ");
                     if ( null != fk.getForeignKeyIndex() && 0 < fk.getForeignKeyIndex().getIndexName().length() ) {
                         if ( !"PRIMARY".equalsIgnoreCase(fk.getForeignKeyIndex().getIndexName()) ) {
                             appendBackQuotation(result);
