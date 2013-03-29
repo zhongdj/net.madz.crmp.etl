@@ -23,16 +23,6 @@ public class DatabaseSchemaUtilsImplTest {
     }
 
     @Test
-    public void testCompareDatabaseSchema() {
-        DatabaseSchemaUtilsImpl dbSchemaUtils = new DatabaseSchemaUtilsImpl();
-        try {
-            Assert.assertTrue(dbSchemaUtils.compareDatabaseSchema("fortest", "fortest"));
-        } catch (SQLException e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
     public void testCloneDatabaseSchema() {
         DatabaseSchemaUtilsImpl dbSchemaUtils = new DatabaseSchemaUtilsImpl();
         try {
@@ -47,6 +37,16 @@ public class DatabaseSchemaUtilsImplTest {
             Assert.fail(e.getMessage());
         } catch (JAXBException e) {
             Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCompareDatabaseSchema() {
+        DatabaseSchemaUtilsImpl dbSchemaUtils = new DatabaseSchemaUtilsImpl();
+        try {
+            Assert.assertTrue(dbSchemaUtils.compareDatabaseSchema("fortest", "fortest"));
+        } catch (SQLException e) {
+            fail(e.getMessage());
         }
     }
 
