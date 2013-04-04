@@ -3,12 +3,14 @@ package net.madz.db.core;
 import static org.junit.Assert.fail;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
 import net.madz.db.configuration.Database;
 import net.madz.db.core.impl.DatabaseSchemaUtilsImpl;
 import net.madz.db.core.impl.DbConfigurationManagement;
+import net.madz.db.core.impl.validation.mysql.ErrorEntry;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -43,8 +45,15 @@ public class DatabaseSchemaUtilsImplTest {
     @Test
     public void testCompareDatabaseSchema() {
         DatabaseSchemaUtilsImpl dbSchemaUtils = new DatabaseSchemaUtilsImpl();
+        List<ErrorEntry> result;
         try {
-            Assert.assertTrue(dbSchemaUtils.compareDatabaseSchema("fortest", "fortest"));
+            result = dbSchemaUtils.compareDatabaseSchema("fortest", "fortest");
+            for ( ErrorEntry entry : result ) {
+                System.out.println(entry.toString());
+            }
+            if ( result.size() > 0 ) {
+                fail("The schema metadata does not match.");
+            }
         } catch (SQLException e) {
             fail(e.getMessage());
         }
