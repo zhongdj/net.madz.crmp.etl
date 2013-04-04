@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -12,6 +13,7 @@ import net.madz.db.core.AbsSchemaMetaDataParser;
 import net.madz.db.core.DatabaseSchemaUtils;
 import net.madz.db.core.IllegalOperationException;
 import net.madz.db.core.SchemaMetaDataComparator;
+import net.madz.db.core.impl.validation.mysql.ErrorEntry;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
@@ -78,12 +80,12 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
 
     @Override
     @SuppressWarnings("unchecked")
-    public boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException {
+    public List<ErrorEntry> compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException {
         if ( !databaseExists(sourceDatabaseName, false) ) {
-            return false;
+            throw new IllegalStateException(MessageConsts.DATABASE_NOT_EXISTS_IN_DB_SERVER);
         }
         if ( !databaseExists(targetDatabaseName, true) ) {
-            return false;
+            throw new IllegalStateException(MessageConsts.DATABASE_NOT_EXISTS_IN_DB_SERVER);
         }
         // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
         // variables
