@@ -39,6 +39,8 @@ import net.madz.db.core.meta.immutable.mysql.datatype.MySQLVarbinary
 import net.madz.db.core.meta.immutable.mysql.datatype.MySQLVarchar
 import net.madz.db.core.meta.immutable.mysql.datatype.MySQLYear
 
+import scala.collection.convert.WrapAsJava._
+
 trait MySQLCommandLine extends MySQLConnector {
 
   def exec(statement: String): Unit = {
@@ -164,7 +166,7 @@ trait MySQLCommandLine extends MySQLConnector {
       MySQLColumn("table_with_all_data_types_p1", "TIME_COLUMN", 27, null, true, "time", 0, 0, 0, 0, null, null, "time", "", "", "", new MySQLTime) ::
       MySQLColumn("table_with_all_data_types_p1", "YEAR_COLUMN", 28, null, true, "year", 0, 0, 0, 0, null, null, "year(4)", "", "", "", new MySQLYear) ::
       MySQLColumn("table_with_all_data_types_p1", "YEAR_PLUS_COLUMN", 29, null, true, "year", 0, 0, 0, 0, null, null, "year(4)", "", "", "", new MySQLYear) ::
-      MySQLColumn("table_with_all_data_types_p1", "CHAR_COLUMN", 30, null, true, "char", 255, 255, 0, 0, "latin7", "latin7_general_ci", "char(255)", "", "", "", new MySQLChar(255)) ::
+      MySQLColumn("table_with_all_data_types_p1", "CHAR_COLUMN", 30, null, true, "char", 255, 255, 0, 0, "latin7", "latin7_general_ci", "char(255) CHARACTER SET latin7 COLLATE latin7_general_ci", "", "", "", new MySQLChar(255,"latin7","latin7_general_ci")) ::
       MySQLColumn("table_with_all_data_types_p1", "BINARY_COLUMN", 31, null, true, "binary", 255, 255, 0, 0, null, null, "binary(255)", "", "", "", new MySQLBinary(255)) :: Nil
 
   val columns_in_table2 =
@@ -172,19 +174,19 @@ trait MySQLCommandLine extends MySQLConnector {
 
   val columns_in_table3 =
     MySQLColumn("table_with_all_data_types_p3", "TINYBLOB_COLUMN", 1, null, true, "tinyblob", 255, 255, 0, 0, null, null, "tinyblob", "", "", "", new MySQLTinyBlob) ::
-      MySQLColumn("table_with_all_data_types_p3", "TINYTEXT_COLUMN", 2, null, true, "tinytext", 255, 255, 0, 0, "latin7", "latin7_general_ci", "tinytext", "", "", "", new MySQLTinyText) ::
+      MySQLColumn("table_with_all_data_types_p3", "TINYTEXT_COLUMN", 2, null, true, "tinytext", 255, 255, 0, 0, "latin7", "latin7_general_ci", "tinytext CHARACTER SET latin7 COLLATE latin7_general_ci", "", "", "", new MySQLTinyText) ::
       MySQLColumn("table_with_all_data_types_p3", "BLOB_COLUMN", 3, null, true, "blob", 65535, 65535, 0, 0, null, null, "blob", "", "", "", new MySQLBlob) ::
-      MySQLColumn("table_with_all_data_types_p3", "TEXT_COLUMN", 4, null, true, "text", 65535, 65535, 0, 0, "latin7", "latin7_general_ci", "text", "", "", "", new MySQLText) ::
+      MySQLColumn("table_with_all_data_types_p3", "TEXT_COLUMN", 4, null, true, "text", 65535, 65535, 0, 0, "latin7", "latin7_general_ci", "text CHARACTER SET latin7 COLLATE latin7_general_ci", "", "", "", new MySQLText("latin7","latin7_general_ci")) ::
       MySQLColumn("table_with_all_data_types_p3", "MEDIUMBLOB_COLUMN", 5, null, true, "mediumblob", 16777215L, 16777215L, 0, 0, null, null, "mediumblob", "", "", "", new MySQLMediumBlob) ::
-      MySQLColumn("table_with_all_data_types_p3", "MEDIUMTEXT_COLUMN", 6, null, true, "mediumtext", 16777215L, 16777215L, 0, 0, "latin7", "latin7_general_ci", "mediumtext", "", "", "", new MySQLMediumText) ::
+      MySQLColumn("table_with_all_data_types_p3", "MEDIUMTEXT_COLUMN", 6, null, true, "mediumtext", 16777215L, 16777215L, 0, 0, "latin7", "latin7_general_ci", "mediumtext CHARACTER SET latin7 COLLATE latin7_general_ci", "", "", "", new MySQLMediumText("latin7","latin7_general_ci")) ::
       MySQLColumn("table_with_all_data_types_p3", "LONGBLOB_COLUMN", 7, null, true, "longblob", 4294967295L, 4294967295L, 0, 0, null, null, "longblob", "", "", "", new MySQLLongBlob) ::
-      MySQLColumn("table_with_all_data_types_p3", "LONGTEXT_COLUMN", 8, null, true, "longtext", 4294967295L, 4294967295L, 0, 0, "latin7", "latin7_general_ci", "longtext", "", "", "", new MySQLLongText) ::
-      MySQLColumn("table_with_all_data_types_p3", "ENUM_COLUMN", 9, null, true, "enum", 1, 1, 0, 0, "latin7", "latin7_general_ci", "enum('A','B','C')", "", "", "", new MySQLEnum().addValue("A").addValue("B").addValue("C")) ::
-      MySQLColumn("table_with_all_data_types_p3", "SET_COLUMN", 10, null, true, "set", 9, 9, 0, 0, "latin7", "latin7_general_ci", "set('HLJ','JX','BJ')", "", "", "", new MySQLSet().addValue("HLJ").addValue("JX").addValue("BJ")) :: Nil
+      MySQLColumn("table_with_all_data_types_p3", "LONGTEXT_COLUMN", 8, null, true, "longtext", 4294967295L, 4294967295L, 0, 0, "latin7", "latin7_general_ci", "longtext CHARACTER SET latin7 COLLATE latin7_general_ci", "", "", "", new MySQLLongText()) ::
+      MySQLColumn("table_with_all_data_types_p3", "ENUM_COLUMN", 9, null, true, "enum", 1, 1, 0, 0, "latin7", "latin7_general_ci", "enum('A','B','C') CHARACTER SET latin7 COLLATE latin7_general_ci", "", "", "", new MySQLEnum(seqAsJavaList(Seq("A", "B", "C")),"latin7","latin7_general_ci")) ::
+      MySQLColumn("table_with_all_data_types_p3", "SET_COLUMN", 10, null, true, "set", 9, 9, 0, 0, "latin7", "latin7_general_ci", "set('HLJ','JX','BJ') CHARACTER SET latin7 COLLATE latin7_general_ci", "", "", "", new MySQLSet(seqAsJavaList(Seq("HLJ", "JX", "BJ")),"latin7","latin7_general_ci")) :: Nil
   val columns_in_table4 =
-    MySQLColumn("table_with_all_data_types_p4", "VARCHAR_COLUMN", 1, null, true, "varchar", 65532, 65532, 0, 0, "latin7", "latin7_general_ci", "varchar(65532)", "", "", "", new MySQLVarchar(65532, "latin7", "latin7_general_ci")) :: Nil
+    MySQLColumn("table_with_all_data_types_p4", "VARCHAR_COLUMN", 1, null, true, "varchar", 65532, 65532, 0, 0, "latin7", "latin7_general_ci", "varchar(65532) CHARACTER SET latin7 COLLATE latin7_general_ci", "", "", "", new MySQLVarchar(65532, "latin7", "latin7_general_ci")) :: Nil
   val columns_in_table5 =
-    MySQLColumn("table_with_all_data_types_p5", "VARCHAR_BINARY_COLUMN", 1, null, true, "varchar", 65532, 65532, 0, 0, "latin7", "latin7_bin", "varchar(65532)", "", "", "", new MySQLVarchar(65532, "latin7", "latin7_bin")) :: Nil
+    MySQLColumn("table_with_all_data_types_p5", "VARCHAR_BINARY_COLUMN", 1, null, true, "varchar", 65532, 65532, 0, 0, "latin7", "latin7_bin", "varchar(65532) CHARACTER SET latin7 COLLATE latin7_bin", "", "", "", new MySQLVarchar(65532, "latin7", "latin7_bin")) :: Nil
 
   val create_table_with_all_data_types_DDL_1 = """
     CREATE TABLE `table_with_all_data_types_p1` (

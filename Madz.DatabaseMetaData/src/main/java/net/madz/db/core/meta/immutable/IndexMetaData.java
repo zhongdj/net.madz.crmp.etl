@@ -34,23 +34,7 @@ public interface IndexMetaData<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     boolean containsColumn(CMD column);
 
     /** All columns in index */
-    Collection<Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet();
+    Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> getEntrySet();
 
     TMD getTable();
-
-    public interface Entry<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>> {
-
-        /** Index this entry belongs to */
-        public IMD getKey();
-
-        public Integer getSubPart();
-
-        /** Column definition */
-        public CMD getColumn();
-
-        /** Column position in index */
-        public Short getPosition();
-
-        public boolean isNull();
-    }
 }

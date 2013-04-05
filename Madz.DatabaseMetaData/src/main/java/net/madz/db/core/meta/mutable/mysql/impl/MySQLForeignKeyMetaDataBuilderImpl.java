@@ -9,9 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+<<<<<<< HEAD
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
+=======
+import net.madz.db.core.meta.immutable.ForeignKeyEntry;
+import net.madz.db.core.meta.immutable.IndexEntry;
+import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
+>>>>>>> 31de27dbf7ab437d2c85c56df38bf3654110707b
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -38,6 +44,23 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         this.foreignKeyPath = table.getTablePath().append(name);
     }
 
+    public MySQLForeignKeyMetaDataBuilderImpl(MySQLTableMetaDataBuilder tableBuilder, MetaDataResultSet<MySQLForeignKeyDbMetaDataEnum> rs) throws SQLException {
+        this.fkTable = tableBuilder;
+        this.foreignKeyPath = tableBuilder.getTablePath().append(rs.get(MySQLForeignKeyDbMetaDataEnum.CONSTRAINT_NAME));
+        this.updateRule = CascadeRule.getRule(rs.get(MySQLForeignKeyDbMetaDataEnum.UPDATE_RULE));
+        this.deleteRule = CascadeRule.getRule(rs.get(MySQLForeignKeyDbMetaDataEnum.DELETE_RULE));
+        // [ToDo] [Tracy] about how to get pkTable
+        // Below code suppose the referenced table is in the same
+        // schema,
+        // but actually, the referenced table could be in another
+        // schema.
+        this.pkTable = this.fkTable.getSchema().getTableBuilder(rs.get(MySQLForeignKeyDbMetaDataEnum.REFERENCED_TABLE_NAME));
+        // Note: some times unique_constraint_name is null
+        this.pkIndex = this.pkTable.getIndexBuilder(rs.get(MySQLForeignKeyDbMetaDataEnum.UNIQUE_CONSTRAINT_NAME));
+        this.fkIndex = this.fkTable.getIndexBuilder(rs.get(MySQLForeignKeyDbMetaDataEnum.CONSTRAINT_NAME));
+        
+    }
+
     @Override
     public MySQLForeignKeyMetaDataBuilder build(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
@@ -62,8 +85,9 @@ public class MySQLForeignKeyMetaDataBuilderImpl
             ResourceManagementUtils.closeResultSet(rs);
         }
         try {
-            rs = stmt.executeQuery("SELECT * FROM key_column_usage WHERE constraint_schema='" + this.fkTable.getSchema().getSchemaPath().getName()
-                    + "' AND constraint_name = '" + this.foreignKeyPath.getName() + "';");
+            rs = stmt.executeQuery("SELECT * FROM key_column_usage WHERE constraint_schema='" + this.fkTable.getSchema().getSchemaName()
+                    + "' AND constraint_name = '" + this.foreignKeyPath.getName()
+                    + "' AND referenced_table_name IS NOT NULL AND referenced_column_name IS NOT NULL;");
             while ( rs.next() ) {
                 final String columnName = rs.getString("column_name");
                 final String referencedColumnName = rs.getString("referenced_column_name");
@@ -84,17 +108,17 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         // auto-generated doesn't match the constraint name.
         if ( null == this.fkIndex ) {
             final Map<Short, MySQLColumnMetaData> fkColumns = new HashMap<Short, MySQLColumnMetaData>();
-            List<ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> fkEntrySet = this.entryList;
-            for ( ForeignKeyMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : fkEntrySet ) {
+            List<ForeignKeyEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> fkEntrySet = this.entryList;
+            for ( ForeignKeyEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : fkEntrySet ) {
                 fkColumns.put(entry.getSeq(), entry.getForeignKeyColumn());
             }
             Collection<MySQLIndexMetaDataBuilder> indexSet = this.fkTable.getIndexBuilderSet();
             Map<Short, MySQLColumnMetaData> indexColumns = null;
             for ( MySQLIndexMetaDataBuilder index : indexSet ) {
                 indexColumns = new HashMap<Short, MySQLColumnMetaData>();
-                final Collection<IndexMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = index
+                final Collection<IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>> entrySet = index
                         .getEntrySet();
-                for ( IndexMetaData.Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
+                for ( IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry : entrySet ) {
                     indexColumns.put(entry.getPosition(), entry.getColumn());
                 }
                 // if ( fkColumns.size() != indexColumns.size() ) {
@@ -109,7 +133,7 @@ public class MySQLForeignKeyMetaDataBuilderImpl
                         break;
                     }
                 }
-                if ( matched && !index.getIndexName().equalsIgnoreCase("PRIMARY") ) {
+                if ( matched ) {
                     this.fkIndex = this.fkTable.getIndexBuilder(index.getIndexName());
                     break;
                 }
@@ -128,8 +152,44 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         return constructedMetaData;
     }
 
+<<<<<<< HEAD
     public MySQLForeignKeyMetaDataBuilder build(JdbcForeignKeyMetaData jFk) {
         // TODO Auto-generated method stub
         return null;
+=======
+    @Override
+    public String getForeignKeyIndexName() {
+        return fkIndex.getIndexName();
+    }
+
+    @Override
+    public String getForeignKeyTableName() {
+        return fkTable.getTableName();
+    }
+
+    @Override
+    public String getPrimaryKeyIndexName() {
+        return pkIndex.getIndexName();
+    }
+
+    @Override
+    public String getPrimaryKeyTableName() {
+        return pkTable.getTableName();
+    }
+
+    @Override
+    public void addEntry(MetaDataResultSet<MySQLForeignKeyDbMetaDataEnum> rs) throws SQLException {
+        final String columnName = rs.get(MySQLForeignKeyDbMetaDataEnum.COLUMN_NAME);
+        final String referencedColumnName = rs.get(MySQLForeignKeyDbMetaDataEnum.REFERENCED_COLUMN_NAME);
+        final MySQLColumnMetaData fkColumn = this.fkTable.getColumnBuilder(columnName);
+        final MySQLColumnMetaData pkColumn = this.pkTable.getColumnBuilder(referencedColumnName);
+        final Short seq = rs.getShort(MySQLForeignKeyDbMetaDataEnum.ORDINAL_POSITION);
+        final BaseForeignKeyMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(
+                fkColumn, pkColumn, this, seq);
+        final MySQLColumnMetaDataBuilder columnBuilder = this.fkTable.getColumnBuilder(columnName);
+        columnBuilder.appendForeignKeyEntry(entry);
+        this.addEntry(entry);
+        
+>>>>>>> 31de27dbf7ab437d2c85c56df38bf3654110707b
     }
 }

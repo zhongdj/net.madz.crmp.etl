@@ -74,6 +74,7 @@ public abstract class MySQLTextTypeBase implements DataType {
             result.append(" BINARY ");
         }
         if ( null != collationName ) {
+            result.append(" COLLATE ");
             result.append(collationName);
         }
         builder.setColumnType(result.toString());

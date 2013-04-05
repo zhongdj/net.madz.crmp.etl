@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
@@ -22,11 +23,11 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     protected final SortDirectionEnum sortDirection;
     protected final Integer cardinatlity;
     protected final Integer pages;
-    protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
+    protected final Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<IndexEntry<SMD, TMD, CMD, FMD, IMD>>();
     // TODO [Jan 22, 2013][barry][Done] ONLY keyType can be re-assign?
     protected final KeyTypeEnum keyType;
 
-    public class Entry implements IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> {
+    public class Entry implements IndexEntry<SMD, TMD, CMD, FMD, IMD> {
 
         private final Short position;
         private final CMD column;
@@ -70,7 +71,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + getOuterType().hashCode();
+            result = prime * result + getOuterType().getIndexName().hashCode();
             result = prime * result + ( ( position == null ) ? 0 : position.hashCode() );
             result = prime * result + ( ( subPart == null ) ? 0 : subPart.hashCode() );
             result = prime * result + ( ( column == null ) ? 0 : column.hashCode() );
@@ -83,7 +84,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
             if ( obj == null ) return false;
             if ( getClass() != obj.getClass() ) return false;
             Entry other = (Entry) obj;
-            if ( !getOuterType().equals(other.getOuterType()) ) return false;
+            if ( !getOuterType().getIndexName().equals(other.getOuterType().getIndexName()) ) return false;
             if ( position == null ) {
                 if ( other.position != null ) return false;
             } else if ( !position.equals(other.position) ) return false;
@@ -99,6 +100,11 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         private IndexMetaDataImpl getOuterType() {
             return IndexMetaDataImpl.this;
         }
+
+        @Override
+        public String getColumnName() {
+            return column.getColumnName();
+        }
     }
 
     public IndexMetaDataImpl(TMD parent, IMD metaData) {
@@ -109,7 +115,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         this.pages = metaData.getPageCount();
         this.sortDirection = metaData.getSortDirection();
         this.keyType = metaData.getKeyType();
-        for ( IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry : metaData.getEntrySet() ) {
+        for ( IndexEntry<SMD, TMD, CMD, FMD, IMD> entry : metaData.getEntrySet() ) {
             CMD column = parent.getColumn(entry.getColumn().getColumnName());
             Short position = entry.getPosition();
             Integer subPart = entry.getSubPart();
@@ -151,7 +157,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
 
     @Override
     public boolean containsColumn(CMD column) {
-        for ( IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry : entryList ) {
+        for ( IndexEntry<SMD, TMD, CMD, FMD, IMD> entry : entryList ) {
             if ( column.equals(entry.getColumn()) ) {
                 return true;
             }
@@ -169,7 +175,7 @@ public class IndexMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
     }
 
     @Override
-    public Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
+    public Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
         return entryList;
     }
 

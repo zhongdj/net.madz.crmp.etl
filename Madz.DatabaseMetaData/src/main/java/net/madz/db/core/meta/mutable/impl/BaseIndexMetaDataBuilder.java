@@ -7,6 +7,7 @@ import java.util.List;
 import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
@@ -31,7 +32,7 @@ public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
     protected SortDirectionEnum sortDirection;
     protected Integer cardinatlity;
     protected Integer pages;
-    protected List<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();;
+    protected List<IndexEntry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<IndexEntry<SMD, TMD, CMD, FMD, IMD>>();;
 
     public BaseIndexMetaDataBuilder(TMDB table, String indexName) {
         super();
@@ -39,7 +40,7 @@ public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
         this.indexPath = table.getTablePath().append(indexName);
     }
 
-    public class Entry implements IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> {
+    public class Entry implements IndexEntry<SMD, TMD, CMD, FMD, IMD> {
 
         private IMD key;
         private int subPart;
@@ -77,6 +78,11 @@ public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
         @Override
         public boolean isNull() {
             return column.isNullable();
+        }
+
+        @Override
+        public String getColumnName() {
+            return column.getColumnName();
         }
     }
 
@@ -117,7 +123,7 @@ public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
 
     @Override
     public boolean containsColumn(CMD column) {
-        for ( IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry : this.entryList ) {
+        for ( IndexEntry<SMD, TMD, CMD, FMD, IMD> entry : this.entryList ) {
             if ( entry.getColumn().equals(column) ) {
                 return true;
             }
@@ -126,7 +132,7 @@ public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
     }
 
     @Override
-    public Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
+    public Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
         return this.entryList;
     }
 
@@ -136,7 +142,7 @@ public abstract class BaseIndexMetaDataBuilder<SMDB extends SchemaMetaDataBuilde
     }
 
     @Override
-    public void addEntry(IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry) {
+    public void addEntry(IndexEntry<SMD, TMD, CMD, FMD, IMD> entry) {
         this.entryList.add(entry);
     }
 }

@@ -46,4 +46,6 @@ public interface MySQLTableMetaDataBuilder
      * MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData,
      * MySQLIndexMetaData>> {
      */
+
+    MySQLForeignKeyMetaDataBuilder getForeignKeyBuilder(String constraintName);
 }

@@ -12,4 +12,6 @@ public class MessageConsts {
     public static final String LENGTH_MUST_BE_GREATER_THAN_ZERO = "For data type, length must be greater than 0.";
     public static final String COLLECTION_DATA_TYPE_SHOULD_NOT_BE_NULL = "For set or enum, data type values should not be null.";
     public static final String LOWER_CASE_TABLE_NAMES_MUST_BE_SAME = "System variable 'lower_case_table_names' of source server and target server must be the same, please configure correctly.";
+    public static final String DATABASE_NOT_EXISTS_IN_DB_SERVER = "Database doesn't exists on server, please check!";
+    public static final String THE_ERROR_CODE_INVALID = "The error code is invalid.";
 }

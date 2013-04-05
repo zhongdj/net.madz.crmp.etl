@@ -3,8 +3,8 @@ package net.madz.db.core.meta.immutable.mysql.impl;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
-import net.madz.db.core.meta.immutable.IndexMetaData.Entry;
+import net.madz.db.core.meta.immutable.ForeignKeyEntry;
+import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.impl.ColumnMetaDataImpl;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -87,19 +87,19 @@ public final class MySQLColumnMetaDataImpl extends
         return this.characterMaximumLength;
     }
 
-    public void addForeignKey(ForeignKeyMetaData.Entry entry) {
+    public void addForeignKey(ForeignKeyEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
         this.fkList.add(entry);
     }
 
-    public void addUniqueIndexEntry(Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
+    public void addUniqueIndexEntry(IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
         this.uniqueIndexList.add(entry);
     }
 
-    public void addNonUniqueIndexEntry(Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
+    public void addNonUniqueIndexEntry(IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
         this.nonUniqueIndexList.add(entry);
     }
 
-    public void setPrimaryKey(Entry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
+    public void setPrimaryKey(IndexEntry<MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData> entry) {
         this.primaryKey = entry;
     }
 

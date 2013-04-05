@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import net.madz.db.core.meta.DottedPath;
+import net.madz.db.core.meta.DottedPathImpl;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
@@ -24,12 +25,14 @@ public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuil
 
     // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable fields
     protected final DottedPath schemaPath;
+    protected final String schemaName;
     protected Map<String, TMDB> tableBuilderMap = new TreeMap<String, TMDB>(String.CASE_INSENSITIVE_ORDER);
     protected final Collection<TMDB> tableList = new LinkedList<TMDB>();
 
     public BasedSchemaMetaDataBuilder(final String databaseName) throws SQLException {
         super();
-        this.schemaPath = new DottedPath(databaseName);
+        this.schemaName = databaseName;
+        this.schemaPath = new DottedPathImpl(databaseName);
     }
 
     @SuppressWarnings("unchecked")
@@ -37,6 +40,10 @@ public abstract class BasedSchemaMetaDataBuilder<SMDB extends SchemaMetaDataBuil
         tableList.add(table);
         tableBuilderMap.put(table.getTablePath().getName(), table);
         return (SMDB) this;
+    }
+    
+    public String getSchemaName() {
+        return schemaName;
     }
 
     public DottedPath getSchemaPath() {

@@ -1,17 +1,17 @@
 package net.madz.db.core.meta.immutable.impl;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
+import net.madz.db.core.meta.immutable.ForeignKeyEntry;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
-import net.madz.db.core.meta.immutable.mysql.MySQLTableMetaData;
 
 public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
         implements ColumnMetaData<SMD, TMD, CMD, FMD, IMD> {
@@ -26,11 +26,11 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
     protected final Integer radix;
     protected final long charOctetLength;
     protected final String remarks, defaultValue;
-    protected IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> primaryKey;
-    protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> uniqueIndexList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
-    protected final Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> nonUniqueIndexList = new LinkedList<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();;
+    protected IndexEntry<SMD, TMD, CMD, FMD, IMD> primaryKey;
+    protected final Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> uniqueIndexList = new LinkedList<IndexEntry<SMD, TMD, CMD, FMD, IMD>>();
+    protected final Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> nonUniqueIndexList = new LinkedList<IndexEntry<SMD, TMD, CMD, FMD, IMD>>();;
     protected final Short ordinalPosition;
-    protected final List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> fkList = new LinkedList<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
+    protected final List<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>> fkList = new LinkedList<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>>();
 
     public ColumnMetaDataImpl(TMD parent, CMD metaData) {
         this.table = parent;
@@ -78,7 +78,7 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
     }
 
     @Override
-    public IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD> getPrimaryKey() {
+    public IndexEntry<SMD, TMD, CMD, FMD, IMD> getPrimaryKey() {
         return this.primaryKey;
     }
 
@@ -106,7 +106,7 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
     }
 
     @Override
-    public Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> getUniqueIndexSet() {
+    public Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> getUniqueIndexSet() {
         return this.uniqueIndexList;
     }
 
@@ -116,7 +116,7 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
     }
 
     @Override
-    public Collection<IndexMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> getNonUniqueIndexSet() {
+    public Collection<IndexEntry<SMD, TMD, CMD, FMD, IMD>> getNonUniqueIndexSet() {
         return this.nonUniqueIndexList;
     }
 

@@ -1,8 +1,11 @@
 package net.madz.db.core;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
+
+import net.madz.db.core.impl.validation.mysql.ErrorEntry;
 
 /**
  * This interface is the facade of this module. It provides checking,comparing,
@@ -34,7 +37,7 @@ public interface DatabaseSchemaUtils {
      * @param targetDatabaseName
      * @return
      */
-    boolean compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException;
+    List<ErrorEntry> compareDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException;
 
     /**
      * This method will clone database schema of source database to target

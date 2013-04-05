@@ -11,9 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+<<<<<<< HEAD
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
+=======
+import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
+>>>>>>> 31de27dbf7ab437d2c85c56df38bf3654110707b
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -29,6 +33,7 @@ import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
 import net.madz.db.utils.MessageConsts;
 import net.madz.db.utils.ResourceManagementUtils;
+import net.madz.db.utils.Utilities;
 
 public class MySQLSchemaMetaDataBuilderImpl
         extends
@@ -70,46 +75,58 @@ public class MySQLSchemaMetaDataBuilderImpl
     }
 
     public MySQLSchemaMetaDataBuilder build(Connection conn) throws SQLException {
-        final Statement stmt = conn.createStatement();
-        final ResultSet rs = stmt.executeQuery("SHOW VARIABLES LIKE 'LOWER_CASE_TABLE_NAMES';");
-        while ( rs.next() ) {
-            lowerCaseTableNames = rs.getInt("Value");
-            if ( lowerCaseTableNames == 0 ) {
-                this.tableBuilderMap = new TreeMap<String, MySQLTableMetaDataBuilder>();
-            } else {
-                this.tableBuilderMap = new TreeMap<String, MySQLTableMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = null;
+            try {
+                rs = stmt.executeQuery("SHOW VARIABLES LIKE 'LOWER_CASE_TABLE_NAMES';");
+                if ( rs.next() ) {
+                    lowerCaseTableNames = rs.getInt("Value");
+                    if ( lowerCaseTableNames == 0 ) {
+                        this.tableBuilderMap = new TreeMap<String, MySQLTableMetaDataBuilder>();
+                    } else {
+                        this.tableBuilderMap = new TreeMap<String, MySQLTableMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
+                    }
+                }
+            } finally {
+                ResourceManagementUtils.closeResultSet(rs);
             }
-        }
-        // We should keep the context of querying in information_schema
-        // database.
-        stmt.executeQuery("USE information_schema;");
-        setCharacterSetAndCollation(stmt);
-        final List<String> tableNames = getTableNames(stmt);
-        // For database without tables, just return
-        if ( 0 >= tableNames.size() ) {
-            return this;
-        }
-        // Build all tables
-        final Map<String, MySQLTableMetaDataBuilder> tableBuilders = new HashMap<String, MySQLTableMetaDataBuilder>();
-        for ( final String name : tableNames ) {
-            final MySQLTableMetaDataBuilder table = new MySQLTableMetaDataBuilderImpl(this, name).build(conn);
-            tableBuilders.put(name, table);
-            appendTableMetaDataBuilder(table);
-        }
-        final Map<String, LinkedList<String>> fkNamesOfTables = getFkNamesOfTables(stmt, tableNames);
-        // For database with no foreign keys
-        if ( 0 >= fkNamesOfTables.size() ) {
-            return this;
-        }
-        // Build all foreign keys
-        for ( final String tableName : fkNamesOfTables.keySet() ) {
-            final LinkedList<String> fks = fkNamesOfTables.get(tableName);
-            for ( String name : fks ) {
-                final MySQLForeignKeyMetaDataBuilder fkBuilder = new MySQLForeignKeyMetaDataBuilderImpl(tableBuilders.get(tableName), name).build(conn);
-                tableBuilders.get(tableName).appendForeignKeyMetaDataBuilder(fkBuilder);
+            // We should keep the context of querying in information_schema
+            // database.
+            stmt.executeQuery("USE information_schema;");
+            setCharacterSetAndCollation(stmt);
+            // Build all tables
+            final Map<String, MySQLTableMetaDataBuilder> tableBuilders = new HashMap<String, MySQLTableMetaDataBuilder>();
+            rs = stmt.executeQuery("SELECT * FROM tables INNER JOIN collations ON  table_collation = collation_name WHERE table_schema = '"
+                    + Utilities.handleSpecialCharacters(this.schemaName) + "'");
+            final MetaDataResultSet<MySQLTableDbMetaDataEnum> mysqlRs = new MetaDataResultSet<MySQLTableDbMetaDataEnum>(rs, MySQLTableDbMetaDataEnum.values());
+            while ( mysqlRs.next() ) {
+                final MySQLTableMetaDataBuilder table = new MySQLTableMetaDataBuilderImpl(this, mysqlRs).build(conn);
+                tableBuilders.put(table.getTableName(), table);
+                appendTableMetaDataBuilder(table);
             }
+            // Build all foreign keys
+            rs = stmt
+                    .executeQuery("SELECT * FROM referential_constraints join key_column_usage on referential_constraints.constraint_schema=key_column_usage.constraint_schema AND referential_constraints.constraint_name=key_column_usage.constraint_name where referential_constraints.constraint_schema='"
+                            + Utilities.handleSpecialCharacters(this.schemaName)
+                            + "' AND key_column_usage.referenced_table_name IS NOT NULL AND key_column_usage.referenced_column_name IS NOT NULL;");
+            final MetaDataResultSet<MySQLForeignKeyDbMetaDataEnum> fkRs = new MetaDataResultSet<MySQLForeignKeyDbMetaDataEnum>(rs,
+                    MySQLForeignKeyDbMetaDataEnum.values());
+            while ( fkRs.next() ) {
+                final String constraintName = fkRs.get(MySQLForeignKeyDbMetaDataEnum.CONSTRAINT_NAME);
+                final MySQLTableMetaDataBuilder tableBuilder = this.getTableBuilder(fkRs.get(MySQLForeignKeyDbMetaDataEnum.TABLE_NAME));
+                MySQLForeignKeyMetaDataBuilder foreignKeyBuilder = tableBuilder.getForeignKeyBuilder(constraintName);
+                if ( null == foreignKeyBuilder ) {
+                    foreignKeyBuilder = new MySQLForeignKeyMetaDataBuilderImpl(tableBuilder, fkRs);
+                    tableBuilder.appendForeignKeyMetaDataBuilder(foreignKeyBuilder);
+                }
+                foreignKeyBuilder.addEntry(fkRs);
+            }
+            return this;
+        } finally {
+            stmt.close();
         }
-        return this;
     }
 
     @Override
@@ -202,11 +219,11 @@ public class MySQLSchemaMetaDataBuilderImpl
         ResultSet rs = null;
         try {
             rs = stmt.executeQuery("SELECT * FROM schemata WHERE schema_name = '" + schemaPath.getName() + "'");
-            if ( rs.next() && rs.getRow() == 1 ) {
+            if ( rs.next() ) {
                 setCharSet(rs.getString("default_character_set_name"));
                 setCollation(rs.getString("default_collation_name"));
             } else {
-                throw new IllegalStateException(MessageConsts.ONLY_ONE_SCHEMA_INFORMATION_IS_OK);
+                throw new IllegalStateException(MessageConsts.DATABASE_NOT_EXISTS_IN_DB_SERVER);
             }
         } finally {
             ResourceManagementUtils.closeResultSet(rs);

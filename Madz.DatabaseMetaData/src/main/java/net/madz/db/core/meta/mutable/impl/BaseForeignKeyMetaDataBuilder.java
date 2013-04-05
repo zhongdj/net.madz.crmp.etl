@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.ColumnMetaData;
+import net.madz.db.core.meta.immutable.ForeignKeyEntry;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
@@ -21,7 +22,7 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
         extends BaseMetaDataBuilder<FMD> implements ForeignKeyMetaDataBuilder<SMDB, TMDB, CMDB, FMDB, IMDB, SMD, TMD, CMD, FMD, IMD>,
         ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD> {
 
-    protected List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>>();
+    protected List<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>> entryList = new LinkedList<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>>();
     protected CascadeRule updateRule, deleteRule;
     // TODO [Tracy] should it be included in jdbc only?
     protected KeyDeferrability deferrability;
@@ -29,7 +30,7 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
     protected IMDB pkIndex, fkIndex;
     protected DottedPath foreignKeyPath;
 
-    public class Entry implements ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> {
+    public class Entry implements ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD> {
 
         private final CMD fkColumn;
         private final CMD pkColumn;
@@ -61,6 +62,16 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
 
         public Short getSeq() {
             return seq;
+        }
+
+        @Override
+        public String getForeignKeyColumnName() {
+            return fkColumn.getColumnName();
+        }
+
+        @Override
+        public String getPrimaryKeyColumnName() {
+            return pkColumn.getColumnName();
         }
     }
 
@@ -111,7 +122,7 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
     }
 
     @Override
-    public List<ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
+    public List<ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD>> getEntrySet() {
         return this.entryList;
     }
 
@@ -121,7 +132,7 @@ public abstract class BaseForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataB
     }
 
     @Override
-    public void addEntry(ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry) {
+    public void addEntry(ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD> entry) {
         this.entryList.add(entry);
     }
 

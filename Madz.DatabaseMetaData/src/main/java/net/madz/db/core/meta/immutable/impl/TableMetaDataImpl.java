@@ -13,7 +13,6 @@ import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
-import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
 import net.madz.db.core.meta.immutable.types.TableType;
 
 public class TableMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IMD>, TMD extends TableMetaData<SMD, TMD, CMD, FMD, IMD>, CMD extends ColumnMetaData<SMD, TMD, CMD, FMD, IMD>, FMD extends ForeignKeyMetaData<SMD, TMD, CMD, FMD, IMD>, IMD extends IndexMetaData<SMD, TMD, CMD, FMD, IMD>>
@@ -182,7 +181,19 @@ public class TableMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         } else if ( !indexMap.equals(other.indexMap) ) return false;
         if ( fkList == null ) {
             if ( other.fkList != null ) return false;
-        } else if ( !fkList.equals(other.fkList) ) return false;
+        } else {
+            final TreeMap<String, FMD> fkMap = createOrderedForeignKeyMap(fkList);
+            final TreeMap<String, FMD> otherFkMap = createOrderedForeignKeyMap(other.fkList);
+            if ( !fkMap.equals(otherFkMap) ) return false;
+        }
         return true;
+    }
+
+    private TreeMap<String, FMD> createOrderedForeignKeyMap(List<FMD> freignKeyList) {
+        final TreeMap<String, FMD> fkTreeMap = new TreeMap<String, FMD>(String.CASE_INSENSITIVE_ORDER);
+        for (FMD fk : freignKeyList) {
+            fkTreeMap.put(fk.getForeignKeyName(), fk);
+        }
+        return fkTreeMap;
     }
 }

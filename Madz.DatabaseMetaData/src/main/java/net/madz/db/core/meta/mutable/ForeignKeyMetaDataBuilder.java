@@ -1,6 +1,7 @@
 package net.madz.db.core.meta.mutable;
 
 import net.madz.db.core.meta.immutable.ColumnMetaData;
+import net.madz.db.core.meta.immutable.ForeignKeyEntry;
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
@@ -11,7 +12,7 @@ public interface ForeignKeyMetaDataBuilder<SMDB extends SchemaMetaDataBuilder<SM
         // ForeignKeyMetaData<SMDB, TMDB, CMDB, FMDB, IMDB> ,
         MetaDataBuilder<FMD>, SQLBasedMetaDataBuilder<FMDB> {
 
-    void addEntry(ForeignKeyMetaData.Entry<SMD, TMD, CMD, FMD, IMD> entry);
+    void addEntry(ForeignKeyEntry<SMD, TMD, CMD, FMD, IMD> entry);
 
     void setPkTable(TMDB pkTable);
 
