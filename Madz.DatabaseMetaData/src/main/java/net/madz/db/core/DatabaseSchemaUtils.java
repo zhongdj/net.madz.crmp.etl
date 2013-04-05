@@ -60,4 +60,17 @@ public interface DatabaseSchemaUtils {
      * @throws SQLException
      */
     boolean dropDatabase(String databaseName) throws JAXBException, SQLException;
+
+    /**
+     * This method migrates databases between different database servers, such
+     * as Access,MySQL,etc.For now, we only support from Access to MySQL.
+     * 
+     * @param sourceDatabaseName
+     * @param targetDatabaseName
+     * @return
+     * @throws IllegalOperationException 
+     * @throws SQLException 
+     * @throws JAXBException 
+     */
+    String migrateDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException, IllegalOperationException, JAXBException;
 }

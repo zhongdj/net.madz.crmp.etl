@@ -7,6 +7,8 @@ import java.sql.Statement;
 
 import javax.xml.bind.JAXBException;
 
+import net.madz.db.configuration.Database;
+import net.madz.db.configuration.Sku;
 import net.madz.db.core.AbsDatabaseGenerator;
 import net.madz.db.core.AbsSchemaMetaDataParser;
 import net.madz.db.core.DatabaseSchemaUtils;
@@ -150,9 +152,14 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
         }
     }
 
+    /** This method only apply to MySQL database */
     private void validateServerConfigurations(String databaseName) throws SQLException {
         Connection conn = null, conn2 = null;
         conn = DbConfigurationManagement.createConnection(databaseName, false);
+        Database db = DbConfigurationManagement.findDatabaseInformation(databaseName, false);
+        if ( !db.getSku().equals(Sku.MY_SQL) ) {
+            return;
+        }
         conn2 = DbConfigurationManagement.createConnection("", true);
         Statement stmt = null, stmt2 = null;
         ResultSet rs = null, rs2 = null;
@@ -180,5 +187,30 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
             throw new IllegalStateException(MessageConsts.LOWER_CASE_TABLE_NAMES_MUST_BE_SAME + "The value of source server is: " + one
                     + ", the value of target server is:" + other);
         }
+    }
+
+    @Override
+    public String migrateDatabaseSchema(String sourceDatabaseName, String targetDatabaseName) throws SQLException, IllegalOperationException, JAXBException {
+        validateDatabaseName(sourceDatabaseName);
+        if ( null == targetDatabaseName || 0 >= targetDatabaseName.length() ) {
+            targetDatabaseName = sourceDatabaseName + "_copy";
+        }
+        if ( !databaseExists(sourceDatabaseName, false) ) {
+            throw new IllegalOperationException(MessageConsts.CONFIGURE_DATABASE_INFO);
+        }
+        if ( databaseExists(targetDatabaseName, true) ) {
+            dropDatabase(targetDatabaseName);
+        }
+        final AbsSchemaMetaDataParser<SMD, TMD, CMD, FMD, IMD> sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName,
+                false);
+        final SMD schemaMetaData = sourceDbParser.parseSchemaMetaData();
+        // Convert Access schema metadata to MySQL schema metaData
+        // Upload schemaMetaData to to writer (local or remote)
+        //
+        final AbsDatabaseGenerator<SMD, TMD, CMD, FMD, IMD> databaseGenerator = DbOperatorFactoryImpl.getInstance().createDatabaseGenerator(targetDatabaseName);
+        final String databaseName = databaseGenerator.generateDatabase(schemaMetaData, DbConfigurationManagement.createConnection(targetDatabaseName, true),
+                targetDatabaseName);
+        DbConfigurationManagement.addDatabaseInfo(targetDatabaseName);
+        return databaseName;
     }
 }
