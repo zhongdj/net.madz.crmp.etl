@@ -1,7 +1,6 @@
 package net.madz.db.core.impl.jdbc;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import net.madz.db.core.AbsSchemaMetaDataParser;
@@ -22,13 +21,11 @@ public class JdbcSchemaMetaDataParserImpl extends
 
     @Override
     public JdbcSchemaMetaData parseSchemaMetaData() throws SQLException {
-        // TODO [Jan 22, 2013][barry][Done] Use modifier final with immutable
-        // variable
-        final DatabaseMetaData metaData = conn.getMetaData();
-        // final JdbcSchemaMetaDataBuilder jdbcSchemaMetaDataBuilder = new
-        // JdbcSchemaMetaDataBuilder(new DottedPath(databaseName));
-        // jdbcSchemaMetaDataBuilder.build(conn);
-        // jdbcSchemaMetaData = jdbcSchemaMetaDataBuilder.getCopy();
-        return jdbcSchemaMetaData;
+        try {
+            JdbcSchemaMetaDataBuilderImpl builderImpl = new JdbcSchemaMetaDataBuilderImpl(databaseName);
+            return builderImpl.build(conn).getMetaData();
+        } finally {
+            conn.close();
+        }
     }
 }

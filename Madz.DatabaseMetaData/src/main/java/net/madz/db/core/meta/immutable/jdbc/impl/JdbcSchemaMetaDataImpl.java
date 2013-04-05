@@ -16,22 +16,4 @@ public final class JdbcSchemaMetaDataImpl extends
     public JdbcSchemaMetaDataImpl(JdbcSchemaMetaData metaData) {
         super(metaData);
     }
-
-    @Override
-    public DottedPath getSchemaPath() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Collection<JdbcTableMetaData> getTables() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public JdbcTableMetaData getTable(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }
