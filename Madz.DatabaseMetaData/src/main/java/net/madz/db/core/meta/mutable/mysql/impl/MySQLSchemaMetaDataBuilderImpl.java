@@ -11,13 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-<<<<<<< HEAD
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
-=======
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
->>>>>>> 31de27dbf7ab437d2c85c56df38bf3654110707b
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;

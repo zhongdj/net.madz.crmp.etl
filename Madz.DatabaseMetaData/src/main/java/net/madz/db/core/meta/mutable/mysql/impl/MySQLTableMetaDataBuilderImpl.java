@@ -8,13 +8,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-<<<<<<< HEAD
-import net.madz.db.core.meta.immutable.IndexMetaData.Entry;
-import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
-=======
 import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
->>>>>>> 31de27dbf7ab437d2c85c56df38bf3654110707b
+import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -33,7 +29,6 @@ import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
 import net.madz.db.utils.ResourceManagementUtils;
-import net.madz.db.utils.Utilities;
 
 public class MySQLTableMetaDataBuilderImpl
         extends
@@ -198,10 +193,11 @@ public class MySQLTableMetaDataBuilderImpl
         return this.indexMap.values();
     }
 
-<<<<<<< HEAD
     public MySQLTableMetaDataBuilder build(JdbcTableMetaData tMetadata) {
         // TODO Auto-generated method stub
-=======
+        return null;
+    }
+
     @Override
     public MySQLForeignKeyMetaDataBuilder getForeignKeyBuilder(String constraintName) {
         for ( MySQLForeignKeyMetaDataBuilder builder : this.fkList ) {
@@ -209,7 +205,6 @@ public class MySQLTableMetaDataBuilderImpl
                 return builder;
             }
         }
->>>>>>> 31de27dbf7ab437d2c85c56df38bf3654110707b
         return null;
     }
 }

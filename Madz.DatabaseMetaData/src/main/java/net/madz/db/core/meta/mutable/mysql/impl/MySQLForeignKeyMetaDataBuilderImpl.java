@@ -9,15 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-<<<<<<< HEAD
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
-=======
 import net.madz.db.core.meta.immutable.ForeignKeyEntry;
 import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
->>>>>>> 31de27dbf7ab437d2c85c56df38bf3654110707b
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -58,7 +55,6 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         // Note: some times unique_constraint_name is null
         this.pkIndex = this.pkTable.getIndexBuilder(rs.get(MySQLForeignKeyDbMetaDataEnum.UNIQUE_CONSTRAINT_NAME));
         this.fkIndex = this.fkTable.getIndexBuilder(rs.get(MySQLForeignKeyDbMetaDataEnum.CONSTRAINT_NAME));
-        
     }
 
     @Override
@@ -152,11 +148,11 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         return constructedMetaData;
     }
 
-<<<<<<< HEAD
     public MySQLForeignKeyMetaDataBuilder build(JdbcForeignKeyMetaData jFk) {
         // TODO Auto-generated method stub
         return null;
-=======
+    }
+
     @Override
     public String getForeignKeyIndexName() {
         return fkIndex.getIndexName();
@@ -189,7 +185,5 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         final MySQLColumnMetaDataBuilder columnBuilder = this.fkTable.getColumnBuilder(columnName);
         columnBuilder.appendForeignKeyEntry(entry);
         this.addEntry(entry);
-        
->>>>>>> 31de27dbf7ab437d2c85c56df38bf3654110707b
     }
 }
