@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -38,6 +41,32 @@ public class MySQLSchemaMetaDataBuilderImpl
 
     public MySQLSchemaMetaDataBuilderImpl(final String databaseName) throws SQLException {
         super(databaseName);
+    }
+
+    public MySQLSchemaMetaDataBuilder build(JdbcSchemaMetaData jMetaData) {
+        // As Access in on windows, so it is case insensitive
+        this.tableBuilderMap = new TreeMap<String, MySQLTableMetaDataBuilder>(String.CASE_INSENSITIVE_ORDER);
+        // [TODO]Set CharacterSet and Collation from configuration file
+        // For database without tables, just return
+        if ( 0 >= jMetaData.getTables().size() ) {
+            return this;
+        }
+        // Build all tables
+        final Map<String, MySQLTableMetaDataBuilder> tableBuilders = new HashMap<String, MySQLTableMetaDataBuilder>();
+        for ( final JdbcTableMetaData tMetadata : jMetaData.getTables() ) {
+            final MySQLTableMetaDataBuilder table = new MySQLTableMetaDataBuilderImpl(this, tMetadata.getTableName()).build(tMetadata);
+            tableBuilders.put(tMetadata.getTableName(), table);
+            appendTableMetaDataBuilder(table);
+        }
+        for ( JdbcTableMetaData tMetadata : jMetaData.getTables() ) {
+            Collection<JdbcForeignKeyMetaData> foreignKeySet = tMetadata.getForeignKeySet();
+            for ( JdbcForeignKeyMetaData jFk : foreignKeySet ) {
+                final MySQLForeignKeyMetaDataBuilder fkBuilder = new MySQLForeignKeyMetaDataBuilderImpl(tableBuilders.get(tMetadata.getTableName()),
+                        jFk.getForeignKeyName()).build(jFk);
+                tableBuilders.get(tMetadata.getTableName()).appendForeignKeyMetaDataBuilder(fkBuilder);
+            }
+        }
+        return this;
     }
 
     public MySQLSchemaMetaDataBuilder build(Connection conn) throws SQLException {

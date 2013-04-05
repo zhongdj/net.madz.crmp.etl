@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.madz.db.core.meta.immutable.IndexMetaData.Entry;
+import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -204,5 +205,10 @@ public class MySQLTableMetaDataBuilderImpl
     @Override
     public Collection<MySQLIndexMetaDataBuilder> getIndexBuilderSet() {
         return this.indexMap.values();
+    }
+
+    public MySQLTableMetaDataBuilder build(JdbcTableMetaData tMetadata) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

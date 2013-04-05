@@ -11,6 +11,7 @@ import java.util.Map;
 
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -125,5 +126,10 @@ public class MySQLForeignKeyMetaDataBuilderImpl
     public MySQLForeignKeyMetaData createMetaData() {
         this.constructedMetaData = new MySQLForeignKeyMetaDataImpl(this.fkTable.getMetaData(), this);
         return constructedMetaData;
+    }
+
+    public MySQLForeignKeyMetaDataBuilder build(JdbcForeignKeyMetaData jFk) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
