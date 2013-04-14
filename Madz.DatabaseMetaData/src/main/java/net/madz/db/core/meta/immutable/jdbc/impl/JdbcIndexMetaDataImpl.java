@@ -10,7 +10,7 @@ import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 public final class JdbcIndexMetaDataImpl extends
         IndexMetaDataImpl<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> implements JdbcIndexMetaData {
 
-    public JdbcIndexMetaDataImpl(JdbcIndexMetaData metaData) {
-        super(metaData);
+    public JdbcIndexMetaDataImpl(JdbcTableMetaData parent, JdbcIndexMetaData metaData) {
+        super(parent, metaData);
     }
 }

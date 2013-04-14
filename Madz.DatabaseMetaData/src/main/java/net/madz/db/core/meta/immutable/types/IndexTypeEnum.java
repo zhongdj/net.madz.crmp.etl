@@ -9,9 +9,9 @@ public enum IndexTypeEnum {
     hashed,
     other;
 
-    public final static IndexTypeEnum getIndexTypeFromJdbcType(Integer jdbcValue) {
+    public final static IndexTypeEnum getIndexTypeFromJdbcType(Short jdbcValue) {
         if ( null != jdbcValue ) {
-            switch (jdbcValue.intValue()) {
+            switch (jdbcValue.shortValue()) {
             case DatabaseMetaData.tableIndexStatistic:
                 return statistic;
             case DatabaseMetaData.tableIndexClustered:

@@ -1,5 +1,10 @@
 package net.madz.db.core.meta.mutable.jdbc;
 
+import java.sql.SQLException;
+
+import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
+import net.madz.db.core.meta.immutable.impl.enums.AccessForeignKeyDbMetaDataEnum;
+import net.madz.db.core.meta.immutable.impl.enums.ImportKeyDbMetaDataEnum;
 import net.madz.db.core.meta.immutable.jdbc.JdbcColumnMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcIndexMetaData;
@@ -11,4 +16,6 @@ public interface JdbcForeignKeyMetaDataBuilder
         extends
         JdbcForeignKeyMetaData,
         ForeignKeyMetaDataBuilder<JdbcSchemaMetaDataBuilder, JdbcTableMetaDataBuilder, JdbcColumnMetaDataBuilder, JdbcForeignKeyMetaDataBuilder, JdbcIndexMetaDataBuilder, JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> {
+
+    void addEntry(MetaDataResultSet<AccessForeignKeyDbMetaDataEnum> importedKeys) throws SQLException;
 }

@@ -64,4 +64,52 @@ public enum CascadeRule {
         }
         return valueOf(rule.toUpperCase());
     }
+
+    public final static CascadeRule getAccessDBOnUpdateRule(Long rawValue) {
+        final Integer value = rawValue.intValue();
+        if ( null != value ) {
+            switch (value) {
+            case 256:
+            case 257:
+            case 4352:
+            case 4353:
+            case 16777472:
+            case 16777473:
+            case 16781568:
+            case 16781569:
+            case 33554688:
+            case 33554689:
+            case 33558784:
+            case 33558785:
+                return RESTRICT;
+            default:
+                return SETNULL;
+            }
+        }
+        return RESTRICT;
+    }
+
+    public final static CascadeRule getAccessDBOnDeleteRule(Long rawValue) {
+        final Integer value = rawValue.intValue();
+        if ( null != value ) {
+            switch (value) {
+            case 4352:
+            case 4096:
+            case 4097:
+            case 4353:
+            case 16781312:
+            case 16781313:
+            case 16781568:
+            case 16781569:
+            case 33558784:
+            case 33558785:
+            case 33558528:
+            case 33558529:
+                return RESTRICT;
+            default:
+                return SETNULL;
+            }
+        }
+        return RESTRICT;
+    }
 }

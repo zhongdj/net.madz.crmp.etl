@@ -9,6 +9,7 @@ import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcIndexMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
+import net.madz.db.core.meta.mutable.jdbc.impl.JdbcSchemaMetaDataBuilderImpl;
 
 public class JdbcSchemaMetaDataParserImpl extends
         AbsSchemaMetaDataParser<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> {

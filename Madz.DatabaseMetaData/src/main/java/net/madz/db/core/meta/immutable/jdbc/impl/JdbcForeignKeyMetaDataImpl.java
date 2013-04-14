@@ -1,7 +1,5 @@
 package net.madz.db.core.meta.immutable.jdbc.impl;
 
-import java.sql.SQLException;
-
 import net.madz.db.core.meta.immutable.impl.ForeignKeyMetaDataImpl;
 import net.madz.db.core.meta.immutable.jdbc.JdbcColumnMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
@@ -13,7 +11,8 @@ public final class JdbcForeignKeyMetaDataImpl extends
         ForeignKeyMetaDataImpl<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> implements
         JdbcForeignKeyMetaData {
 
-    public JdbcForeignKeyMetaDataImpl(JdbcForeignKeyMetaData metaData) throws SQLException {
-        super(metaData);
+    public JdbcForeignKeyMetaDataImpl(JdbcTableMetaData parent, JdbcForeignKeyMetaData fkMetaData) {
+        super(parent, fkMetaData);
     }
+
 }

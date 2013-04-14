@@ -1,8 +1,7 @@
 package net.madz.db.core.meta.immutable.jdbc.impl;
 
-import java.util.Collection;
+import java.util.List;
 
-import net.madz.db.core.meta.DottedPath;
 import net.madz.db.core.meta.immutable.impl.SchemaMetaDataImpl;
 import net.madz.db.core.meta.immutable.jdbc.JdbcColumnMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
@@ -15,5 +14,11 @@ public final class JdbcSchemaMetaDataImpl extends
 
     public JdbcSchemaMetaDataImpl(JdbcSchemaMetaData metaData) {
         super(metaData);
+    }
+
+    public void addAllTables(List<JdbcTableMetaData> tables) {
+        for ( JdbcTableMetaData table : tables ) {
+            appendTable(table);
+        }
     }
 }
