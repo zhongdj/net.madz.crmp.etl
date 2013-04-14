@@ -69,7 +69,7 @@ public class MySQLSchemaMetaDataImplTest {
         table.setType(TableType.table);
         // Construct column c1
         MySQLColumnMetaDataBuilderImpl c1 = new MySQLColumnMetaDataBuilderImpl(table, "c1");
-        c1.setDataType(new MySQLVarchar(20, "utf8", "utf8_bin"));
+        c1.setDataType(new MySQLVarchar(20L, "utf8", "utf8_bin"));
         c1.setNullable(false);
         c1.setColumnKey("PRI");
         table.appendColumnMetaDataBuilder(c1);
