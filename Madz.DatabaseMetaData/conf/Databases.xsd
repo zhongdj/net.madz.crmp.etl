@@ -39,6 +39,9 @@
 	</xs:element>
 	<xs:element name="database">
 		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:table" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="sku" type="tns:sku" use="required" />
 			<xs:attribute name="url" type="xs:string" use="required" />
@@ -60,6 +63,13 @@
 			<xs:attribute name="generatorClass" type="xs:string"
 				use="optional" />
 			<xs:attribute name="comparatorClass" type="xs:string"
+				use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="table">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:attribute name="primaryKeyName" type="xs:string"
 				use="required" />
 		</xs:complexType>
 	</xs:element>

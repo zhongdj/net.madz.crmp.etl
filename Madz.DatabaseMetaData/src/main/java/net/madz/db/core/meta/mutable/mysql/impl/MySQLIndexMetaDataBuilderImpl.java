@@ -110,12 +110,7 @@ public class MySQLIndexMetaDataBuilderImpl
 
     public MySQLIndexMetaDataBuilder build(JdbcIndexMetaData index) {
         this.isUnique = index.isUnique();
-        if ( this.getIndexName().equalsIgnoreCase("primary") ) {
-            this.keyType = KeyTypeEnum.primaryKey;
-        } else if ( this.isUnique )
-            this.keyType = KeyTypeEnum.uniqueKey;
-        else
-            this.keyType = KeyTypeEnum.index;
+        this.keyType = index.getKeyType();
         // TODO index type??? moved to jdbc level
         this.sortDirection = index.getSortDirection();
         this.cardinatlity = index.getCardinality();

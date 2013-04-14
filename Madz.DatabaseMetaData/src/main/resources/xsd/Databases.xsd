@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--NOTE: This file should not be changed, just for references. -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://madz.net/datasource" xmlns:tns="http://madz.net/datasource"
 	elementFormDefault="qualified">
@@ -38,6 +39,9 @@
 	</xs:element>
 	<xs:element name="database">
 		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:table" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="sku" type="tns:sku" use="required" />
 			<xs:attribute name="url" type="xs:string" use="required" />
@@ -59,6 +63,13 @@
 			<xs:attribute name="generatorClass" type="xs:string"
 				use="optional" />
 			<xs:attribute name="comparatorClass" type="xs:string"
+				use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="table">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:attribute name="primaryKeyName" type="xs:string"
 				use="required" />
 		</xs:complexType>
 	</xs:element>

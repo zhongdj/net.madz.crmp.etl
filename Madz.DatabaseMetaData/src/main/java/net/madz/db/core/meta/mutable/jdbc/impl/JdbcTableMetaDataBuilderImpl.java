@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.madz.db.configuration.Database;
+import net.madz.db.configuration.Table;
+import net.madz.db.core.impl.DbConfigurationManagement;
 import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
 import net.madz.db.core.meta.immutable.impl.enums.ColumnDbMetaDataEnum;
@@ -70,10 +73,18 @@ public class JdbcTableMetaDataBuilderImpl
         } finally {
             ResourceManagementUtils.closeResultSet(jIndexRs);
         }
+        String primaryKeyName = "PrimaryKey";
+        final Database databaseInformation = DbConfigurationManagement.findDatabaseInformation(this.schema.getSchemaName(), false);
+        final List<Table> tables = databaseInformation.getTable();
+        for ( Table table : tables ) {
+            if ( table.getName().equalsIgnoreCase(getTableName()) ) {
+                primaryKeyName = table.getPrimaryKeyName();
+            }
+        }
         // pks
         for ( String indexName : indexMap.keySet() ) {
-            if ( indexName.equalsIgnoreCase("PrimaryKey") ) {
-                primaryKey = indexMap.get("PrimaryKey");
+            if ( indexName.equalsIgnoreCase(primaryKeyName) ) {
+                primaryKey = indexMap.get(primaryKeyName);
                 primaryKey.setPrimaryKey();
             }
         }

@@ -144,7 +144,7 @@ public class MySQLTableMetaDataBuilderImpl
         for ( MySQLIndexMetaDataBuilder indexBuilder : this.indexMap.values() ) {
             final MySQLIndexMetaData indexMetaData = indexBuilder.getMetaData();
             indexes.add(indexMetaData);
-            final boolean isPrimary = indexMetaData.getIndexName().equalsIgnoreCase("primary");
+            final boolean isPrimary = indexMetaData.getKeyType() == KeyTypeEnum.primaryKey ? true : false;
             if ( isPrimary ) {
                 result.setPrimaryKey(indexMetaData);
             }
@@ -207,12 +207,12 @@ public class MySQLTableMetaDataBuilderImpl
         }
         // Convert indexes
         for ( JdbcIndexMetaData index : tMetadata.getIndexSet() ) {
-            String indexName = index.getIndexName();
-            if ( indexName.equalsIgnoreCase("PrimaryKey") ) {
-                indexName = "primary";
-            }
-            final MySQLIndexMetaDataBuilder indexBuilder = new MySQLIndexMetaDataBuilderImpl(this, indexName).build(index);
+            final MySQLIndexMetaDataBuilder indexBuilder = new MySQLIndexMetaDataBuilderImpl(this, index.getIndexName()).build(index);
             appendIndexMetaDataBuilder(indexBuilder);
+            if ( indexBuilder.getKeyType() == KeyTypeEnum.primaryKey ) {
+                this.primaryKey = indexBuilder;
+            }
+            this.primaryKey = indexBuilder;
         }
         return this;
     }
