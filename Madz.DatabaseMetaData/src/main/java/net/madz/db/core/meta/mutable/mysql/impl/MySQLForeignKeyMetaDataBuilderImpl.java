@@ -11,7 +11,11 @@ import java.util.Map;
 
 import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcColumnMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcIndexMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 import net.madz.db.core.meta.immutable.ForeignKeyEntry;
 import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
@@ -149,8 +153,35 @@ public class MySQLForeignKeyMetaDataBuilderImpl
     }
 
     public MySQLForeignKeyMetaDataBuilder build(JdbcForeignKeyMetaData jFk) {
-        // TODO Auto-generated method stub
-        return null;
+        if ( null == jFk ) {
+            throw new IllegalArgumentException(MessageConsts.ARGUMENT_SHOULD_NOT_BE_NULL);
+        }
+        this.updateRule = jFk.getUpdateCascadeRule();
+        this.deleteRule = jFk.getDeleteCascadeRule();
+        // [ToDo] [Tracy] about how to get pkTable
+        // Below code suppose the referenced table is in the same
+        // schema,
+        // but actually, the referenced table could be in another
+        // schema.
+        this.pkTable = this.fkTable.getSchema().getTableBuilder(jFk.getPrimaryKeyTable().getTableName());
+        // Note: some times unique_constraint_name is null
+        this.pkIndex = null;
+        this.fkIndex = null;
+        final List<ForeignKeyEntry<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData>> entrySet = jFk
+                .getEntrySet();
+        for ( ForeignKeyEntry<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> entry : entrySet ) {
+            final String columnName = entry.getForeignKeyColumnName();
+            final String referencedColumnName = entry.getPrimaryKeyColumnName();
+            final MySQLColumnMetaData fkColumn = this.fkTable.getColumnBuilder(columnName);
+            final MySQLColumnMetaData pkColumn = this.pkTable.getColumnBuilder(referencedColumnName);
+            final Short seq = entry.getSeq();
+            final BaseForeignKeyMetaDataBuilder<MySQLSchemaMetaDataBuilder, MySQLTableMetaDataBuilder, MySQLColumnMetaDataBuilder, MySQLForeignKeyMetaDataBuilder, MySQLIndexMetaDataBuilder, MySQLSchemaMetaData, MySQLTableMetaData, MySQLColumnMetaData, MySQLForeignKeyMetaData, MySQLIndexMetaData>.Entry mysqlEntry = new BaseForeignKeyMetaDataBuilder.Entry(
+                    fkColumn, pkColumn, this, seq);
+            final MySQLColumnMetaDataBuilder columnBuilder = this.fkTable.getColumnBuilder(columnName);
+            columnBuilder.appendForeignKeyEntry(mysqlEntry);
+            this.addEntry(mysqlEntry);
+        }
+        return this;
     }
 
     @Override

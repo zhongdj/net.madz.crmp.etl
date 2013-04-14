@@ -1,14 +1,14 @@
 package net.madz.db.core.meta.mutable.mysql.impl;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.madz.db.core.impl.JdbcToMySQLDataTypeMappingManagement;
 import net.madz.db.core.meta.immutable.ForeignKeyEntry;
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
+import net.madz.db.core.meta.immutable.jdbc.JdbcColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -23,7 +23,6 @@ import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
-import net.madz.db.utils.ResourceManagementUtils;
 
 public final class MySQLColumnMetaDataBuilderImpl
         extends
@@ -236,5 +235,22 @@ public final class MySQLColumnMetaDataBuilderImpl
     @Override
     public void setDataType(DataType dataType) {
         dataType.build(this);
+    }
+
+    public MySQLColumnMetaDataBuilder build(JdbcColumnMetaData column) {
+        this.ordinalPosition = column.getOrdinalPosition();
+        this.defaultValue = column.getDefaultValue();
+        this.isNullable = column.isNullable();
+        this.size = column.getSize();
+        final DataType dataType = JdbcToMySQLDataTypeMappingManagement.getInstance().getMySQLDataType(column);
+        this.setDataType(dataType);
+        this.characterOctetLength = column.getCharOctetLength();
+        this.numericPrecision = column.getDecimalDigits();
+        this.collationName = null;
+        this.columnKey = null;
+        this.extra = null;
+        this.isAutoIncremented = column.isAutoIncremented();
+        this.remarks = column.getRemarks();
+        return this;
     }
 }

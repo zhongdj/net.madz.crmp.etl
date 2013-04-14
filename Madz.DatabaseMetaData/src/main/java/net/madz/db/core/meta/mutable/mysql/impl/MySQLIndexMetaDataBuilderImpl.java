@@ -4,8 +4,15 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 
+import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
+import net.madz.db.core.meta.immutable.jdbc.JdbcColumnMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcIndexMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -99,6 +106,39 @@ public class MySQLIndexMetaDataBuilderImpl
             column.appendNonUniqueIndexEntry(entry);
         }
         this.addEntry(entry);
-        
+    }
+
+    public MySQLIndexMetaDataBuilder build(JdbcIndexMetaData index) {
+        this.isUnique = index.isUnique();
+        if ( this.getIndexName().equalsIgnoreCase("primary") ) {
+            this.keyType = KeyTypeEnum.primaryKey;
+        } else if ( this.isUnique )
+            this.keyType = KeyTypeEnum.uniqueKey;
+        else
+            this.keyType = KeyTypeEnum.index;
+        // TODO index type??? moved to jdbc level
+        this.sortDirection = index.getSortDirection();
+        this.cardinatlity = index.getCardinality();
+        // TODO pages ?? moved to jdbc level
+        this.indexMethod = MySQLIndexMethod.getIndexMethod(index.getIndexType());
+        this.indexComment = null;
+        for ( IndexEntry<JdbcSchemaMetaData, JdbcTableMetaData, JdbcColumnMetaData, JdbcForeignKeyMetaData, JdbcIndexMetaData> entry : index.getEntrySet() ) {
+            short subPart = entry.getSubPart().shortValue();
+            short position = entry.getPosition();
+            MySQLColumnMetaDataBuilder column = this.table.getColumnBuilder(entry.getColumnName());
+            if ( column.getColumnType().toUpperCase().contains("TEXT") || column.getColumnType().toUpperCase().contains("BLOB") ) {
+                if ( subPart == 0 ) {
+                    subPart = 3;
+                }
+            }
+            BaseIndexMetaDataBuilder.Entry mysqlEntry = new BaseIndexMetaDataBuilder.Entry(this, subPart, column, position);
+            if ( this.isUnique ) {
+                column.appendUniqueIndexEntry(mysqlEntry);
+            } else {
+                column.appendNonUniqueIndexEntry(mysqlEntry);
+            }
+            this.addEntry(mysqlEntry);
+        }
+        return this;
     }
 }

@@ -60,7 +60,7 @@ public class JdbcSchemaMetaDataBuilderImpl
                 final MetaDataResultSet<AccessForeignKeyDbMetaDataEnum> foreignKeys = new MetaDataResultSet<AccessForeignKeyDbMetaDataEnum>(rawForeignKeys,
                         AccessForeignKeyDbMetaDataEnum.values());
                 while ( foreignKeys.next() ) {
-                    String fkName = foreignKeys.get(AccessForeignKeyDbMetaDataEnum.szRelationship);// FK_NAME
+                    String fkName = foreignKeys.get(AccessForeignKeyDbMetaDataEnum.SZRELATIONSHIP);// FK_NAME
                     JdbcForeignKeyMetaDataBuilder jFKBuilder = jTableBuilder.getForeignKeyBuilder(fkName);
                     if ( null == jFKBuilder ) {
                         jFKBuilder = new JdbcForeignKeyMetaDataBuilderImpl(foreignKeys, jTableBuilder, fkName);

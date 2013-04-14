@@ -10,6 +10,8 @@ import java.util.List;
 
 import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
+import net.madz.db.core.meta.immutable.jdbc.JdbcColumnMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcIndexMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
@@ -28,6 +30,7 @@ import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
+import net.madz.db.utils.MessageConsts;
 import net.madz.db.utils.ResourceManagementUtils;
 
 public class MySQLTableMetaDataBuilderImpl
@@ -194,8 +197,24 @@ public class MySQLTableMetaDataBuilderImpl
     }
 
     public MySQLTableMetaDataBuilder build(JdbcTableMetaData tMetadata) {
-        // TODO Auto-generated method stub
-        return null;
+        if ( null == tMetadata ) {
+            throw new IllegalArgumentException(MessageConsts.ARGUMENT_SHOULD_NOT_BE_NULL);
+        }
+        // Convert columns
+        for ( JdbcColumnMetaData column : tMetadata.getColumns() ) {
+            final MySQLColumnMetaDataBuilder columnBuilder = new MySQLColumnMetaDataBuilderImpl(this, column.getColumnName()).build(column);
+            appendColumnMetaDataBuilder(columnBuilder);
+        }
+        // Convert indexes
+        for ( JdbcIndexMetaData index : tMetadata.getIndexSet() ) {
+            String indexName = index.getIndexName();
+            if ( indexName.equalsIgnoreCase("PrimaryKey") ) {
+                indexName = "primary";
+            }
+            final MySQLIndexMetaDataBuilder indexBuilder = new MySQLIndexMetaDataBuilderImpl(this, indexName).build(index);
+            appendIndexMetaDataBuilder(indexBuilder);
+        }
+        return this;
     }
 
     @Override

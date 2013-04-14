@@ -30,10 +30,10 @@ public class JdbcForeignKeyMetaDataBuilderImpl
         this.fkTable = parent;
         this.foreignKeyPath = parent.getTablePath().append(foreignKeyName);
         this.deferrability = null;
-        final Long grbit = metaData.getLong(AccessForeignKeyDbMetaDataEnum.grbit);
+        final Long grbit = metaData.getLong(AccessForeignKeyDbMetaDataEnum.GRBIT);
         this.deleteRule = CascadeRule.getAccessDBOnDeleteRule(grbit);
         this.updateRule = CascadeRule.getAccessDBOnUpdateRule(grbit);
-        this.pkTable = parent.getSchema().getTableBuilder(metaData.get(AccessForeignKeyDbMetaDataEnum.szReferencedObject));
+        this.pkTable = parent.getSchema().getTableBuilder(metaData.get(AccessForeignKeyDbMetaDataEnum.SZREFERENCEDOBJECT));
     }
 
     @Override
@@ -81,12 +81,12 @@ public class JdbcForeignKeyMetaDataBuilderImpl
     }
 
     public void addEntry(MetaDataResultSet<AccessForeignKeyDbMetaDataEnum> importedKeys) throws SQLException {
-        final String fkColumnName = importedKeys.get(AccessForeignKeyDbMetaDataEnum.szColumn);
-        final String pkColumnName = importedKeys.get(AccessForeignKeyDbMetaDataEnum.szReferencedColumn);
+        final String fkColumnName = importedKeys.get(AccessForeignKeyDbMetaDataEnum.SZCOLUMN);
+        final String pkColumnName = importedKeys.get(AccessForeignKeyDbMetaDataEnum.SZREFERENCEDCOLUMN);
         JdbcColumnMetaData fkColumn = this.fkTable.getColumnBuilder(fkColumnName);
         JdbcColumnMetaData pkColumn = this.pkTable.getColumnBuilder(pkColumnName);
         BaseForeignKeyMetaDataBuilder.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(fkColumn, pkColumn, this,
-                importedKeys.getShort(AccessForeignKeyDbMetaDataEnum.icolumn));
+                importedKeys.getShort(AccessForeignKeyDbMetaDataEnum.ICOLUMN));
         this.entryList.add(entry);
     }
 }
