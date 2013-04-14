@@ -22,6 +22,7 @@ public class ErrorCodeTypes {
     // For Foreign Key level, Error Code is 5XX
     public static final int FOREIGN_KEYS_NUMBER_DIFFERENT = 501;
     public static final int FOREIGN_KEY_ENTRIES_NUMBER_DIFFERENT = 502;
+    public static final int FOREIGN_KEY_NAME_NOT_MATCHED = 503;
     final static HashMap<Integer, String> ERROR_CODES_MAP = new HashMap<Integer, String>();
     static {
         ERROR_CODES_MAP.put(ErrorCodeTypes.FIELD_NOT_MATCHED, "Field is not matched.");
@@ -33,6 +34,7 @@ public class ErrorCodeTypes {
         ERROR_CODES_MAP.put(ErrorCodeTypes.INDEX_ENTRIES_NUMBER_NOT_MATCHED, "Index entries' number is different.");
         ERROR_CODES_MAP.put(ErrorCodeTypes.FOREIGN_KEYS_NUMBER_DIFFERENT, "Foreign keys' number is different.");
         ERROR_CODES_MAP.put(ErrorCodeTypes.FOREIGN_KEY_ENTRIES_NUMBER_DIFFERENT, "Foreign key entries' number is different.");
+        ERROR_CODES_MAP.put(ErrorCodeTypes.FOREIGN_KEY_NAME_NOT_MATCHED, "Foreign key is not found in target database.");
     }
 
     public static String getErrorCodeMessage(int errorCode) {
