@@ -124,6 +124,15 @@ public class MySQLDatabaseGeneratorImpl extends
                         appendBackQuotation(result);
                         result.append(column.getColumnName());
                         appendBackQuotation(result);
+                        if (column.getColumnType().toUpperCase().contains("TEXT") || column.getColumnType().toUpperCase().contains("BLOB")) {
+                            result.append("(");
+                            if (entry.getSubPart() <= 0 ) {
+                                result.append(3); //[TODO] Need to be reconsidered.
+                            } else {
+                                result.append(entry.getSubPart());
+                            }
+                            result.append(")");
+                        }
                         result.append(",");
                     }
                     result.deleteCharAt(result.length() - 1);
@@ -365,6 +374,11 @@ public class MySQLDatabaseGeneratorImpl extends
             appendBackQuotation(result);
             result.append(entry.getColumn().getColumnName());
             appendBackQuotation(result);
+            if (entry.getSubPart() > 0) {
+                result.append("(");
+                result.append(entry.getSubPart());
+                result.append(")");
+            }
             appendSpace(result);
             result.append(",");
         }
