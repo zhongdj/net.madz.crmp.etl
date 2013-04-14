@@ -7,4 +7,8 @@ public interface JdbcColumnMetaData extends
 
     /** Sql Type from java.sql.Types */
     Integer getSqlType();
+    
+    /**/
+    /** Number of fractional digits. Null is returned for data types where DECIMAL_DIGITS is not applicable */
+    Integer getDecimalDigits();
 }
