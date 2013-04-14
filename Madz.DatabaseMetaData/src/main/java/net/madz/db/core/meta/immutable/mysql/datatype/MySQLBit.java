@@ -12,18 +12,18 @@ public class MySQLBit implements DataType {
 
     public static final String name = "BIT";
     /** length is equal to number_precision */
-    private final short length;
+    private final Short length;
 
     public MySQLBit() {
         length = 1;
     }
 
-    public MySQLBit(short length) {
+    public MySQLBit(Short length) {
         super();
         this.length = length;
     }
 
-    public short getLength() {
+    public Short getLength() {
         return length;
     }
 

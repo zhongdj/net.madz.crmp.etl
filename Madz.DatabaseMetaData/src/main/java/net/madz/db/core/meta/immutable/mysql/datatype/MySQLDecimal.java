@@ -4,11 +4,11 @@ public class MySQLDecimal extends MySQLFloatTypeBase {
 
     public static final String name = "DECIMAL";
 
-    public MySQLDecimal(int length, int decimals, boolean isUnsigned, boolean isZeroFill) {
+    public MySQLDecimal(Integer length, Integer decimals, Boolean isUnsigned, Boolean isZeroFill) {
         super(length, decimals, isUnsigned, isZeroFill);
     }
 
-    public MySQLDecimal(int length, int decimals) {
+    public MySQLDecimal(Integer length, Integer decimals) {
         super(length, decimals);
     }
 

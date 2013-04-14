@@ -5,14 +5,14 @@ public class MySQLChar extends MySQLCharBase {
     public static final String name = "CHAR";
 
     public MySQLChar() {
-        super(1); // default value
+        super(1L); // default value
     }
 
-    public MySQLChar(long length) {
+    public MySQLChar(Long length) {
         super(length);
     }
 
-    public MySQLChar(long length, String charsetName, String collationName) {
+    public MySQLChar(Long length, String charsetName, String collationName) {
         super(length, charsetName, collationName);
     }
 

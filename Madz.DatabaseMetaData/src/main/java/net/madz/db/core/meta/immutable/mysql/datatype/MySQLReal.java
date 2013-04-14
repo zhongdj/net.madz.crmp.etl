@@ -4,14 +4,12 @@ public class MySQLReal extends MySQLFloatTypeBase {
 
     public static final String name = "REAL";
 
-    public MySQLReal(int length, int decimals, boolean isUnsigned, boolean isZeroFill) {
+    public MySQLReal(Integer length, Integer decimals, Boolean isUnsigned, Boolean isZeroFill) {
         super(length, decimals, isUnsigned, isZeroFill);
-        // TODO Auto-generated constructor stub
     }
 
-    public MySQLReal(int length, int decimals) {
+    public MySQLReal(Integer length, Integer decimals) {
         super(length, decimals);
-        // TODO Auto-generated constructor stub
     }
 
     @Override

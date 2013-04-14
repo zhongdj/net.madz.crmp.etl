@@ -4,7 +4,11 @@ public class MySQLInteger extends MySQLIntTypeBase {
 
     public static final String name = "INTEGER";
 
-    public MySQLInteger(Short displayLength, boolean isUnsigned, boolean isZeroFill) {
+    public MySQLInteger() {
+        super();
+    }
+
+    public MySQLInteger(Short displayLength, Boolean isUnsigned, Boolean isZeroFill) {
         super(displayLength, isUnsigned, isZeroFill);
     }
 
@@ -12,7 +16,7 @@ public class MySQLInteger extends MySQLIntTypeBase {
         super(displayLength);
     }
 
-    public MySQLInteger(Short displayLength, boolean isUnsigned) {
+    public MySQLInteger(Short displayLength, Boolean isUnsigned) {
         super(displayLength, isUnsigned);
     }
 

@@ -5,17 +5,17 @@ import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 public abstract class MySQLFloatTypeBase implements DataType {
 
     /** same to numeric_precision in columns table of information_schema */
-    private int length;
+    private Integer length;
     /** same to numeric_scale in columns table of information_schema */
-    private int decimals;
-    private boolean isUnsigned;
-    private boolean isZeroFill;
+    private Integer decimals;
+    private Boolean isUnsigned;
+    private Boolean isZeroFill;
 
-    public MySQLFloatTypeBase(int length, int decimals) {
+    public MySQLFloatTypeBase(Integer length, Integer decimals) {
         this(length, decimals, false, false);
     }
 
-    public MySQLFloatTypeBase(int length, int decimals, boolean isUnsigned, boolean isZeroFill) {
+    public MySQLFloatTypeBase(Integer length, Integer decimals, Boolean isUnsigned, Boolean isZeroFill) {
         super();
         this.length = length;
         this.decimals = decimals;
@@ -23,11 +23,11 @@ public abstract class MySQLFloatTypeBase implements DataType {
         this.isZeroFill = isZeroFill;
     }
 
-    public long getLength() {
+    public Integer getLength() {
         return length;
     }
 
-    public void setLength(int length) {
+    public void setLength(Integer length) {
         this.length = length;
     }
 
@@ -35,23 +35,23 @@ public abstract class MySQLFloatTypeBase implements DataType {
         return decimals;
     }
 
-    public void setDecimals(int decimals) {
+    public void setDecimals(Integer decimals) {
         this.decimals = decimals;
     }
 
-    public boolean isUnsigned() {
+    public Boolean isUnsigned() {
         return isUnsigned;
     }
 
-    public void setUnsigned(boolean isUnsigned) {
+    public void setUnsigned(Boolean isUnsigned) {
         this.isUnsigned = isUnsigned;
     }
 
-    public boolean isZerofill() {
+    public Boolean isZerofill() {
         return isZeroFill;
     }
 
-    public void setZerofill(boolean isZeroFill) {
+    public void setZerofill(Boolean isZeroFill) {
         this.isZeroFill = isZeroFill;
     }
 

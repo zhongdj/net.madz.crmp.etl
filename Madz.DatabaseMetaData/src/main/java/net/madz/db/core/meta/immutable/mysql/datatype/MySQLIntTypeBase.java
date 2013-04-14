@@ -4,19 +4,22 @@ import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 
 public abstract class MySQLIntTypeBase implements DataType {
 
-    private Short displayLength;
-    private boolean isUnsigned;
-    private boolean isZeroFill;
+    private Short displayLength = 0;
+    private Boolean isUnsigned = false;
+    private Boolean isZeroFill = false;
+
+    public MySQLIntTypeBase() {
+    }
 
     public MySQLIntTypeBase(Short displayLength) {
         this(displayLength, false, false);
     }
 
-    public MySQLIntTypeBase(Short displayLength, boolean isUnsigned) {
+    public MySQLIntTypeBase(Short displayLength, Boolean isUnsigned) {
         this(displayLength, isUnsigned, false);
     }
 
-    public MySQLIntTypeBase(Short displayLength, boolean isUnsigned, boolean isZeroFill) {
+    public MySQLIntTypeBase(Short displayLength, Boolean isUnsigned, Boolean isZeroFill) {
         super();
         this.displayLength = displayLength;
         this.isUnsigned = isUnsigned;
@@ -35,7 +38,7 @@ public abstract class MySQLIntTypeBase implements DataType {
         return isUnsigned;
     }
 
-    public void setUnsigned(boolean unsigned) {
+    public void setUnsigned(Boolean unsigned) {
         this.isUnsigned = unsigned;
     }
 
@@ -43,7 +46,7 @@ public abstract class MySQLIntTypeBase implements DataType {
         return isZeroFill;
     }
 
-    public void setZerofill(boolean zerofill) {
+    public void setZerofill(Boolean zerofill) {
         this.isZeroFill = zerofill;
     }
 

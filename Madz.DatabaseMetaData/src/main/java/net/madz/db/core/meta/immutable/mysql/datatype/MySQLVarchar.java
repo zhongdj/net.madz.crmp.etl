@@ -4,11 +4,11 @@ public class MySQLVarchar extends MySQLCharBase {
 
     public static final String name = "VARCHAR";
 
-    public MySQLVarchar(long length) {
+    public MySQLVarchar(Long length) {
         super(length);
     }
 
-    public MySQLVarchar(long length, String charsetName, String collationName) {
+    public MySQLVarchar(Long length, String charsetName, String collationName) {
         super(length, charsetName, collationName);
     }
 

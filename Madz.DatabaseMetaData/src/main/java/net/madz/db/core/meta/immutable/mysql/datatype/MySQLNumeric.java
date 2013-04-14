@@ -4,14 +4,12 @@ public class MySQLNumeric extends MySQLFloatTypeBase {
 
     public static final String name = "NUMERIC";
 
-    public MySQLNumeric(int length, int decimals, boolean isUnsigned, boolean isZeroFill) {
+    public MySQLNumeric(Integer length, Integer decimals, Boolean isUnsigned, Boolean isZeroFill) {
         super(length, decimals, isUnsigned, isZeroFill);
-        // TODO Auto-generated constructor stub
     }
 
-    public MySQLNumeric(int length, int decimals) {
+    public MySQLNumeric(Integer length, Integer decimals) {
         super(length, decimals);
-        // TODO Auto-generated constructor stub
     }
 
     @Override

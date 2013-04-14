@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.example.org/JdbcDataTypeToMySqlMappingSchema"
+	xmlns:tns="http://www.example.org/JdbcDataTypeToMySqlMappingSchema"
+	elementFormDefault="qualified">
+	<xs:element name="jdbc-data-type-bindings">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:jdbc-data-type-binding" minOccurs="1"
+					maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="jdbc-data-type-binding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:property-binding" minOccurs="0"
+					maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:int" use="required" />
+			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:attribute name="data-type-class" type="xs:string"
+				use="required" />
+			<xs:attribute name="maxLength" type="xs:int" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="property-binding">
+		<xs:complexType>
+			<xs:sequence>
+			</xs:sequence>
+			<xs:attribute name="jdbc-name" type="xs:string" use="required" />
+			<xs:attribute name="constructor-argument-type" type="xs:string"
+				use="required" />
+			<xs:attribute name="constructor-argument" type="xs:string"
+				use="required" />
+			<xs:attribute name="datatype-convertor-clzName" type="xs:string"
+				use="optional" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

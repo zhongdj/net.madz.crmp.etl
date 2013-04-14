@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jdbc-data-type-bindings
+	xmlns="http://www.example.org/JdbcDataTypeToMySqlMappingSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.example.org/JdbcDataTypeToMySqlMappingSchema JdbcDataTypeToMySqlMappingSchema.xsd">
+	<jdbc-data-type-binding id="-11" name="GUID"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLChar"
+		maxLength="255">
+		<property-binding jdbc-name="size"
+			constructor-argument="length" constructor-argument-type="java.lang.Long"
+			datatype-convertor-clzName="net.madz.db.utils.IntegerToLongConvertor" />
+	</jdbc-data-type-binding>
+	<jdbc-data-type-binding id="-7" name="BIT"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLBit">
+		<property-binding jdbc-name="size"
+			constructor-argument-type="java.lang.Short"
+			datatype-convertor-clzName="net.madz.db.utils.IntegerToShortConvertor"
+			constructor-argument="length" />
+	</jdbc-data-type-binding>
+	<jdbc-data-type-binding id="-6" name="TINYINT"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLTinyInt" />
+	<jdbc-data-type-binding id="-5" name="BIGINT"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLBigInt" />
+	<jdbc-data-type-binding id="-4" name="LONGVARBINARY"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLBlob" />
+	<jdbc-data-type-binding id="-3" name="VARBINARY"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLVarbinary">
+		<property-binding jdbc-name="size"
+			constructor-argument-type="java.lang.Long" constructor-argument="length" />
+	</jdbc-data-type-binding>
+	<jdbc-data-type-binding id="-2" name="BINARY"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLBinary">
+		<property-binding jdbc-name="size"
+			constructor-argument-type="java.lang.Long" constructor-argument="length" />
+	</jdbc-data-type-binding>
+	<jdbc-data-type-binding id="-1" name="LONGVARCHAR"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLVarchar"
+		maxLength="32767">
+		<property-binding jdbc-name="size"
+			constructor-argument-type="java.lang.Long"
+			datatype-convertor-clzName="net.madz.db.utils.IntegerToLongConvertor"
+			constructor-argument="length" />
+	</jdbc-data-type-binding>
+	<jdbc-data-type-binding id="-1" name="LONGVARCHAR"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLText">
+	</jdbc-data-type-binding>
+	<jdbc-data-type-binding id="1" name="CHAR"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLChar">
+		<property-binding jdbc-name="size"
+			constructor-argument-type="java.lang.Long" constructor-argument="length" />
+	</jdbc-data-type-binding>
+	<jdbc-data-type-binding id="2" name="DECIMAL"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLDecimal">
+		<property-binding jdbc-name="size"
+			constructor-argument-type="java.lang.Integer" constructor-argument="length" />
+		<property-binding jdbc-name="decimalDigits"
+			constructor-argument-type="java.lang.Integer" constructor-argument="decimals" />
+	</jdbc-data-type-binding>
+	<jdbc-data-type-binding id="4" name="INTEGER"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLInteger" />
+	<jdbc-data-type-binding id="5" name="SMALLINT"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLSmallInt" />
+	<jdbc-data-type-binding id="7" name="REAL"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLFloat">
+		<property-binding jdbc-name="size"
+			constructor-argument-type="java.lang.Integer" constructor-argument="length" />
+		<property-binding jdbc-name="decimalDigits"
+			constructor-argument-type="java.lang.Integer" constructor-argument="decimals" />
+	</jdbc-data-type-binding>
+	<jdbc-data-type-binding id="8" name="DOUBLE"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLDouble">
+		<property-binding jdbc-name="size"
+			constructor-argument-type="java.lang.Integer" constructor-argument="length" />
+		<property-binding jdbc-name="decimalDigits"
+			constructor-argument-type="java.lang.Integer" constructor-argument="decimals" />
+	</jdbc-data-type-binding>
+	<jdbc-data-type-binding id="9" name="DATETIME"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLDateTime" />
+	<jdbc-data-type-binding id="12" name="VARCHAR"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLTinyText" />
+	<jdbc-data-type-binding id="91" name="DATE"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLDate" />
+	<jdbc-data-type-binding id="92" name="TIME"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLTime" />
+	<jdbc-data-type-binding id="93" name="TIMESTAMP"
+		data-type-class="net.madz.db.core.meta.immutable.mysql.datatype.MySQLTimeStamp" />
+</jdbc-data-type-bindings>

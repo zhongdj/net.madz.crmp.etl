@@ -6,27 +6,22 @@ public class MySQLTinyText extends MySQLTextTypeBase {
 
     public MySQLTinyText() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-    public MySQLTinyText(boolean isBinary, String charsetName) {
+    public MySQLTinyText(Boolean isBinary, String charsetName) {
         super(isBinary, charsetName);
-        // TODO Auto-generated constructor stub
     }
 
-    public MySQLTinyText(boolean isBinary) {
+    public MySQLTinyText(Boolean isBinary) {
         super(isBinary);
-        // TODO Auto-generated constructor stub
     }
 
     public MySQLTinyText(String charsetName, String collationName) {
         super(charsetName, collationName);
-        // TODO Auto-generated constructor stub
     }
 
     public MySQLTinyText(String collationName) {
         super(collationName);
-        // TODO Auto-generated constructor stub
     }
 
     @Override

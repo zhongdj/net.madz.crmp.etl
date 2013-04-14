@@ -6,27 +6,22 @@ public class MySQLMediumText extends MySQLTextTypeBase {
 
     public MySQLMediumText() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-    public MySQLMediumText(boolean isBinary, String charsetName) {
+    public MySQLMediumText(Boolean isBinary, String charsetName) {
         super(isBinary, charsetName);
-        // TODO Auto-generated constructor stub
     }
 
-    public MySQLMediumText(boolean isBinary) {
+    public MySQLMediumText(Boolean isBinary) {
         super(isBinary);
-        // TODO Auto-generated constructor stub
     }
 
     public MySQLMediumText(String charsetName, String collationName) {
         super(charsetName, collationName);
-        // TODO Auto-generated constructor stub
     }
 
     public MySQLMediumText(String collationName) {
         super(collationName);
-        // TODO Auto-generated constructor stub
     }
 
     @Override

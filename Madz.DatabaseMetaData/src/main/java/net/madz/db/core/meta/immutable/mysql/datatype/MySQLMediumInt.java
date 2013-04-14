@@ -4,7 +4,7 @@ public class MySQLMediumInt extends MySQLIntTypeBase {
 
     public static final String name = "MEDIUMINT";
 
-    public MySQLMediumInt(Short displayLength, boolean isUnsigned, boolean isZeroFill) {
+    public MySQLMediumInt(Short displayLength, Boolean isUnsigned, Boolean isZeroFill) {
         super(displayLength, isUnsigned, isZeroFill);
     }
 
@@ -12,7 +12,7 @@ public class MySQLMediumInt extends MySQLIntTypeBase {
         super(displayLength);
     }
 
-    public MySQLMediumInt(Short displayLength, boolean isUnsigned) {
+    public MySQLMediumInt(Short displayLength, Boolean isUnsigned) {
         super(displayLength, isUnsigned);
     }
 

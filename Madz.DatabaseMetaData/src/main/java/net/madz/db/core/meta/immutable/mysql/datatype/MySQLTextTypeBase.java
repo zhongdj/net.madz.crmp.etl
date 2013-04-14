@@ -4,15 +4,15 @@ import net.madz.db.core.meta.mutable.mysql.MySQLColumnMetaDataBuilder;
 
 public abstract class MySQLTextTypeBase implements DataType {
 
-    private boolean isBinary;
-    private String charsetName;
-    private String collationName;
+    private Boolean isBinary = false;
+    private String charsetName = null;
+    private String collationName = null;
 
     public MySQLTextTypeBase() {
         super();
     }
 
-    public MySQLTextTypeBase(boolean isBinary) {
+    public MySQLTextTypeBase(Boolean isBinary) {
         super();
         this.isBinary = isBinary;
     }
@@ -28,13 +28,13 @@ public abstract class MySQLTextTypeBase implements DataType {
         this.collationName = collationName;
     }
 
-    public MySQLTextTypeBase(boolean isBinary, String charsetName) {
+    public MySQLTextTypeBase(Boolean isBinary, String charsetName) {
         super();
         this.isBinary = isBinary;
         this.charsetName = charsetName;
     }
 
-    public boolean isBinary() {
+    public Boolean isBinary() {
         return isBinary;
     }
 

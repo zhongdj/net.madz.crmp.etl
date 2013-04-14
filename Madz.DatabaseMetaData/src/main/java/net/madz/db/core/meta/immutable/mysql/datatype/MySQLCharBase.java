@@ -5,15 +5,15 @@ import net.madz.db.utils.Utilities;
 
 public abstract class MySQLCharBase implements DataType {
 
-    private final long length;
+    private final Long length;
     private final String charsetName;
     private final String collationName;
 
-    public MySQLCharBase(long length) {
+    public MySQLCharBase(Long length) {
         this(length, null, null);
     }
 
-    public MySQLCharBase(long length, String charsetName, String collationName) {
+    public MySQLCharBase(Long length, String charsetName, String collationName) {
         super();
         Utilities.validateLength(length);
         this.length = length;
@@ -21,7 +21,7 @@ public abstract class MySQLCharBase implements DataType {
         this.collationName = collationName;
     }
 
-    public long getLength() {
+    public Long getLength() {
         return length;
     }
 

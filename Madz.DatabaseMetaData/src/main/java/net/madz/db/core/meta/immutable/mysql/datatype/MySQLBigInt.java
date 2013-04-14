@@ -4,11 +4,15 @@ public class MySQLBigInt extends MySQLIntTypeBase {
 
     public static final String name = "BIGINT";
 
-    public MySQLBigInt(Short displayLength, boolean isUnsigned, boolean isZeroFill) {
+    public MySQLBigInt() {
+        super();
+    }
+
+    public MySQLBigInt(Short displayLength, Boolean isUnsigned, Boolean isZeroFill) {
         super(displayLength, isUnsigned, isZeroFill);
     }
 
-    public MySQLBigInt(Short displayLength, boolean isUnsigned) {
+    public MySQLBigInt(Short displayLength, Boolean isUnsigned) {
         super(displayLength, isUnsigned);
     }
 

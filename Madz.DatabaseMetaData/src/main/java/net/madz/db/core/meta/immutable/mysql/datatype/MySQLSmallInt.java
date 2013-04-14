@@ -4,7 +4,10 @@ public class MySQLSmallInt extends MySQLIntTypeBase {
 
     public static final String name = "SMALLINT";
 
-    public MySQLSmallInt(Short displayLength, boolean isUnsigned, boolean isZeroFill) {
+    public MySQLSmallInt() {
+    }
+
+    public MySQLSmallInt(Short displayLength, Boolean isUnsigned, Boolean isZeroFill) {
         super(displayLength, isUnsigned, isZeroFill);
     }
 
@@ -12,7 +15,7 @@ public class MySQLSmallInt extends MySQLIntTypeBase {
         super(displayLength);
     }
 
-    public MySQLSmallInt(Short displayLength, boolean isUnsigned) {
+    public MySQLSmallInt(Short displayLength, Boolean isUnsigned) {
         super(displayLength, isUnsigned);
     }
 

@@ -6,13 +6,13 @@ public class MySQLBinary extends MySQLBinaryTypeBase {
 
     public static final String name = "BINARY";
     /** same with CHARACTER_MAXIMUM_LENGTH, CHARACTER_OCTET_LENGTH */
-    private final long length;
+    private final Long length;
 
     public MySQLBinary() {
-        length = 1;
+        length = 1L;
     }
 
-    public MySQLBinary(long length) {
+    public MySQLBinary(Long length) {
         super();
         Utilities.validateLength(length);
         this.length = length;
@@ -24,7 +24,7 @@ public class MySQLBinary extends MySQLBinaryTypeBase {
     }
 
     @Override
-    public long getLength() {
+    public Long getLength() {
         return length;
     }
 }

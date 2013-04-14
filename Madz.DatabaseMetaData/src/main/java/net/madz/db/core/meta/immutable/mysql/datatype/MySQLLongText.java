@@ -6,27 +6,22 @@ public class MySQLLongText extends MySQLTextTypeBase {
 
     public MySQLLongText() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-    public MySQLLongText(boolean isBinary, String charsetName) {
+    public MySQLLongText(Boolean isBinary, String charsetName) {
         super(isBinary, charsetName);
-        // TODO Auto-generated constructor stub
     }
 
-    public MySQLLongText(boolean isBinary) {
+    public MySQLLongText(Boolean isBinary) {
         super(isBinary);
-        // TODO Auto-generated constructor stub
     }
 
     public MySQLLongText(String charsetName, String collationName) {
         super(charsetName, collationName);
-        // TODO Auto-generated constructor stub
     }
 
     public MySQLLongText(String collationName) {
         super(collationName);
-        // TODO Auto-generated constructor stub
     }
 
     @Override
