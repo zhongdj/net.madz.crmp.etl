@@ -14,4 +14,6 @@ public class MessageConsts {
     public static final String LOWER_CASE_TABLE_NAMES_MUST_BE_SAME = "System variable 'lower_case_table_names' of source server and target server must be the same, please configure correctly.";
     public static final String DATABASE_NOT_EXISTS_IN_DB_SERVER = "Database doesn't exists on server, please check!";
     public static final String THE_ERROR_CODE_INVALID = "The error code is invalid.";
+    public static final String THE_DATA_TYPE_NOT_SUPPORT = "The data type of jdbc is not supported to converted to mysql data type, the data type is:";
+    public static final String DATA_TYPE_NEEDS_DEFAULT_NO_ARGUMENT_CONSTRUCTOR = "The data type needs default no argument constructor, the data type is:";
 }
