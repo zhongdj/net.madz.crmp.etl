@@ -11,6 +11,7 @@ import net.madz.db.configuration.Database;
 import net.madz.db.core.impl.DatabaseSchemaUtilsImpl;
 import net.madz.db.core.impl.DbConfigurationManagement;
 import net.madz.db.core.impl.validation.mysql.ErrorEntry;
+import net.madz.db.utils.LogUtils;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -63,5 +64,16 @@ public class DatabaseSchemaUtilsImplTest {
     @Ignore
     public void testDropDatabase() {
         fail("Not yet implemented");
+    }
+    
+    @Test
+    public void testMigrateDatabaseSchema() {
+        DatabaseSchemaUtilsImpl dbSchemaUtils = new DatabaseSchemaUtilsImpl();
+        try {
+            dbSchemaUtils.migrateDatabaseSchema("Search", "Search");
+        } catch (Exception e) {
+            LogUtils.debug(e.getClass(),e.getMessage());
+            fail(e.getMessage());
+        } 
     }
 }
