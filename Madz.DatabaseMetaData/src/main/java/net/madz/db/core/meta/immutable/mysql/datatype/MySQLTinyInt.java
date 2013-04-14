@@ -1,12 +1,15 @@
-package net.madz.db.core.meta.immutable.mysql;
+package net.madz.db.core.meta.immutable.mysql.datatype;
 
-import net.madz.db.core.meta.immutable.mysql.datatype.MySQLIntTypeBase;
 
 public class MySQLTinyInt extends MySQLIntTypeBase {
 
     public static final String name = "TINYINT";
 
-    public MySQLTinyInt(Short displayLength, boolean isUnsigned, boolean isZeroFill) {
+    public MySQLTinyInt() {
+        super();
+    }
+
+    public MySQLTinyInt(Short displayLength, Boolean isUnsigned, Boolean isZeroFill) {
         super(displayLength, isUnsigned, isZeroFill);
     }
 
@@ -14,7 +17,7 @@ public class MySQLTinyInt extends MySQLIntTypeBase {
         super(displayLength);
     }
 
-    public MySQLTinyInt(Short displayLength, boolean isUnsigned) {
+    public MySQLTinyInt(Short displayLength, Boolean isUnsigned) {
         super(displayLength, isUnsigned);
     }
 
