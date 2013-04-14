@@ -21,6 +21,10 @@ import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.IndexMetaData;
 import net.madz.db.core.meta.immutable.SchemaMetaData;
 import net.madz.db.core.meta.immutable.TableMetaData;
+import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData;
+import net.madz.db.core.meta.immutable.mysql.MySQLSchemaMetaData;
+import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
+import net.madz.db.core.meta.mutable.mysql.impl.MySQLSchemaMetaDataBuilderImpl;
 import net.madz.db.utils.LogUtils;
 import net.madz.db.utils.MessageConsts;
 
@@ -210,13 +214,13 @@ public class DatabaseSchemaUtilsImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, F
         final AbsSchemaMetaDataParser<SMD, TMD, CMD, FMD, IMD> sourceDbParser = DbOperatorFactoryImpl.getInstance().createSchemaParser(sourceDatabaseName,
                 false);
         final SMD schemaMetaData = sourceDbParser.parseSchemaMetaData();
+        final MySQLSchemaMetaData mySqlMetaData = new MySQLSchemaMetaDataBuilderImpl(sourceDatabaseName).build((JdbcSchemaMetaData) schemaMetaData).getMetaData();
         // Convert Access schema metadata to MySQL schema metaData
         // Upload schemaMetaData to to writer (local or remote)
         //
         final AbsDatabaseGenerator<SMD, TMD, CMD, FMD, IMD> databaseGenerator = DbOperatorFactoryImpl.getInstance().createDatabaseGenerator(targetDatabaseName);
-        final String databaseName = databaseGenerator.generateDatabase(schemaMetaData, DbConfigurationManagement.createConnection(targetDatabaseName, true),
-                targetDatabaseName);
+        databaseGenerator.generateDatabase((SMD) mySqlMetaData, DbConfigurationManagement.createConnection(targetDatabaseName, true), targetDatabaseName);
         DbConfigurationManagement.addDatabaseInfo(targetDatabaseName);
-        return databaseName;
+        return sourceDatabaseName;
     }
 }
