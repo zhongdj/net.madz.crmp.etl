@@ -80,12 +80,13 @@ public class JdbcForeignKeyMetaDataBuilderImpl
         return constructedMetaData;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addEntry(MetaDataResultSet<AccessForeignKeyDbMetaDataEnum> importedKeys) throws SQLException {
         final String fkColumnName = importedKeys.get(AccessForeignKeyDbMetaDataEnum.SZCOLUMN);
         final String pkColumnName = importedKeys.get(AccessForeignKeyDbMetaDataEnum.SZREFERENCEDCOLUMN);
         JdbcColumnMetaData fkColumn = this.fkTable.getColumnBuilder(fkColumnName);
         JdbcColumnMetaData pkColumn = this.pkTable.getColumnBuilder(pkColumnName);
-        BaseForeignKeyMetaDataBuilder.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(fkColumn, pkColumn, this,
+		BaseForeignKeyMetaDataBuilder.Entry entry = new BaseForeignKeyMetaDataBuilder.Entry(fkColumn, pkColumn, this,
                 importedKeys.getShort(AccessForeignKeyDbMetaDataEnum.ICOLUMN));
         this.entryList.add(entry);
     }

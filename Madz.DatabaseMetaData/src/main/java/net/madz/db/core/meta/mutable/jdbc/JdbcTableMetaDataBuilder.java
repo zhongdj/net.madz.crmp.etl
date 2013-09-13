@@ -2,16 +2,12 @@ package net.madz.db.core.meta.mutable.jdbc;
 
 import java.util.Collection;
 
-import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
-import net.madz.db.core.meta.immutable.impl.enums.IndexDbMetaDataEnum;
 import net.madz.db.core.meta.immutable.jdbc.JdbcColumnMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcIndexMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 import net.madz.db.core.meta.mutable.TableMetaDataBuilder;
-import net.madz.db.core.meta.mutable.jdbc.impl.JdbcForeignKeyMetaDataBuilderImpl;
-import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
 
 public interface JdbcTableMetaDataBuilder
         extends

@@ -67,6 +67,7 @@ public class DatabaseSchemaUtilsImplTest {
     }
     
     @Test
+    @Ignore
     public void testMigrateDatabaseSchema() {
         DatabaseSchemaUtilsImpl dbSchemaUtils = new DatabaseSchemaUtilsImpl();
         try {

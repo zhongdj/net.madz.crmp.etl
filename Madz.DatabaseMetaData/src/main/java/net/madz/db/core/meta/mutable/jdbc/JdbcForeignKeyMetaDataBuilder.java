@@ -4,7 +4,6 @@ import java.sql.SQLException;
 
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
 import net.madz.db.core.meta.immutable.impl.enums.AccessForeignKeyDbMetaDataEnum;
-import net.madz.db.core.meta.immutable.impl.enums.ImportKeyDbMetaDataEnum;
 import net.madz.db.core.meta.immutable.jdbc.JdbcColumnMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcIndexMetaData;

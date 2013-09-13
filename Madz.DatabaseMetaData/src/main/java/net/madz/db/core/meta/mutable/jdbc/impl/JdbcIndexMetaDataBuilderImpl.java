@@ -11,7 +11,6 @@ import net.madz.db.core.meta.immutable.jdbc.JdbcIndexMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
 import net.madz.db.core.meta.immutable.jdbc.impl.JdbcIndexMetaDataImpl;
-import net.madz.db.core.meta.immutable.types.IndexTypeEnum;
 import net.madz.db.core.meta.immutable.types.KeyTypeEnum;
 import net.madz.db.core.meta.immutable.types.SortDirectionEnum;
 import net.madz.db.core.meta.mutable.impl.BaseIndexMetaDataBuilder;
@@ -54,7 +53,8 @@ public class JdbcIndexMetaDataBuilderImpl
         return this.constructedMetaData;
     }
 
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public void addIndexEntry(MetaDataResultSet<IndexDbMetaDataEnum> indexRs) throws SQLException {
         final String columnName = indexRs.get(IndexDbMetaDataEnum.COLUMN_NAME);
         final JdbcColumnMetaData column = this.table.getColumnBuilder(columnName);

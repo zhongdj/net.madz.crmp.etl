@@ -9,16 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.madz.db.core.meta.immutable.ForeignKeyMetaData;
-import net.madz.db.core.meta.immutable.IndexMetaData;
+import net.madz.db.core.meta.immutable.ForeignKeyEntry;
+import net.madz.db.core.meta.immutable.IndexEntry;
+import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
 import net.madz.db.core.meta.immutable.jdbc.JdbcColumnMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcIndexMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcSchemaMetaData;
 import net.madz.db.core.meta.immutable.jdbc.JdbcTableMetaData;
-import net.madz.db.core.meta.immutable.ForeignKeyEntry;
-import net.madz.db.core.meta.immutable.IndexEntry;
-import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
 import net.madz.db.core.meta.immutable.mysql.MySQLColumnMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLForeignKeyMetaData;
 import net.madz.db.core.meta.immutable.mysql.MySQLIndexMetaData;
@@ -61,7 +59,8 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         this.fkIndex = this.fkTable.getIndexBuilder(rs.get(MySQLForeignKeyDbMetaDataEnum.CONSTRAINT_NAME));
     }
 
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public MySQLForeignKeyMetaDataBuilder build(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
         ResultSet rs = null;
@@ -152,7 +151,8 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         return constructedMetaData;
     }
 
-    public MySQLForeignKeyMetaDataBuilder build(JdbcForeignKeyMetaData jFk) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public MySQLForeignKeyMetaDataBuilder build(JdbcForeignKeyMetaData jFk) {
         if ( null == jFk ) {
             throw new IllegalArgumentException(MessageConsts.ARGUMENT_SHOULD_NOT_BE_NULL);
         }
@@ -204,7 +204,8 @@ public class MySQLForeignKeyMetaDataBuilderImpl
         return pkTable.getTableName();
     }
 
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public void addEntry(MetaDataResultSet<MySQLForeignKeyDbMetaDataEnum> rs) throws SQLException {
         final String columnName = rs.get(MySQLForeignKeyDbMetaDataEnum.COLUMN_NAME);
         final String referencedColumnName = rs.get(MySQLForeignKeyDbMetaDataEnum.REFERENCED_COLUMN_NAME);

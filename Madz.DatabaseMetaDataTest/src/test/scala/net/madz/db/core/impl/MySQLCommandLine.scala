@@ -8,7 +8,7 @@ import scala.slick.session.Database
 import scala.slick.session.Database
 import scala.slick.session.Database.threadLocalSession
 
-import net.madz.db.core.meta.immutable.mysql.MySQLTinyInt
+import net.madz.db.core.meta.immutable.mysql.datatype.MySQLTinyInt
 import net.madz.db.core.meta.immutable.mysql.datatype.DataType
 import net.madz.db.core.meta.immutable.mysql.datatype.MySQLBigInt
 import net.madz.db.core.meta.immutable.mysql.datatype.MySQLBinary

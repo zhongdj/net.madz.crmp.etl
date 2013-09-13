@@ -1,10 +1,7 @@
 package net.madz.db.core.meta.mutable.mysql.impl;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
 
 import net.madz.db.core.meta.immutable.IndexEntry;
 import net.madz.db.core.meta.immutable.impl.MetaDataResultSet;
@@ -28,8 +25,6 @@ import net.madz.db.core.meta.mutable.mysql.MySQLForeignKeyMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLIndexMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLSchemaMetaDataBuilder;
 import net.madz.db.core.meta.mutable.mysql.MySQLTableMetaDataBuilder;
-import net.madz.db.utils.ResourceManagementUtils;
-import net.madz.db.utils.Utilities;
 
 public class MySQLIndexMetaDataBuilderImpl
         extends
@@ -94,7 +89,8 @@ public class MySQLIndexMetaDataBuilderImpl
         this.keyType = keyType;
     }
 
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public void addEntry(MetaDataResultSet<MySQLIndexDbMetaDataEnum> rs) throws SQLException {
         short subPart = rs.getShort(MySQLIndexDbMetaDataEnum.SUB_PART);
         short position = rs.getShort(MySQLIndexDbMetaDataEnum.SEQ_IN_INDEX);
@@ -108,7 +104,8 @@ public class MySQLIndexMetaDataBuilderImpl
         this.addEntry(entry);
     }
 
-    public MySQLIndexMetaDataBuilder build(JdbcIndexMetaData index) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public MySQLIndexMetaDataBuilder build(JdbcIndexMetaData index) {
         this.isUnique = index.isUnique();
         this.keyType = index.getKeyType();
         // TODO index type??? moved to jdbc level

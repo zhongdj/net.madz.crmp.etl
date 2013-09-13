@@ -148,7 +148,8 @@ public class TableMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CMD, FMD, IM
         return result;
     }
 
-    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     public boolean equals(Object obj) {
         if ( this == obj ) return true;
         if ( obj == null ) return false;

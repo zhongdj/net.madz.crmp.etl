@@ -166,13 +166,11 @@ public abstract class BaseColumnMetaDataBuilder<SMDB extends SchemaMetaDataBuild
         this.uniqueIndexList.remove(primaryKey);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean isMemberOfPrimaryKey() {
         return null != this.primaryKey;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean isMemberOfIndex() {
         return isMemberOfPrimaryKey() || isMemberOfUniqueIndex() || this.nonUniqueIndexList.size() > 0;

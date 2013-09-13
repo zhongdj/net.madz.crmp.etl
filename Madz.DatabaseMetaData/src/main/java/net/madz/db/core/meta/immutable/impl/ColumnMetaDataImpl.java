@@ -46,7 +46,8 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
         this.isAutoIncremented = metaData.isAutoIncremented();
     }
 
-    void setTable(TMD table) {
+    @SuppressWarnings("unchecked")
+	void setTable(TMD table) {
         if ( this.table != null ) this.table.getColumns().remove(this);
         this.table = table;
         if ( this.table != null ) this.table.getColumns().add((CMD) this);
@@ -82,13 +83,11 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
         return this.primaryKey;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean isMemberOfPrimaryKey() {
         return null != this.primaryKey;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean isMemberOfIndex() {
         return isMemberOfPrimaryKey() || isMemberOfUniqueIndex() || this.nonUniqueIndexList.size() > 0;
@@ -178,7 +177,8 @@ public abstract class ColumnMetaDataImpl<SMD extends SchemaMetaData<SMD, TMD, CM
         return result;
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public boolean equals(Object obj) {
         if ( this == obj ) return true;
         if ( obj == null ) return false;
